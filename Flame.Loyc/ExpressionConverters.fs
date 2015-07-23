@@ -140,27 +140,32 @@ module ExpressionConverters =
     let WhileConverter = 
         let convWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let cond, newScope = parent.ConvertExpression node.Args.[0] scope
-            let scopedBody     = ConvertScopedExpression parent node.Args.[1] newScope
-            ExpressionBuilder.While cond scopedBody, newScope
+            let tag            = new BlockTag()
+            let innerScope     = newScope.FlowChildScope tag
+            let scopedBody     = ConvertScopedExpression parent node.Args.[1] innerScope
+            ExpressionBuilder.While tag cond scopedBody, newScope
         CreateBinaryConverter convWhile
 
     /// A converter for do-while expressions.
     let DoWhileConverter = 
         let convDoWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
-            let scopedBody     = ConvertScopedExpression parent node.Args.[0] scope
-            let cond, newScope = parent.ConvertExpression node.Args.[1] scope
-            ExpressionBuilder.DoWhile scopedBody cond, newScope
+            let tag            = new BlockTag()
+            let innerScope     = scope.FlowChildScope tag
+            let scopedBody     = ConvertScopedExpression parent node.Args.[0] innerScope
+            let cond           = ConvertScopedExpression parent node.Args.[1] innerScope
+            ExpressionBuilder.DoWhile tag scopedBody cond, scope
         CreateBinaryConverter convDoWhile
 
     /// A converter for `for`-loop expressions.
     let ForConverter = 
         let convFor (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
-            let       newScope = scope.ChildScope
+            let tag            = new BlockTag()
+            let newScope       = scope.ChildScope
             let init, newScope = parent.ConvertExpression node.Args.[0] newScope
             let cond, newScope = parent.ConvertExpression node.Args.[1] newScope
             let delta          = ConvertScopedExpression parent node.Args.[2] newScope
-            let body           = ConvertScopedExpression parent node.Args.[3] newScope
-            ExpressionBuilder.Scope (ExpressionBuilder.For init cond delta body) newScope, scope
+            let body           = newScope.FlowChildScope tag |> ConvertScopedExpression parent node.Args.[3]
+            ExpressionBuilder.Scope (ExpressionBuilder.For tag init cond delta body) newScope, scope
 
         CreateNAryConverter 4 convFor
 

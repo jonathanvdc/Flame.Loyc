@@ -248,8 +248,8 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.Comma ExpressionConverters.CommaConverter;
                                              makePair CodeSymbols.Semicolon (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Pop);
 
-                                             makePair CodeSymbols.Break (ExpressionConverters.DefineNullaryOperator ExpressionBuilder.Break);
-                                             makePair CodeSymbols.Continue (ExpressionConverters.DefineNullaryOperator ExpressionBuilder.Continue);
+                                             makePair CodeSymbols.Break (ExpressionConverters.DefineScopedNullaryOperator ExpressionBuilder.Break);
+                                             makePair CodeSymbols.Continue (ExpressionConverters.DefineScopedNullaryOperator ExpressionBuilder.Continue);
 
                                              makePair CodeSymbols.Return (ExpressionConverters.DefineNullaryOperator ExpressionBuilder.ReturnVoid); 
                                              makePair CodeSymbols.Return (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Return);

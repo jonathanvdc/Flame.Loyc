@@ -9,4 +9,17 @@ public class X
     }
 
     public X getThis() { return this; }
+
+    public int factorial(int n)
+    {
+        int result = 1;
+        int i = 1;
+        while (true)
+        {
+            if (i > n) break;
+            result *= i;
+            i++;
+        }
+        return result;
+    }
 }

@@ -975,6 +975,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.LocalScope.ReleaseStatement">
 <summary>
  Creates a release statement for this local scope.
@@ -1005,6 +1008,11 @@
  Gets this local scope&apos;s associated function scope.
 </summary>
 </member>
+<member name="P:Flame.Functional.LocalScope.ControlTag">
+<summary>
+ Gets the enclosing control flow block&apos;s tag.
+</summary>
+</member>
 <member name="P:Flame.Functional.LocalScope.ChildScope">
 <summary>
  Creates a child scope.
@@ -1013,6 +1021,11 @@
 <member name="M:Flame.Functional.LocalScope.GetVariable(System.String)">
 <summary>
  Gets the variable with the given name.
+</summary>
+</member>
+<member name="M:Flame.Functional.LocalScope.FlowChildScope(Flame.Compiler.BlockTag)">
+<summary>
+ Creates a child scope with the given control flow tag.
 </summary>
 </member>
 <member name="M:Flame.Functional.LocalScope.DeclaresDirectly(System.String)">
@@ -1025,6 +1038,12 @@
 <summary>
  Declares a variable of the given type and name.
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -1371,29 +1390,34 @@
  The resulting expression is of type void.
 </summary>
 </member>
-<member name="P:Flame.Functional.ExpressionBuilder.Continue">
+<member name="M:Flame.Functional.ExpressionBuilder.Continue(Flame.Functional.LocalScope)">
 <summary>
  Creates a continue expression.
 </summary>
 </member>
-<member name="P:Flame.Functional.ExpressionBuilder.Break">
+<member name="M:Flame.Functional.ExpressionBuilder.Break(Flame.Functional.LocalScope)">
 <summary>
  Creates a break expression.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.For(Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.For(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a for loop expression,
  which has type void.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.DoWhile(Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.Tagged(Flame.Compiler.BlockTag,Flame.Compiler.IExpression)">
+<summary>
+ Creates a new tagged block expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.DoWhile(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a do-while loop expression,
  which has type void.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.While(Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.While(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a while loop expression,
  which has type void.

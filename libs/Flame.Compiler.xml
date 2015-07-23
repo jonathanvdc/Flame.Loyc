@@ -4,6 +4,17 @@
     <name>Flame.Compiler</name>
   </assembly>
   <members>
+    <member name="T:Flame.Compiler.BlockTag">
+      <summary>
+ Defines a unique tag that is associated with some control-flow block.
+ Such a tag is named, but its name need not be unique.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.BlockTag.Name">
+      <summary>
+ Gets the block tag's name.
+ </summary>
+    </member>
     <member name="T:Flame.Compiler.IMemberNode">
       <summary>
  Defines a node that directly contains one or more members.
@@ -888,16 +899,11 @@
  Creates a block that executes that given blocks in sequence.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.ICodeGenerator.EmitWhile(Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
+    <member name="M:Flame.Compiler.ICodeGenerator.EmitTagged(Flame.Compiler.BlockTag,Flame.Compiler.ICodeBlock)">
       <summary>
- Creates a block that repeats the given body as long as the given condition
- block evaluates to true.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.ICodeGenerator.EmitDoWhile(Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
-      <summary>
- Creates a block that executes the given body once, and then keeps on executing
- it as long as the given condition block evaluates to true.
+ Creates a tagged block: a block that supports "break" and "continue".
+ "break" means: jump to the end of this block; "continue" means:
+ jump to the start of this block.
  </summary>
     </member>
     <member name="M:Flame.Compiler.ICodeGenerator.EmitIfElse(Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
@@ -919,16 +925,16 @@
  function's exection and transfers control back to the calling block.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.ICodeGenerator.EmitBreak">
+    <member name="M:Flame.Compiler.ICodeGenerator.EmitBreak(Flame.Compiler.BlockTag)">
       <summary>
- Creates a break block: a block that 'breaks' out of the enclosing loop block:
+ Creates a break block: a block that 'breaks' out of the given enclosing block:
  control is transferred to the block that trails said block.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.ICodeGenerator.EmitContinue">
+    <member name="M:Flame.Compiler.ICodeGenerator.EmitContinue(Flame.Compiler.BlockTag)">
       <summary>
  Creates a continue block: a block that stops the execution of the
- enclosing loop block's body, and starts the next iteration.
+ given enclosing block's body, and starts the next iteration.
  </summary>
     </member>
     <member name="M:Flame.Compiler.ICodeGenerator.EmitBoolean(System.Boolean)">
@@ -1072,6 +1078,18 @@
  Creates a new vector of the specified element type with the specified dimensions.
  </summary>
       <param name="Dimensions" />
+    </member>
+    <member name="M:Flame.Compiler.IWhileCodeGenerator.EmitWhile(Flame.Compiler.BlockTag,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
+      <summary>
+ Creates a block that repeats the given body as long as the given condition
+ block evaluates to true.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.IWhileCodeGenerator.EmitDoWhile(Flame.Compiler.BlockTag,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
+      <summary>
+ Creates a block that executes the given body once, and then keeps on executing
+ it as long as the given condition block evaluates to true.
+ </summary>
     </member>
     <member name="T:Flame.Compiler.ICodeBlock">
       <summary>
@@ -1477,7 +1495,7 @@
  Provides an interface for code generators that support C-family style for loops.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Emit.IForCodeGenerator.EmitForBlock(Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
+    <member name="M:Flame.Compiler.Emit.IForCodeGenerator.EmitForBlock(Flame.Compiler.BlockTag,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock,Flame.Compiler.ICodeBlock)">
       <summary>
  Creates a for loop block from the given initialization, condition, delta and body blocks.
  </summary>
@@ -1493,7 +1511,7 @@
  given collection block at a time.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Emit.IForeachCodeGenerator.EmitForeachHeader(System.Collections.Generic.IEnumerable`1{Flame.Compiler.Emit.ICollectionBlock})">
+    <member name="M:Flame.Compiler.Emit.IForeachCodeGenerator.EmitForeachHeader(Flame.Compiler.BlockTag,System.Collections.Generic.IEnumerable`1{Flame.Compiler.Emit.ICollectionBlock})">
       <summary>
  Creates a foreach block header based on the given collection blocks.
  </summary>
@@ -3898,6 +3916,39 @@
       <returns />
     </member>
     <member name="M:Flame.Compiler.Statements.DoWhileStatement.Emit(Flame.Compiler.ICodeGenerator)">
+      <summary>
+ Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Statements.TaggedStatement">
+      <summary>
+ Defines a tagged statement: the statement equivalent of a
+ code generator's tagged block.
+ Tagged statements are potential targets for "break" and "continue"
+ statements.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Statements.TaggedStatement.AcceptFlow``2(Flame.Compiler.IFlowVisitor`2{TState,TFlow})">
+      <summary>
+ Accepts and interacts with a flow visitor.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Statements.TaggedStatement.Accept(Flame.Compiler.INodeVisitor)">
+      <summary>
+ Accepts a node visitor.
+ This method is applies the visitor to this node's children and
+ returns a new node with the same structure as this node, but with
+ the updated children.
+ If this node has no children, this node is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Statements.TaggedStatement.Optimize">
+      <summary>
+ Returns an optimized version of the statement.
+ </summary>
+      <returns />
+    </member>
+    <member name="M:Flame.Compiler.Statements.TaggedStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
  </summary>
