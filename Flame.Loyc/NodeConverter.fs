@@ -111,7 +111,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
         match this.tryConvertNullableNode typeConverters node scope with
         | None   -> 
             if node.IsId then
-                match scope.Global.Binder.BindType node.Name.Name with
+                match scope.Global.Binder.Bind node.Name.Name with
                 | null   -> None
                 | result -> Some result
             else

@@ -106,7 +106,7 @@ namespace fecs
                 }
                 var namer = ECSharpTypeNamer.Instance;
                 var convRules = DefaultConversionRules.Create(namer.Convert);
-                var globalScope = new GlobalScope(Binder, convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers);
+                var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers);
                 var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier);
                 var unit = ParseCompilationUnit(nodes, globalScope, DeclaringAssembly);
                 Parameters.Log.LogEvent(new LogEntry("Status", "Parsed " + SourceItem.SourceIdentifier));

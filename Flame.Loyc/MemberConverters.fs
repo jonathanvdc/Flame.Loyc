@@ -282,15 +282,15 @@ module MemberConverters =
     
     /// A converter for types that are named by using a scope operator ('.' or '::').
     let ScopeOperatorConverter =
-        let rec toTypeName (node : LNode) : string =
+        let rec toTypeName (node : LNode) : TypeName =
             if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
-                (toTypeName node.Args.[0]) + "." + (toTypeName node.Args.[1])
+                (toTypeName node.Args.[0]).Append (toTypeName node.Args.[1])
             else
-                node.Name.Name
+                new TypeName(node.Name.Name)
 
-        let getSubtype (ty : IType) (name : string) =
+        let getSubtype (ty : IType) (name : TypeName) =
             match ty with
-            | :? INamespace as ns -> ns.GetTypes() |> Array.tryFind (fun x -> x.Name = name)
+            | :? INamespace as ns -> ns.GetTypes() |> Array.tryFind (fun x -> x.Name = name.Name)
             | _                   -> None
                 
         let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
@@ -298,8 +298,8 @@ module MemberConverters =
             | Some ty -> 
                 match getSubtype ty (toTypeName node.Args.[1]) with
                 | Some x -> x
-                | None   -> toTypeName node |> scope.Global.Binder.BindType
-            | None    -> toTypeName node |> scope.Global.Binder.BindType
+                | None   -> toTypeName node |> scope.Global.Binder.Bind
+            | None    -> toTypeName node |> scope.Global.Binder.Bind
 
         CreateBinaryConverter convTy
 

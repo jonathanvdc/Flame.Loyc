@@ -382,6 +382,60 @@
 <member name="">
 
 </member>
+<member name="P:Flame.Functional.FunctionalBinder.Environment">
+<summary>
+ Gets this binder&apos;s environment.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalBinder.UseNamespace(Flame.Functional.TypeName)">
+<summary>
+ Uses the given namespace.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalBinder.MapNamespace(System.String,Flame.Functional.TypeName)">
+<summary>
+ Maps the given name to the given namespace.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:Flame.Functional.FunctionalBinder.Bind(System.String)">
+<summary>
+ Binds the given name to a type.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalBinder.Bind(Flame.Functional.TypeName)">
+<summary>
+ Binds the given name to a type.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:Flame.Functional.FunctionalBinder">
+<summary>
+ Defines a functional binder type.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="">
 
 </member>
@@ -1376,6 +1430,72 @@
 
  This information is discarded on optimization.
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.TypeName.Tail">
+<summary>
+ Gets this type name&apos;s &quot;tail&quot; type name.
+</summary>
+</member>
+<member name="P:Flame.Functional.TypeName.Path">
+<summary>
+ Gets this type name&apos;s &quot;path&quot;.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.TypeName.IsEmpty">
+<summary>
+ Checks if this type name is empty.
+</summary>
+</member>
+<member name="P:Flame.Functional.TypeName.Head">
+<summary>
+ Gets this type name&apos;s &quot;head&quot;.
+</summary>
+</member>
+<member name="P:Flame.Functional.TypeName.AllPartitions">
+<summary>
+ Gets all possible partitions for this type name.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="M:Flame.Functional.TypeName.Append(Flame.Functional.TypeName)">
+<summary>
+ Appends the given type name to this type name, and returns the result.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 
