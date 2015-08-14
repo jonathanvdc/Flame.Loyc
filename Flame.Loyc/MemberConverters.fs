@@ -141,6 +141,100 @@ module MemberConverters =
         let recognizeField (node : LNode) = node.ArgCount > 1
         new TypeMemberConverter(recognizeField, ConvertFieldDeclaration)
 
+    /// Parses the given symbol into an accessor type.
+    let GetAccessorType (symbol : Symbol) =
+        if symbol = CodeSymbols.get then
+            Some AccessorType.GetAccessor
+        else if symbol = CodeSymbols.set then
+            Some AccessorType.SetAccessor
+        else if symbol = CodeSymbols.add then
+            Some AccessorType.AddAccessor
+        else if symbol = CodeSymbols.remove then
+            Some AccessorType.RemoveAccessor
+        else
+            None
+
+    /// Gets an accessor's return type and parameters, based on its accessor type and the enclosing property's return type and parameters.
+    let GetAccessorSignature (accType : AccessorType) (propType : Lazy<IType>) (indexerParams : Lazy<IParameter seq>) : Lazy<IType> * Lazy<IParameter seq> =
+        if accType = AccessorType.GetAccessor then
+            propType, indexerParams
+        else
+            lazy PrimitiveTypes.Void, lazy Seq.append (evalLazy indexerParams) ([| new DescribedParameter("value", evalLazy propType) |])
+
+    /// Converts an accessor declaration.
+    let ConvertAccessorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) : IAccessor =
+        let isStatic, attrs = ReadAttributes parent node scope
+        if isStatic then
+            let staticNode = node.Attrs |> Seq.find (fun x -> x.Name = CodeSymbols.Static)
+            scope.Log.LogError(new LogEntry("Invalid 'static' attribute", 
+                                            "'static' attributes cannot be applied to accessors directly. " + 
+                                            "Apply them to the enclosing property instead.", 
+                                            NodeHelpers.ToSourceLocation staticNode.Range))
+        let acc = new FunctionalAccessor(new FunctionalMemberHeader(accType.ToString().ToLower() + "_" + declProp.Name, attrs), declProp, accType)
+        let retType, parameters = GetAccessorSignature accType (lazy declProp.PropertyType) (lazy (declProp.GetIndexerParameters() |> Seq.ofArray))
+        let acc = acc.WithReturnType retType
+        let acc = evalLazy parameters |> Seq.fold (fun (x : FunctionalAccessor) y -> x.WithParameter (lazy y)) acc
+
+        let getBody declMethod =
+            let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
+            let body            = parent.ConvertExpression node.Args.[0] localScope ||> ExpressionBuilder.Scope 
+                                                                                     |> ExpressionBuilder.ToStatement
+            AutoReturn declMethod.ReturnType body
+
+        acc.WithBody getBody :> IAccessor
+
+
+    /// Converts a property "member", i.e. an accessor or a block that contains accessors.
+    let rec ConvertPropertyMember (parent : INodeConverter) (scope : GlobalScope) (prop : FunctionalProperty) (node : LNode) : FunctionalProperty =
+        if node.Name = CodeSymbols.Braces then
+            node.Args |> Seq.fold (ConvertPropertyMember parent scope) prop
+        else
+            match GetAccessorType node.Name with
+            | None         ->
+                scope.Log.LogError(new LogEntry("Unrecognized accessor type", 
+                                                "'" + node.Name.Name + "' was not recognized as a type of accessor. ", 
+                                                NodeHelpers.ToSourceLocation node.Target.Range))
+                prop
+            | Some accType ->
+                let createAcc = ConvertAccessorDeclaration parent node scope accType
+                prop.WithAccessor createAcc
+
+    /// Converts a single property declaration.
+    let ConvertPropertyDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (declType : IType) =
+        let isStatic, attrs = ReadAttributes parent node scope
+        let propType = lazy match parent.TryConvertType node.Args.[0] (new LocalScope(scope)) with
+                            | None    ->
+                                let message = new LogEntry("Unresolved type",
+                                                           "Could not resolve the declared type of property '" + name + 
+                                                           "' of '" + scope.TypeNamer declType + "'.",
+                                                           NodeHelpers.ToSourceLocation node.Args.[0].Range)
+                                scope.Log.LogError(message)
+                                null
+                            | Some ty -> ty
+
+        let prop = new FunctionalProperty(new FunctionalMemberHeader(name, attrs), declType, isStatic)
+        let prop = prop.WithPropertyType propType
+        // TODO: add indexer parameters (if any)
+        let prop = ConvertPropertyMember parent scope prop node.Args.[2]
+        prop :> IProperty
+
+    /// A type member converter for property declarations.
+    let PropertyDeclarationConverter =
+        let convertProp (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
+            match NodeHelpers.GetIdName node.Args.[1] with
+            | None      -> 
+                let message = new LogEntry("Unnamed property", 
+                                           "A property was declared without an identifier.",
+                                           NodeHelpers.ToSourceLocation node.Args.[1].Range)
+                scope.Log.LogError(message)
+                declType
+            | Some name ->
+                ConvertPropertyDeclaration parent node scope name |> declType.WithProperty
+                
+        let recognizeProperty (node : LNode) = node.ArgCount = 3
+        new TypeMemberConverter(recognizeProperty, convertProp)
+
+    /// Converts a type declaration.
     let ConvertTypeDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespace) =
         let isStatic, attrs = ReadAttributes parent node scope
         let newAttrs = if isStatic then Seq.singleton PrimitiveAttributes.Instance.StaticTypeAttribute |> Seq.append attrs else attrs

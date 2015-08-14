@@ -311,10 +311,11 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                 |> NodeConverter.ToMultiDictionary
 
         let typeMemberConverters =  [|
-                                        CodeSymbols.Var,    MemberConverters.FieldDeclarationConverter
-                                        CodeSymbols.Braces, MemberConverters.TypeMemberBlockConverter
-                                        CodeSymbols.Fn,     MemberConverters.MethodDeclarationConverter MemberConverters.ConvertMethodDeclaration
-                                        CodeSymbols.Cons,   MemberConverters.MethodDeclarationConverter MemberConverters.ConvertConstructorDeclaration
+                                        CodeSymbols.Var,      MemberConverters.FieldDeclarationConverter
+                                        CodeSymbols.Braces,   MemberConverters.TypeMemberBlockConverter
+                                        CodeSymbols.Fn,       MemberConverters.MethodDeclarationConverter MemberConverters.ConvertMethodDeclaration
+                                        CodeSymbols.Cons,     MemberConverters.MethodDeclarationConverter MemberConverters.ConvertConstructorDeclaration
+                                        CodeSymbols.Property, MemberConverters.PropertyDeclarationConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
 

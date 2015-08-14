@@ -9,14 +9,20 @@ public class Vector
     public double X;
     public double Y;
 
-    public double LengthSquared()
+    public double LengthSquared
     {
-        return this.X * this.X + this.Y * this.Y;
+        get { return this.X * this.X + this.Y * this.Y; }
+        set { this.Length = System.Math.Sqrt(value); }
     }
 
-    public double Length()
+    public double Length
     {
-        return System.Math.Sqrt(this.LengthSquared());
+        get { return System.Math.Sqrt(this.LengthSquared); }
+        set
+        {
+            this.X /= value;
+            this.Y /= value;
+        }
     }
 }
 
