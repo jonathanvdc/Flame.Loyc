@@ -256,6 +256,135 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.ReturnType">
+<summary>
+ Gets this functional-style accessor&apos;s return type.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.Parameters">
+<summary>
+ Gets this functional-style accessor&apos;s parameters.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.LazyBody">
+<summary>
+ Gets this functional-style accessor&apos;s body statement, with lazy evaluation.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.DeclaringProperty">
+<summary>
+ Gets this functional-style accessor&apos;s property type.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.Body">
+<summary>
+ Gets this functional-style accessor&apos;s body statement.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.BaseMethods">
+<summary>
+ Gets this functional-style accessor&apos;s base methods.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.FunctionalAccessor.AccessorType">
+<summary>
+ Gets this functional-style accessor&apos;s accessor type.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalAccessor.WithReturnType(System.Lazy{Flame.IType})">
+<summary>
+ Sets this functional accessor&apos;s return type.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalAccessor.WithParameter(System.Lazy{Flame.IParameter})">
+<summary>
+ Adds this parameter to this functional accessor.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalAccessor.WithBody(Microsoft.FSharp.Core.FSharpFunc{Flame.IMethod,Flame.Compiler.IStatement})">
+<summary>
+ Sets this functional-style method&apos;s body.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalAccessor.WithBaseMethod(System.Lazy{Flame.IMethod})">
+<summary>
+ Adds a base method to this functional-style method.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:Flame.Functional.FunctionalAccessor">
+<summary>
+ Defines a functional-style accessor.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalField.InitialValue">
 <summary>
  Gets this functional-style field&apos;s initial value.
@@ -437,6 +566,11 @@
  Gets this functional-style method&apos;s generic parameters.
 </summary>
 </member>
+<member name="P:Flame.Functional.FunctionalMethod.CreateBody">
+<summary>
+ Gets this functional-style method&apos;s body-generating function.
+</summary>
+</member>
 <member name="P:Flame.Functional.FunctionalMethod.Body">
 <summary>
  Gets this functional-style method&apos;s body statement.
@@ -464,7 +598,7 @@
 </member>
 <member name="M:Flame.Functional.FunctionalMethod.WithParameter(System.Lazy{Flame.IParameter})">
 <summary>
- Adds this parameter to this function method.
+ Adds this parameter to this functional method.
 </summary>
 </member>
 <member name="M:Flame.Functional.FunctionalMethod.WithGenericParameter(Microsoft.FSharp.Core.FSharpFunc{Flame.IGenericMember,Flame.IGenericParameter})">
@@ -601,6 +735,85 @@
 <member name="T:Flame.Functional.FunctionalNamespace">
 <summary>
  Defines a functional-style namespace.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="P:Flame.Functional.FunctionalProperty.PropertyType">
+<summary>
+ Gets this functional-style property&apos;s return type.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalProperty.LazyAccessors">
+<summary>
+ Gets this functional-style property&apos;s accessors, with lazy evaluation.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalProperty.IndexerParameters">
+<summary>
+ Gets this functional-style property&apos;s indexer parameters.
+</summary>
+</member>
+<member name="P:Flame.Functional.FunctionalProperty.Accessors">
+<summary>
+ Gets this functional-style property&apos;s accessors, with lazy evaluation.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalProperty.WithPropertyType(System.Lazy{Flame.IType})">
+<summary>
+ Sets this functional property&apos;s type.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalProperty.WithIndexerParameter(System.Lazy{Flame.IParameter})">
+<summary>
+ Adds this indexer parameter to this function property.
+</summary>
+</member>
+<member name="M:Flame.Functional.FunctionalProperty.WithAccessor(Microsoft.FSharp.Core.FSharpFunc{Flame.IProperty,Flame.IAccessor})">
+<summary>
+ Adds an accessor to this functional-style property.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:Flame.Functional.FunctionalProperty">
+<summary>
+ Defines a functional-style property.
 </summary>
 </member>
 <member name="">

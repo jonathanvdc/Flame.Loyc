@@ -41,16 +41,16 @@ module MemberConverters =
     let private ConvertSingleField (inferType : IExpression -> IType) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         match NodeHelpers.GetIdNode node with
         | None -> 
-            let message = new LogEntry("Invalid variable declaration",
-                                       "A variable declaration must reference an identifier node, " +
+            let message = new LogEntry("Invalid field declaration",
+                                       "A field declaration must reference an identifier node, " +
                                        "which was not found in '" + node.Print() + "'.")
             None, None, lazy (ExpressionBuilder.VoidError message)
         | Some identifier ->
             let name = identifier.Name.Name
             match (inferType null, NodeHelpers.GetAssignedValueNode node) with
             | (null, None) -> 
-                let message = new LogEntry("Invalid variable declaration",
-                                           "A variable declaration that infers its type must be assigned a value, " +
+                let message = new LogEntry("Invalid field declaration",
+                                           "A field declaration that infers its type must be assigned a value, " +
                                            "which was not found in '" + node.Print() + "'.")
                 Some name, None, lazy (ExpressionBuilder.VoidError message)
 
@@ -109,6 +109,8 @@ module MemberConverters =
 
         fMethod.WithBody getBody
 
+    /// Appends a `return(void);` statement to the given statement, provided the given
+    /// type is either `null` or `void`.
     let AutoReturn (retType : IType) (body : IStatement) =
         if retType = null || retType.Equals(PrimitiveTypes.Void) then
             new BlockStatement([| body; new ReturnStatement() :> IStatement |]) :> IStatement
@@ -119,13 +121,14 @@ module MemberConverters =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let retType = lazy (parent.ConvertType node.Args.[0] (new LocalScope(scope)))
         let fMethod = fMethod.WithReturnType retType
-        (fun _ -> AutoReturn retType.Value fMethod.Body) |> fMethod.WithBody :> IMethod
+        (fun (x : IMethod) -> AutoReturn x.ReturnType (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let fMethod = fMethod.AsConstructor 
-        (fun _ -> AutoReturn PrimitiveTypes.Void fMethod.Body) |> fMethod.WithBody :> IMethod
+        (fun (x : IMethod) -> AutoReturn PrimitiveTypes.Void (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
 
+    /// Creates a type member converter based on the given method definition converter.
     let MethodDeclarationConverter conv =
         let convertMethod (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
             let func = conv parent node scope
@@ -183,6 +186,7 @@ module MemberConverters =
     let TypeMemberBlockConverter =
         new TypeMemberConverter(Constant true, ConvertMemberBlock (fun (parent : INodeConverter) -> parent.ConvertTypeMember))
     
+    /// A converter for types that are named by using a scope operator ('.' or '::').
     let ScopeOperatorConverter =
         let rec toTypeName (node : LNode) : string =
             if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
@@ -204,5 +208,4 @@ module MemberConverters =
             | None    -> toTypeName node |> scope.Global.Binder.BindType
 
         CreateBinaryConverter convTy
-            
 
