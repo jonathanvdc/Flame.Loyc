@@ -23,8 +23,8 @@ type SingleNodeConverter<'a>  = ScopedNodeConverter<'a, LocalScope>
 type CallConverter            = SingleNodeConverter<IExpression * LocalScope>
 type TypeConverter            = SingleNodeConverter<IType>
 
-type NamespaceMemberConverter = ScopedNodeConverter<IFunctionalNamespace, IFunctionalNamespace * GlobalScope>
-type TypeMemberConverter      = ScopedNodeConverter<FunctionalType, FunctionalType * GlobalScope>
+type NamespaceMemberConverter = ScopedNodeConverter<IFunctionalNamespace * GlobalScope, IFunctionalNamespace * GlobalScope>
+type TypeMemberConverter      = ScopedNodeConverter<FunctionalType * GlobalScope, FunctionalType * GlobalScope>
 
 type AttributeConverter       = ScopedNodeConverter<IAttribute, GlobalScope>
 

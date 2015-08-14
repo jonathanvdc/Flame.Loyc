@@ -86,7 +86,7 @@ module MemberConverters =
             | (Some name, Some fieldType, expr) ->
                 defineField name fieldType isStatic attrs expr |> parentType.WithField
 
-        node.Args.Slice(1) |> Seq.fold foldDef declType
+        node.Args.Slice(1) |> Seq.fold foldDef declType, scope
 
     let ConvertParameterDeclaration (parent : INodeConverter) (scope : LocalScope) (node : LNode) =
         let varType = parent.ConvertType node.Args.[0] scope
@@ -132,7 +132,7 @@ module MemberConverters =
     let MethodDeclarationConverter conv =
         let convertMethod (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
             let func = conv parent node scope
-            declType.WithMethod func
+            declType.WithMethod func, scope
         let recognizeMethod (node : LNode) = node.ArgCount = 4
         new TypeMemberConverter(recognizeMethod, convertMethod)
 
@@ -227,9 +227,9 @@ module MemberConverters =
                                            "A property was declared without an identifier.",
                                            NodeHelpers.ToSourceLocation node.Args.[1].Range)
                 scope.Log.LogError(message)
-                declType
+                declType, scope
             | Some name ->
-                ConvertPropertyDeclaration parent node scope name |> declType.WithProperty
+                ConvertPropertyDeclaration parent node scope name |> declType.WithProperty, scope
                 
         let recognizeProperty (node : LNode) = node.ArgCount = 3
         new TypeMemberConverter(recognizeProperty, convertProp)
@@ -241,7 +241,8 @@ module MemberConverters =
         let name, tParams = ReadName parent node.Args.[0] scope
         let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs), declNs)
         let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
-        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType) item -> parent.ConvertTypeMember item scope state) fType
+        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType, newScope) item -> parent.ConvertTypeMember item newScope state) (fType, scope)
+                                       |> fst
         fType :> IType
     
     /// A namespace member converter for type declarations.
@@ -249,7 +250,7 @@ module MemberConverters =
         let recognizeType (node : LNode) = node.ArgCount = 3
         let convDecl parent node (declNs : IFunctionalNamespace, scope) =
             let t = ConvertTypeDeclaration parent node scope
-            declNs.WithType t
+            declNs.WithType t, scope
 
         new NamespaceMemberConverter(recognizeType, convDecl)
 
@@ -258,7 +259,8 @@ module MemberConverters =
         let _, attrs = ReadAttributes parent node scope
         let name, _ = ReadName parent node.Args.[0] scope
         let fNs = new FunctionalNamespace(new FunctionalMemberHeader(MemberExtensions.CombineNames(declNs.FullName, name), attrs), declNs.DeclaringAssembly)
-        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace) item -> parent.ConvertNamespaceMember item scope state) (fNs :> IFunctionalNamespace)
+        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace, newScope) item -> parent.ConvertNamespaceMember item newScope state) (fNs :> IFunctionalNamespace, scope)
+                                       |> fst
         fType :> INamespaceBranch
     
     /// A namespace member converter for namespace declarations.
@@ -266,28 +268,31 @@ module MemberConverters =
         let recognizeNs (node : LNode) = node.ArgCount = 3
         let convDecl parent node (declNs : IFunctionalNamespace, scope) =
             let ns = ConvertNamespaceDeclaration parent node scope
-            declNs.WithNamespace ns
+            declNs.WithNamespace ns, scope
 
         new NamespaceMemberConverter(recognizeNs, convDecl)
 
-    let ConvertMemberBlock<'a> (selector : INodeConverter -> LNode -> GlobalScope -> 'a -> 'a) (parent : INodeConverter) (node : LNode) (decl : 'a, scope : GlobalScope) =
+    let ConvertMemberBlock<'a> (selector : INodeConverter -> LNode -> GlobalScope -> 'a -> ('a * GlobalScope)) (parent : INodeConverter) (node : LNode) (decl : 'a, scope : GlobalScope) =
         let conv = selector parent
-        node.Args |> Seq.fold (fun state item -> conv item scope state) decl
+        node.Args |> Seq.fold (fun (state, newScope) item -> conv item newScope state) (decl, scope)
 
     let NamespaceMemberBlockConverter =
         new NamespaceMemberConverter(Constant true, ConvertMemberBlock (fun (parent : INodeConverter) -> parent.ConvertNamespaceMember))
 
     let TypeMemberBlockConverter =
         new TypeMemberConverter(Constant true, ConvertMemberBlock (fun (parent : INodeConverter) -> parent.ConvertTypeMember))
+
+    /// A converter for `import` "expressions".
+    let ImportConverter<'a> =
+        let conv (parent : INodeConverter) (node : LNode) (ns : 'a, scope : GlobalScope) =
+            ns, scope.Binder.UseNamespace (NodeHelpers.ToTypeName node.Args.[0]) |> scope.WithBinder
+        let matchNode (x : LNode) = 
+            x.Args.Count = 1
+
+        new ScopedNodeConverter<'a * GlobalScope, 'a * GlobalScope>(matchNode, conv)
     
     /// A converter for types that are named by using a scope operator ('.' or '::').
     let ScopeOperatorConverter =
-        let rec toTypeName (node : LNode) : TypeName =
-            if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
-                (toTypeName node.Args.[0]).Append (toTypeName node.Args.[1])
-            else
-                new TypeName(node.Name.Name)
-
         let getSubtype (ty : IType) (name : TypeName) =
             match ty with
             | :? INamespace as ns -> ns.GetTypes() |> Array.tryFind (fun x -> x.Name = name.Name)
@@ -296,10 +301,10 @@ module MemberConverters =
         let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             match parent.TryConvertType node.Args.[0] scope with
             | Some ty -> 
-                match getSubtype ty (toTypeName node.Args.[1]) with
+                match getSubtype ty (NodeHelpers.ToTypeName node.Args.[1]) with
                 | Some x -> x
-                | None   -> toTypeName node |> scope.Global.Binder.Bind
-            | None    -> toTypeName node |> scope.Global.Binder.Bind
+                | None   -> NodeHelpers.ToTypeName node |> scope.Global.Binder.Bind
+            | None    -> NodeHelpers.ToTypeName node |> scope.Global.Binder.Bind
 
         CreateBinaryConverter convTy
 

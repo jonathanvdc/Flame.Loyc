@@ -25,7 +25,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
         | Some (expr, scope) ->
             Some (ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range) expr, scope)
 
-    member private this.tryConvertMember<'a> (dict : IReadOnlyDictionary<Symbol, seq<ScopedNodeConverter<'a, 'a * GlobalScope>>>) (node : LNode) scope decl =
+    member private this.tryConvertMember<'a> (dict : IReadOnlyDictionary<Symbol, seq<ScopedNodeConverter<'a * GlobalScope, 'a * GlobalScope>>>) (node : LNode) scope decl =
         let name = node.Name
         if not(dict.ContainsKey name) then
             None 
@@ -68,7 +68,8 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
     /// Converts a list of nodes into a top-level namespace.
     member this.ConvertCompilationUnit (scope : GlobalScope) (declAsm : IAssembly) (nodes : seq<LNode>) =
         let ns = new FunctionalNamespace(new FunctionalMemberHeader(""), declAsm) :> IFunctionalNamespace
-        nodes |> Seq.fold (fun ns item -> this.ConvertNamespaceMember item scope ns) ns
+        nodes |> Seq.fold (fun (ns, newScope) item -> this.ConvertNamespaceMember item newScope ns) (ns, scope)
+              |> fst
          
     member private this.TryConvertIdNode (node : LNode) (scope : LocalScope) =
         if node.Name = CodeSymbols.Missing || node.Name = CodeSymbols.Void then
@@ -316,6 +317,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                         CodeSymbols.Fn,       MemberConverters.MethodDeclarationConverter MemberConverters.ConvertMethodDeclaration
                                         CodeSymbols.Cons,     MemberConverters.MethodDeclarationConverter MemberConverters.ConvertConstructorDeclaration
                                         CodeSymbols.Property, MemberConverters.PropertyDeclarationConverter
+                                        CodeSymbols.Import,   MemberConverters.ImportConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
 
@@ -323,6 +325,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                         CodeSymbols.Class,     MemberConverters.TypeDeclarationConverter
                                         CodeSymbols.Namespace, MemberConverters.NamespaceDeclarationConverter
                                         CodeSymbols.Braces,    MemberConverters.NamespaceMemberBlockConverter
+                                        CodeSymbols.Import,    MemberConverters.ImportConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
 

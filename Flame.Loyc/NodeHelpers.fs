@@ -46,3 +46,9 @@ module NodeHelpers =
     let ToSourceLocation (range : Loyc.Syntax.SourceRange) =
         let doc = new LoycSourceDocument(range.Source)
         new SourceLocation(doc, range.StartIndex, range.Length)
+
+    let rec ToTypeName (node : LNode) : TypeName =
+        if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
+            (ToTypeName node.Args.[0]).Append (ToTypeName node.Args.[1])
+        else
+            new TypeName(node.Name.Name)

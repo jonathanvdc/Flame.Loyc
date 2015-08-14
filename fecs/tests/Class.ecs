@@ -1,3 +1,5 @@
+using System;
+
 public class Vector
 {
     public this(double X, double Y)
@@ -12,12 +14,12 @@ public class Vector
     public double LengthSquared
     {
         get { return this.X * this.X + this.Y * this.Y; }
-        set { this.Length = System.Math.Sqrt(value); }
+        set { this.Length = Math.Sqrt(value); }
     }
 
     public double Length
     {
-        get { return System.Math.Sqrt(this.LengthSquared); }
+        get { return Math.Sqrt(this.LengthSquared); }
         set
         {
             double ratio = value / this.Length;

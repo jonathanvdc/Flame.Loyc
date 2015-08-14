@@ -1149,6 +1149,11 @@
  Gets this global scope&apos;s binder.
 </summary>
 </member>
+<member name="M:Flame.Functional.GlobalScope.WithBinder(Flame.Functional.FunctionalBinder)">
+<summary>
+ Creates a new global scope with the given binder.
+</summary>
+</member>
 <member name="">
 
 </member>
@@ -1455,11 +1460,6 @@
 <member name="P:Flame.Functional.TypeName.Head">
 <summary>
  Gets this type name&apos;s &quot;head&quot;.
-</summary>
-</member>
-<member name="P:Flame.Functional.TypeName.AllPartitions">
-<summary>
- Gets all possible partitions for this type name.
 </summary>
 </member>
 <member name="">

@@ -18,11 +18,11 @@ type INodeConverter =
     /// Tries to convert the given type member definition node to a type member definition.
     /// Constructs like fields, properties and methods are type members.
     /// This steps adds the newly created type member directly to the given FunctionalType.
-    abstract member TryConvertTypeMember : LNode -> GlobalScope -> FunctionalType -> FunctionalType option
+    abstract member TryConvertTypeMember : LNode -> GlobalScope -> FunctionalType -> (FunctionalType * GlobalScope) option
 
     /// Tries to convert a namespace member node to a namespace member.
     /// Things like types, namespaces and modules are namespace members.
-    abstract member TryConvertNamespaceMember : LNode -> GlobalScope -> IFunctionalNamespace -> IFunctionalNamespace option
+    abstract member TryConvertNamespaceMember : LNode -> GlobalScope -> IFunctionalNamespace -> (IFunctionalNamespace * GlobalScope) option
 
     /// Tries to convert the given attribute node to an attribute.
     abstract member TryConvertAttribute : GlobalScope -> LNode -> IAttribute option
@@ -31,7 +31,7 @@ type INodeConverter =
 module NodeConverterExtensions =
 
     type INodeConverter with
-        member private this.convertMember<'a>  (func : LNode -> GlobalScope -> 'a -> 'a option) (node : LNode) scope decl =
+        member private this.convertMember<'a>  (func : LNode -> GlobalScope -> 'a -> ('a * GlobalScope) option) (node : LNode) scope decl =
             match func node scope decl with
             | Some result -> result
             | None        ->
@@ -39,7 +39,7 @@ module NodeConverterExtensions =
                                            "The node converter didn't know what to do with '" + node.Print() + "'.",
                                            NodeHelpers.ToSourceLocation node.Range)
                 scope.Log.LogError(message) // TODO: log this in a somewhat functional way
-                decl
+                decl, scope
 
         member this.ConvertExpression (node : LNode) (scope : LocalScope) =
             match this.TryConvertExpression node scope with
