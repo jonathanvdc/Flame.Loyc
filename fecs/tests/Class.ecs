@@ -20,8 +20,9 @@ public class Vector
         get { return System.Math.Sqrt(this.LengthSquared); }
         set
         {
-            this.X /= value;
-            this.Y /= value;
+            double ratio = value / this.Length;
+            this.X *= ratio;
+            this.Y *= ratio;
         }
     }
 }
