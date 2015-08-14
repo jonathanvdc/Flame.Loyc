@@ -1,72 +1,75 @@
 using System;
 
-public class Vector
+namespace Test
 {
-    public this(double X, double Y)
+    public class Vector
     {
-        this.X = X;
-        this.Y = Y;
-    }
-
-    public double X;
-    public double Y;
-
-    public double LengthSquared
-    {
-        get { return this.X * this.X + this.Y * this.Y; }
-        set { this.Length = Math.Sqrt(value); }
-    }
-
-    public double Length
-    {
-        get { return Math.Sqrt(this.LengthSquared); }
-        set
+        public this(double X, double Y)
         {
-            double ratio = value / this.Length;
-            this.X *= ratio;
-            this.Y *= ratio;
+            this.X = X;
+            this.Y = Y;
+        }
+
+        public double X;
+        public double Y;
+
+        public double LengthSquared
+        {
+            get { return this.X * this.X + this.Y * this.Y; }
+            set { this.Length = Math.Sqrt(value); }
+        }
+
+        public double Length
+        {
+            get { return Math.Sqrt(this.LengthSquared); }
+            set
+            {
+                double ratio = value / this.Length;
+                this.X *= ratio;
+                this.Y *= ratio;
+            }
         }
     }
-}
 
-public class X
-{
-    public int abs(int n)
+    public class X
     {
-        if (n >= 0)
-            return n;
-        else
-            return -n;
-    }
-
-    public X getThis() { return this; }
-
-    public int factorial(int n)
-    {
-        if (n <= 0)
-            return 1;
-        else
-            return this.factorial(n - 1) * n;
-    }
-
-    public int Never()
-    {
-        int x = 0;
-        do
+        public int abs(int n)
         {
-            continue;
-            x++;
-        } while (false);
-        return x;
-    }
+            if (n >= 0)
+                return n;
+            else
+                return -n;
+        }
 
-    public int Forever()
-    {
-        int x = 0;
-        do
+        public X getThis() { return this; }
+
+        public int factorial(int n)
         {
-            x++;
-        } while (true);
-        return x;
+            if (n <= 0)
+                return 1;
+            else
+                return this.factorial(n - 1) * n;
+        }
+
+        public int Never()
+        {
+            int x = 0;
+            do
+            {
+                continue;
+                x++;
+            } while (false);
+            return x;
+        }
+
+        public int Forever()
+        {
+            int x = 0;
+            do
+            {
+                x++;
+            } while (true);
+            return x;
+        }
     }
 }

@@ -387,9 +387,14 @@
  Gets this binder&apos;s environment.
 </summary>
 </member>
+<member name="M:Flame.Functional.FunctionalBinder.UseNamespace(Flame.INamespace)">
+<summary>
+ Uses the given namespace, and all enclosing namespaces, when resolving names.
+</summary>
+</member>
 <member name="M:Flame.Functional.FunctionalBinder.UseNamespace(Flame.Functional.TypeName)">
 <summary>
- Uses the given namespace.
+ Uses the given namespace when resolving names.
 </summary>
 </member>
 <member name="M:Flame.Functional.FunctionalBinder.MapNamespace(System.String,Flame.Functional.TypeName)">

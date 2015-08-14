@@ -259,7 +259,7 @@ module MemberConverters =
         let _, attrs = ReadAttributes parent node scope
         let name, _ = ReadName parent node.Args.[0] scope
         let fNs = new FunctionalNamespace(new FunctionalMemberHeader(MemberExtensions.CombineNames(declNs.FullName, name), attrs), declNs.DeclaringAssembly)
-        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace, newScope) item -> parent.ConvertNamespaceMember item newScope state) (fNs :> IFunctionalNamespace, scope)
+        let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace, newScope) item -> parent.ConvertNamespaceMember item newScope state) (fNs :> IFunctionalNamespace, scope.Binder.UseNamespace fNs |> scope.WithBinder)
                                        |> fst
         fType :> INamespaceBranch
     
