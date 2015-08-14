@@ -20,7 +20,7 @@ namespace fecs
 
         public Tuple<IStatement, IMethod> Apply(Tuple<IStatement, IMethod> Value)
         {
-            var logVisitor = new LoggingVisitor(Log, true);
+            var logVisitor = new LoggingVisitor(Log, true, false);
             return new Tuple<IStatement, IMethod>(logVisitor.Visit(Value.Item1), Value.Item2);
         }
     }

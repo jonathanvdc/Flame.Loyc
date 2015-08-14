@@ -205,7 +205,16 @@ module ExpressionConverters =
         let entry       = new LogEntry("Invalid syntax", message, sourceRange)
         ExpressionBuilder.VoidError entry, scope
 
+    /// Creates a warning expression that represents a warning (`#warning`) node.
+    let ConvertWarning (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
+        let message     = string node.Args.[0].Value
+        let sourceRange = NodeHelpers.ToSourceLocation node.Range
+        let sourceRange = if sourceRange.Length = 0 then new SourceLocation(sourceRange.Document, sourceRange.Position, 1) else sourceRange
+        let entry       = new LogEntry("Syntax-level warning", message, sourceRange)
+        ExpressionBuilder.Warning entry ExpressionBuilder.Void, scope
+
     let ErrorConverter = CreateUnaryConverter ConvertError
+    let WarningConverter = CreateUnaryConverter ConvertWarning
 
     let private convertQuickbind (valueGetter : LNode -> LNode) (nameGetter : LNode -> LNode) (parent : INodeConverter) (node : LNode) (scope : LocalScope) = 
         let valueNode      = valueGetter node
@@ -277,3 +286,26 @@ module ExpressionConverters =
     let ConvertInvocation (target : IExpression) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let args, scope = parent.ConvertExpressions node.Args scope
         ExpressionBuilder.Invoke scope target args, scope
+
+    /// Converts member access.
+    let MemberAccessConverter =
+        let convStaticMemberAccess (parent : INodeConverter) (left : LNode) (right : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            match parent.TryConvertType left scope with
+            | Some ty -> 
+                ExpressionBuilder.AccessNamedMembers scope right.Name.Name (Global ty), scope
+            | None    ->
+                let error = ExpressionBuilder.VoidError (new LogEntry("Unresolved type", "Could not resolve type '" + left.Print() + "' on the left-hand side of a member access operation."))
+                ExpressionBuilder.Source (NodeHelpers.ToSourceLocation left.Range) error, scope
+
+        let convMemberAccess (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let left, right = node.Args.[0], node.Args.[1]
+            match parent.TryConvertExpression left scope with
+            | Some(expr, newScope) ->
+                if ExpressionBuilder.IsError expr then
+                    convStaticMemberAccess parent left right scope
+                else
+                    ExpressionBuilder.AccessNamedMembers scope right.Name.Name (ExpressionBuilder.GetAccessedExpression expr), newScope
+            | None                 ->
+                convStaticMemberAccess parent left right scope
+                
+        CreateBinaryConverter convMemberAccess

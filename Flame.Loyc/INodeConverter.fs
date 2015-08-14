@@ -15,8 +15,9 @@ type INodeConverter =
     /// Tries to convert a type node to a type.
     abstract member TryConvertType : LNode -> LocalScope -> IType option
 
-    /// Tries to convert the given type member node to a type member.
+    /// Tries to convert the given type member definition node to a type member definition.
     /// Constructs like fields, properties and methods are type members.
+    /// This steps adds the newly created type member directly to the given FunctionalType.
     abstract member TryConvertTypeMember : LNode -> GlobalScope -> FunctionalType -> FunctionalType option
 
     /// Tries to convert a namespace member node to a namespace member.
@@ -46,15 +47,13 @@ module NodeConverterExtensions =
             | None        -> 
                 let message = if node.IsId then
                                     new LogEntry("Unrecognized identifier", 
-                                                "Identifier '" + node.Name.Name + "' was not recognized.",
-                                                NodeHelpers.ToSourceLocation node.Range)
+                                                "Identifier '" + node.Name.Name + "' was not recognized.")
                                 else
                                     new LogEntry("Unknown node type", 
                                                 "The node converter didn't know what to do with '" + node.Print() + "'. " + 
                                                 "It was kind of hoping that the '" + node.Target.Print() + "' " + 
-                                                "node would turn out to be some kind of known expression node.",
-                                                NodeHelpers.ToSourceLocation node.Range)
-                ExpressionBuilder.VoidError(message), scope
+                                                "node would turn out to be some kind of known expression node.")
+                ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range) (ExpressionBuilder.VoidError message), scope
 
         member this.ConvertExpressions (nodes : LNode seq) (scope : LocalScope) =
             let foldExpr (exprs : IExpression list, scope : LocalScope) (item : LNode) =

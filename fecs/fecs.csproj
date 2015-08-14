@@ -166,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ECSharpProjectHandler.cs" />
+    <Compile Include="ECSharpTypeNamer.cs" />
     <Compile Include="LogPass.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

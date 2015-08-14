@@ -721,6 +721,17 @@
  </summary>
       <returns />
     </member>
+    <member name="M:Flame.PrimitiveTypes.GetPrimitiveMagnitude(Flame.IType)">
+      <summary>
+ Gets the given type's primitive magnitude. The following table
+ maps primitive magnitudes to primitives:
+ * 4 - 64-bit primitives: float64, int64, uint64, bit64.
+ * 3 - 32-bit primitives: float32, int32, uint32, bit32.
+ * 2 - 16-bit primitives: int16, uint16, bit16, char.
+ * 1 - 8-bit primitives: int8, uint8, bit8, bool.
+ * 0 - everything else.
+ </summary>
+    </member>
     <member name="T:Flame.DescriptionAttribute">
       <summary>
  Defines an attribute that captures a description or documentation,
@@ -1260,14 +1271,15 @@
       <param name="Arguments" />
       <returns />
     </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
     <member name="M:Flame.Primitives.StringPrimitiveType.GetMethods">
       <summary>
  Gets the type's methods, excluding any constructors.
+ </summary>
+      <returns />
+    </member>
+    <member name="M:Flame.Primitives.StringPrimitiveType.GetFields">
+      <summary>
+ Gets the type's fields.
  </summary>
       <returns />
     </member>
@@ -1277,11 +1289,10 @@
  </summary>
       <returns />
     </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetFields">
+    <member name="M:Flame.Primitives.StringPrimitiveType.GetMembers">
       <summary>
- Gets the type's fields.
+ Gets the type's members.
  </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.StringPrimitiveType.GetConstructors">
       <summary>
@@ -2234,20 +2245,20 @@
  A generic converter that is the composition of two conversion functions.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedRetypedParameter.GetAttributes">
+    <member name="M:Flame.Build.RetypedParameter.GetAttributes">
       <summary>
  Gets the member's attributes.
  </summary>
       <returns />
     </member>
-    <member name="M:Flame.Build.DescribedRetypedParameter.IsAssignable(Flame.IType)">
+    <member name="M:Flame.Build.RetypedParameter.IsAssignable(Flame.IType)">
       <summary>
  Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
  </summary>
       <param name="Type">The potential argument's type.</param>
       <returns />
     </member>
-    <member name="P:Flame.Build.DescribedRetypedParameter.ParameterType">
+    <member name="P:Flame.Build.RetypedParameter.ParameterType">
       <summary>
  Gets the parameter's (default) type.
  </summary>

@@ -4,6 +4,11 @@
     <name>Flame.DSharp</name>
   </assembly>
   <members>
+    <member name="T:Flame.DSharp.Box`1">
+      <summary>
+ Wraps a read-write reference to a value.
+ </summary>
+    </member>
     <member name="T:Flame.DSharp.Lexer.TokenType">
       <summary>
  Tokens is an enumeration of all possible token values.

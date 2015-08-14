@@ -183,3 +183,26 @@ module MemberConverters =
     let TypeMemberBlockConverter =
         new TypeMemberConverter(Constant true, ConvertMemberBlock (fun (parent : INodeConverter) -> parent.ConvertTypeMember))
     
+    let ScopeOperatorConverter =
+        let rec toTypeName (node : LNode) : string =
+            if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
+                (toTypeName node.Args.[0]) + "." + (toTypeName node.Args.[1])
+            else
+                node.Name.Name
+
+        let getSubtype (ty : IType) (name : string) =
+            match ty with
+            | :? INamespace as ns -> ns.GetTypes() |> Array.tryFind (fun x -> x.Name = name)
+            | _                   -> None
+                
+        let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
+            match parent.TryConvertType node.Args.[0] scope with
+            | Some ty -> 
+                match getSubtype ty (toTypeName node.Args.[1]) with
+                | Some x -> x
+                | None   -> toTypeName node |> scope.Global.Binder.BindType
+            | None    -> toTypeName node |> scope.Global.Binder.BindType
+
+        CreateBinaryConverter convTy
+            
+

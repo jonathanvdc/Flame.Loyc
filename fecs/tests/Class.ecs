@@ -1,3 +1,25 @@
+public class Vector
+{
+    public this(double X, double Y)
+    {
+        this.X = X;
+        this.Y = Y;
+    }
+
+    public double X;
+    public double Y;
+
+    public double LengthSquared()
+    {
+        return this.X * this.X + this.Y * this.Y;
+    }
+
+    public double Length()
+    {
+        return System.Math.Sqrt(this.LengthSquared());
+    }
+}
+
 public class X
 {
     public int abs(int n)
@@ -12,14 +34,30 @@ public class X
 
     public int factorial(int n)
     {
-        int result = 1;
-        int i = 1;
-        while (true)
+        if (n <= 0)
+            return 1;
+        else
+            return this.factorial(n - 1) * n;
+    }
+
+    public int Never()
+    {
+        int x = 0;
+        do
         {
-            if (i > n) break;
-            result *= i;
-            i++;
-        }
-        return result;
+            continue;
+            x++;
+        } while (false);
+        return x;
+    }
+
+    public int Forever()
+    {
+        int x = 0;
+        do
+        {
+            x++;
+        } while (true);
+        return x;
     }
 }

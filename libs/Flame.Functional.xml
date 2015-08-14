@@ -2,11 +2,67 @@
 <doc>
 <assembly><name>Flame.Functional</name></assembly>
 <members>
-<member name="">
-
+<member name="T:Flame.Functional.AccessedExpression.Global">
+<summary>
+ No expression is accessed: the type member is static.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedExpression.Generic">
+<summary>
+ The accessed type is generic.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedExpression.Value">
+<summary>
+ The accessed type is a value type.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedExpression.Reference">
+<summary>
+ The accessed type is a reference type.
+</summary>
 </member>
 <member name="">
 
+</member>
+<member name="M:Flame.Functional.AccessedExpression.Describe(Microsoft.FSharp.Core.FSharpFunc{Flame.IType,System.String})">
+<summary>
+ Gets a user-friendly member prefix for this accessed member.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedExpression">
+<summary>
+ Defines a number of categories for types
+ whose type members are accessed.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedMember`1.Static">
+<summary>
+ The given type member is a static member.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedMember`1.Extension">
+<summary>
+ The given type member is an extension member.
+</summary>
+</member>
+<member name="T:Flame.Functional.AccessedMember`1.Instance">
+<summary>
+ The given type member is an instance member.
+</summary>
+</member>
+<member name="P:Flame.Functional.AccessedMember`1.MemberPrefix">
+<summary>
+ Gets a user-friendly member prefix for this accessed member.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="T:Flame.Functional.AccessedMember`1">
+<summary>
+ Defines a way of classifying type members.
+</summary>
 </member>
 <member name="">
 
@@ -17,6 +73,9 @@
  can be converted implicitly to the given target type.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="M:Flame.Functional.DefaultConversionRules.Flame-Functional-IConversionRules-ConvertImplicit(Flame.Compiler.IExpression,Flame.IType)">
 <summary>
  Converts the given expression to the given type implicitly.
@@ -26,9 +85,6 @@
 <summary>
  Converts the given expression to the given type explicitly.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -792,6 +848,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.GlobalScope.TypeNamer">
 <summary>
  Gets this global scope&apos;s type namer.
@@ -800,6 +859,12 @@
 <member name="P:Flame.Functional.GlobalScope.Log">
 <summary>
  Gets this global scope&apos;s log.
+</summary>
+</member>
+<member name="P:Flame.Functional.GlobalScope.GetAllMembers">
+<summary>
+ Gets all instance, static and extension
+ type members for the given type.
 </summary>
 </member>
 <member name="P:Flame.Functional.GlobalScope.Environment">
@@ -1144,6 +1209,64 @@
  explicitly containing a variable and variable action.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessNamedMembers(Flame.Functional.LocalScope,System.String,Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses all type members with the given name on the given expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessMembers(Flame.Functional.LocalScope,System.Collections.Generic.IEnumerable{Flame.ITypeMember},Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses the given sequence of type members on the given expression, and computes their intersection.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessMember(Flame.Functional.LocalScope,Flame.ITypeMember,Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses a single type member on the given expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.Intersection(System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Gets the intersection expression of the given sequence of expressions.
+ An intersection expression may be used when resolving overloads, but 
+ code generators do not support them.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessProperty(Flame.Functional.LocalScope,Flame.IProperty,Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses a property on a target expression with no index arguments, within the given local scope. 
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessIndexedProperty(Flame.Functional.LocalScope,Flame.IProperty,Flame.Functional.AccessedExpression,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Accesses a property on a target expression with the given index arguments, within the given local scope. 
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessMethod(Flame.Functional.LocalScope,Flame.IMethod,Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses a method on a target expression, within the given local scope.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.GetAddress(Flame.Compiler.IExpression)">
+<summary>
+ Gets the address of the given expression, or creates a copy
+ of said expression, and creates the address of a temporary backing variable.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessField(Flame.Functional.LocalScope,Flame.IField,Flame.Functional.AccessedExpression)">
+<summary>
+ Accesses a field on a target expression, within the given local scope.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.GetAccessedMember``1(``0)">
+<summary>
+ Analyzes the given expression as the type member in a member access operation.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.GetAccessedExpression(Flame.Compiler.IExpression)">
+<summary>
+ Analyzes the given expression as the target of a member access operation.
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Invoke(Flame.Functional.LocalScope,Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
  Creates an expression that represents the invocation of the given function on the
@@ -1202,6 +1325,9 @@
  Declares and binds an expression to a variable.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Cast(Flame.Functional.LocalScope,Flame.Compiler.IExpression,Flame.IType)">
 <summary>
  Casts an expression to a type, based on the conversion rules given by the local scope.
@@ -1212,10 +1338,17 @@
  Assigns the given right hand side to the left hand side.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.GetVariableOrExpressionVariable(Flame.Compiler.IExpression)">
+<summary>
+ Gets the variable captured by the given expression.
+ If this cannot be done, an expression variable
+ is created that wraps the given expression. 
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.GetVariable(Flame.Compiler.IExpression)">
 <summary>
  Tries to get the variable captured by the given expression.
- This function will reach across log node boundaries. 
+ This function will reach across metadata node boundaries. 
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.DeclareLocal(Flame.Functional.LocalScope,Flame.IType,System.String)">
@@ -1234,6 +1367,16 @@
  Creates an expression that represents an erroneous node, 
  and contains the given error message.
  The resulting expression&apos;s type is void.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.IsError(Flame.Compiler.IExpression)">
+<summary>
+ Determines if the given expression is an error expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.Source(Flame.Compiler.SourceLocation,Flame.Compiler.IExpression)">
+<summary>
+ Tags the given expression with the given source code location.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Error(Flame.Compiler.LogEntry,Flame.Compiler.IExpression)">

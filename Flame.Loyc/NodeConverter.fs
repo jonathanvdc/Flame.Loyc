@@ -18,6 +18,13 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                    nsMemberConverters   : IReadOnlyDictionary<Symbol, seq<NamespaceMemberConverter>>,
                    attrConverters       : IReadOnlyDictionary<Symbol, seq<AttributeConverter>>) =
 
+    let withSource (node : LNode) (arg : (IExpression * LocalScope) option)  =
+        match arg with
+        | None -> 
+            None
+        | Some (expr, scope) ->
+            Some (ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range) expr, scope)
+
     member private this.tryConvertMember<'a> (dict : IReadOnlyDictionary<Symbol, seq<ScopedNodeConverter<'a, 'a * GlobalScope>>>) (node : LNode) scope decl =
         let name = node.Name
         if not(dict.ContainsKey name) then
@@ -39,8 +46,13 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
             let result = candidates |> Seq.tryFind (fun item -> item.Matches node)
 
             match result with
-            | Some converter -> Some (converter.Convert (this :> INodeConverter) node scope)
+            | Some converter -> converter.Convert (this :> INodeConverter) node scope |> Some
             | None           -> None
+
+    member private this.tryConvertNullableNode<'Scope, 'Result when 'Result : null> (dict : IReadOnlyDictionary<Symbol, seq<ScopedNodeConverter<'Result, 'Scope>>>) (node : LNode) scope =
+        match this.tryConvertNode dict node scope with
+        | Some null -> None
+        | x         -> x
 
     /// Converts the given node to an expression, given
     /// a global scope, and cleans up its scope afterward.
@@ -89,14 +101,14 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
 
     member this.TryConvertExpression (node : LNode) (scope : LocalScope) : (IExpression * LocalScope) option =
         if node.IsCall then
-            this.TryConvertCallNode node scope
+            this.TryConvertCallNode node scope |> withSource node
         else if node.IsId then
-            this.TryConvertIdNode node scope
+            this.TryConvertIdNode node scope |> withSource node
         else
-            this.TryConvertLiteralNode node scope
+            this.TryConvertLiteralNode node scope |> withSource node
 
     member this.TryConvertType (node : LNode) (scope : LocalScope) =
-        match this.tryConvertNode typeConverters node scope with
+        match this.tryConvertNullableNode typeConverters node scope with
         | None   -> 
             if node.IsId then
                 match scope.Global.Binder.BindType node.Name.Name with
@@ -108,7 +120,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
 
     /// Tries to convert an attribute node.
     member this.TryConvertAttribute (scope : GlobalScope) (node : LNode) =
-        this.tryConvertNode attrConverters node scope
+        this.tryConvertNullableNode attrConverters node scope
 
     /// Tries to convert the given type member node to a type member.
     /// Constructs like fields, properties and methods are type members.
@@ -264,7 +276,10 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
 
                                              makePair CodeSymbols.Var ExpressionConverters.VariableDeclarationConverter;
                                              
+                                             makePair CodeSymbols.Dot ExpressionConverters.MemberAccessConverter;
+
                                              makePair CodeSymbols.Error ExpressionConverters.ErrorConverter
+                                             makePair CodeSymbols.Warning ExpressionConverters.WarningConverter
                                          |]
                                 |> NodeConverter.ToMultiDictionary
 
@@ -288,7 +303,10 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                  makeType CodeSymbols.String PrimitiveTypes.String;
                                  makeType CodeSymbols.Void PrimitiveTypes.Void;
 
-                                 makePair CodeSymbols.Object ExpressionConverters.RootTypeConverter
+                                 makePair CodeSymbols.Object ExpressionConverters.RootTypeConverter;
+
+                                 makePair CodeSymbols.Dot MemberConverters.ScopeOperatorConverter;
+                                 makePair CodeSymbols.ColonColon MemberConverters.ScopeOperatorConverter;
                              |] |> Seq.ofArray 
                                 |> NodeConverter.ToMultiDictionary
 
