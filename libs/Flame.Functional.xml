@@ -201,6 +201,11 @@
 <member name="">
 
 </member>
+<member name="P:Flame.Functional.FunctionScope.Type">
+<summary>
+ Gets the enclosing type of the function associated with this function scope.
+</summary>
+</member>
 <member name="P:Flame.Functional.FunctionScope.Parameters">
 <summary>
  Gets this function scope&apos;s parameters.

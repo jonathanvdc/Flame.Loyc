@@ -309,3 +309,43 @@ module ExpressionConverters =
                 convStaticMemberAccess parent left right scope
                 
         CreateBinaryConverter convMemberAccess
+
+    /// Converts a `void` or `missing` identifier.
+    let ConvertVoidIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option = 
+        if node.Name = CodeSymbols.Void || node.Name = CodeSymbols.Missing then
+            Some ExpressionBuilder.Void
+        else
+            None
+
+    /// Converts an identifier that identifies a local variable.
+    let ConvertLocalIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option = 
+        match scope.GetVariable(node.Name.Name) with
+        | Some localVar -> Some (localVar.CreateGetExpression())
+        | None          -> None
+
+    /// Converts a member identifier.
+    let ConvertMemberIdentifier (getAccessedExpr : LocalScope -> AccessedExpression option) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option =
+        match getAccessedExpr scope with
+        | None      -> None
+        | Some expr -> 
+            let accExpr = ExpressionBuilder.AccessNamedMembers scope node.Name.Name expr
+            if ExpressionBuilder.IsError accExpr then
+                None
+            else
+                Some accExpr
+
+    /// Converts an identifier that identifies a type member of the current object instance.
+    let ConvertInstanceIdentifier : IdentifierConverter =
+        let getAccExpr (scope : LocalScope) = 
+            match scope.GetVariable(CodeSymbols.This.Name) with
+            | None         -> None
+            | Some thisVar -> Some (ExpressionBuilder.GetAccessedExpression (thisVar.CreateGetExpression()))
+        ConvertMemberIdentifier getAccExpr
+
+    /// Converts an identifier that identifies a static type member of the enclosing type.
+    let ConvertStaticIdentifier : IdentifierConverter =
+        let getAccExpr (scope : LocalScope) = 
+            match scope.Function.Type with
+            | None    -> None
+            | Some ty -> Some (Global ty)
+        ConvertMemberIdentifier getAccExpr

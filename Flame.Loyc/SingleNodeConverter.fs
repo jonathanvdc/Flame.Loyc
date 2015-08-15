@@ -29,3 +29,4 @@ type TypeMemberConverter      = ScopedNodeConverter<FunctionalType * GlobalScope
 type AttributeConverter       = ScopedNodeConverter<IAttribute, GlobalScope>
 
 type LiteralConverter         = obj -> IExpression
+type IdentifierConverter      = INodeConverter -> LNode -> LocalScope -> IExpression option

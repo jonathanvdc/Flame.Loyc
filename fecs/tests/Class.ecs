@@ -5,29 +5,22 @@ namespace Test
 {
     public class Vector
     {
-        public this(double X, double Y)
-        {
-            this.X = X;
-            this.Y = Y;
-        }
-
-        public double X;
-        public double Y;
+        public this(public double X, public double Y) { }
 
         public double LengthSquared
         {
-            get { return this.X * this.X + this.Y * this.Y; }
-            set { this.Length = Math.Sqrt(value); }
+            get { return X * X + Y * Y; }
+            set { Length = Math.Sqrt(value); }
         }
 
         public double Length
         {
-            get { return Math.Sqrt(this.LengthSquared); }
+            get { return Math.Sqrt(LengthSquared); }
             set
             {
-                double ratio = value / this.Length;
-                this.X *= ratio;
-                this.Y *= ratio;
+                double ratio = value / Length;
+                X *= ratio;
+                Y *= ratio;
             }
         }
     }

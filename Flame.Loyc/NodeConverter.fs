@@ -16,7 +16,8 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                    typeConverters       : IReadOnlyDictionary<Symbol, seq<TypeConverter>>,
                    typeMemberConverters : IReadOnlyDictionary<Symbol, seq<TypeMemberConverter>>,
                    nsMemberConverters   : IReadOnlyDictionary<Symbol, seq<NamespaceMemberConverter>>,
-                   attrConverters       : IReadOnlyDictionary<Symbol, seq<AttributeConverter>>) =
+                   attrConverters       : IReadOnlyDictionary<Symbol, seq<AttributeConverter>>,
+                   identifierConverters : IdentifierConverter seq) =
 
     let withSource (node : LNode) (arg : (IExpression * LocalScope) option)  =
         match arg with
@@ -72,12 +73,11 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
               |> fst
          
     member private this.TryConvertIdNode (node : LNode) (scope : LocalScope) =
-        if node.Name = CodeSymbols.Missing || node.Name = CodeSymbols.Void then
-            Some (ExpressionBuilder.Void, scope)
-        else
-            match scope.GetVariable(node.Name.Name) with
-            | Some localVar -> Some (localVar.CreateGetExpression(), scope)
-            | None          -> None
+        identifierConverters |> Seq.map (fun f -> f (this :> INodeConverter) node scope)
+                             |> Seq.filter (fun x -> x.IsSome)
+                             |> Seq.map (fun x -> x.Value)
+                             |> Seq.tryFind (ExpressionConverters.Constant true)
+                             |> (fun x -> match x with None -> None | Some y -> Some (y, scope))
 
     member private this.TryConvertLiteralNode (node : LNode) (scope : LocalScope) =
         if node.Value = null then
@@ -339,9 +339,17 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
 
+        let identConverters      =  [|
+                                        ExpressionConverters.ConvertVoidIdentifier
+                                        ExpressionConverters.ConvertLocalIdentifier
+                                        ExpressionConverters.ConvertInstanceIdentifier
+                                        ExpressionConverters.ConvertStaticIdentifier
+                                    |] |> Seq.ofArray
+
         NodeConverter(callConverters, 
                       literalConverters,
                       typeConverters,
                       typeMemberConverters,
                       nsMemberConverters,
-                      attrConverters)
+                      attrConverters,
+                      identConverters)
