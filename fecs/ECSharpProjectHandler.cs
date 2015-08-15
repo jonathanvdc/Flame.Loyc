@@ -81,7 +81,29 @@ namespace fecs
             // take the types defined in this namespace into account when resolving symbols.
             asm.MainNamespace = rootNs;
 
+            asm.EntryPoint = InferEntryPoint(asm);
+
             return asm;
+        }
+
+        private static IMethod InferEntryPoint(IAssembly Assembly)
+        {
+            foreach (var type in Assembly.CreateBinder().GetTypes())
+            {
+                foreach (var method in type.GetMethods())
+                {
+                    // Basically match anything that looks like `static void main(string[] Args)`
+                    if (method.IsStatic && method.Name.Equals("main", StringComparison.OrdinalIgnoreCase) && method.ReturnType.Equals(PrimitiveTypes.Void))
+                    {
+                        var parameters = method.GetParameters();
+                        if (parameters.Length == 1 && parameters[0].ParameterType.Equals(PrimitiveTypes.String.MakeArrayType(1)))
+                        {
+                            return method;
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         public static Task<IFunctionalNamespace[]> ParseCompilationUnitsAsync(List<IProjectSourceItem> SourceItems, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
