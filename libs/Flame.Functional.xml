@@ -501,6 +501,12 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalMemberBase.IsStatic">
 <summary>
  Figures out whether this functional-style member is static.
@@ -534,20 +540,32 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalMemberHeader.Name">
 <summary>
  Gets this functional-style member header&apos;s name.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalMemberHeader.Attributes">
 <summary>
  Gets this functional-style member header&apos;s attributes.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="M:Flame.Functional.FunctionalMemberHeader.WithAttribute(System.Lazy{Flame.IAttribute})">
 <summary>
  Adds an attribute to this functional-style member header.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -958,6 +976,12 @@
 <summary>
  Gets this functional type&apos;s members.
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="">
 

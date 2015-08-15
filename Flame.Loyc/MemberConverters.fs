@@ -72,8 +72,8 @@ module MemberConverters =
                         else 
                             parent.ConvertType typeNode (new LocalScope(scope)) |> Constant
 
-        let defineField name fieldType isStatic (attrs : seq<IAttribute>) initValue (parentType : IType) =
-            let header = new FunctionalMemberHeader(name, attrs)
+        let defineField name fieldType isStatic (attrs : seq<IAttribute>) initValue srcLoc (parentType : IType) =
+            let header = new FunctionalMemberHeader(name, attrs, srcLoc)
             new FunctionalField(header, parentType, isStatic, fieldType, initValue) :> IField
 
         let foldDef (parentType : FunctionalType) item =
@@ -84,7 +84,7 @@ module MemberConverters =
                 // TODO: log this!
                 parentType
             | (Some name, Some fieldType, expr) ->
-                defineField name fieldType isStatic attrs expr |> parentType.WithField
+                defineField name fieldType isStatic attrs expr (NodeHelpers.ToSourceLocation item.Range) |> parentType.WithField
 
         node.Args.Slice(1) |> Seq.fold foldDef declType, scope
 
@@ -96,7 +96,7 @@ module MemberConverters =
     let private ConvertCommonMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let isStatic, attrs = ReadAttributes parent node scope
         let name, tParams   = ReadName parent node.Args.[1] scope
-        let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs), declType, isStatic)
+        let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic)
         let fMethod         = tParams |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithGenericParameter item) fMethod
         let tempLocalScope  = new LocalScope(scope)
         let fMethod         = node.Args.[2].Args |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithParameter (lazy (ConvertParameterDeclaration parent tempLocalScope item))) fMethod
@@ -170,7 +170,7 @@ module MemberConverters =
                                             "'static' attributes cannot be applied to accessors directly. " + 
                                             "Apply them to the enclosing property instead.", 
                                             NodeHelpers.ToSourceLocation staticNode.Range))
-        let acc = new FunctionalAccessor(new FunctionalMemberHeader(accType.ToString().ToLower() + "_" + declProp.Name, attrs), declProp, accType)
+        let acc = new FunctionalAccessor(new FunctionalMemberHeader(accType.ToString().ToLower() + "_" + declProp.Name, attrs, NodeHelpers.ToSourceLocation node.Range), declProp, accType)
         let retType, parameters = GetAccessorSignature accType (lazy declProp.PropertyType) (lazy (declProp.GetIndexerParameters() |> Seq.ofArray))
         let acc = acc.WithReturnType retType
         let acc = evalLazy parameters |> Seq.fold (fun (x : FunctionalAccessor) y -> x.WithParameter (lazy y)) acc
@@ -212,7 +212,7 @@ module MemberConverters =
                                 null
                             | Some ty -> ty
 
-        let prop = new FunctionalProperty(new FunctionalMemberHeader(name, attrs), declType, isStatic)
+        let prop = new FunctionalProperty(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic)
         let prop = prop.WithPropertyType propType
         // TODO: add indexer parameters (if any)
         let prop = ConvertPropertyMember parent scope prop node.Args.[2]
@@ -244,7 +244,7 @@ module MemberConverters =
                            inferredAttrs
         let name, tParams = ReadName parent node.Args.[0] scope
         let baseTypes     = node.Args.[1].Args |> Seq.map (fun x -> lazy parent.ConvertType x (new LocalScope(scope)))
-        let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs), declNs)
+        let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs, NodeHelpers.ToSourceLocation node.Args.[0].Range), declNs)
         let fType = baseTypes |> Seq.fold (fun (state : FunctionalType) item -> state.WithBaseType item) fType
         let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType, newScope) item -> parent.ConvertTypeMember item newScope state) (fType, scope)
@@ -264,7 +264,7 @@ module MemberConverters =
     let ConvertNamespaceDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespaceBranch) =
         let _, attrs = ReadAttributes parent node scope
         let name, _ = ReadName parent node.Args.[0] scope
-        let fNs = new FunctionalNamespace(new FunctionalMemberHeader(MemberExtensions.CombineNames(declNs.FullName, name), attrs), declNs.DeclaringAssembly)
+        let fNs = new FunctionalNamespace(new FunctionalMemberHeader(MemberExtensions.CombineNames(declNs.FullName, name), attrs, NodeHelpers.ToSourceLocation node.Args.[0].Range), declNs.DeclaringAssembly)
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace, newScope) item -> parent.ConvertNamespaceMember item newScope state) (fNs :> IFunctionalNamespace, scope.Binder.UseNamespace fNs |> scope.WithBinder)
                                        |> fst
         fType :> INamespaceBranch

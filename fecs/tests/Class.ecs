@@ -5,7 +5,7 @@ namespace Test
 {
     public interface IVector
     {
-        
+        double Length { get; }
     }
 
     public struct Vector : IVector
