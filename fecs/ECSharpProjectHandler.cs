@@ -86,6 +86,12 @@ namespace fecs
             return asm;
         }
 
+        /// <summary>
+        /// Infers an assembly's entry point, which is any function that matches the following pattern:
+        /// `static void main(string[] Args)`.
+        /// </summary>
+        /// <param name="Assembly"></param>
+        /// <returns></returns>
         private static IMethod InferEntryPoint(IAssembly Assembly)
         {
             foreach (var type in Assembly.CreateBinder().GetTypes())
