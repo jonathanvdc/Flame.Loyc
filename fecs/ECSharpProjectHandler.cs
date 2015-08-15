@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace fecs
@@ -159,6 +160,13 @@ namespace fecs
                 var convRules = DefaultConversionRules.Create(namer.Convert);
                 var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers, GetParameters);
                 var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier);
+
+                if (Parameters.Log.Options.GetOption<bool>("E", false))
+                {
+                    string newFile = EcsLanguageService.Value.PrintMultiple(nodes, MessageSink.Console, indentString : new string(' ', 4));
+                    Parameters.Log.LogMessage(new LogEntry("'" + SourceItem.SourceIdentifier + "' after macro expansion", Environment.NewLine + newFile));
+                }
+
                 var unit = ParseCompilationUnit(nodes, globalScope, DeclaringAssembly);
                 Parameters.Log.LogEvent(new LogEntry("Status", "Parsed " + SourceItem.SourceIdentifier));
                 return unit;
