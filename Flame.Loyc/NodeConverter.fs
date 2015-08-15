@@ -306,6 +306,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
 
                                  makePair CodeSymbols.Dot MemberConverters.ScopeOperatorConverter;
                                  makePair CodeSymbols.ColonColon MemberConverters.ScopeOperatorConverter;
+                                 makePair CodeSymbols.Of MemberConverters.ArrayTypeConverter;
                              |] |> Seq.ofArray 
                                 |> NodeConverter.ToMultiDictionary
 

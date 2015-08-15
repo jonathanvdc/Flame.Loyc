@@ -308,3 +308,15 @@ module MemberConverters =
 
         CreateBinaryConverter convTy
 
+    /// A converter that converts array suffixes.
+    let ArrayTypeConverter =
+        let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
+            let rank = CodeSymbols.CountArrayDimensions node.Args.[0].Name
+            match parent.TryConvertType node.Args.[1] scope with
+            | None    -> null
+            | Some ty -> ty.MakeArrayType(rank) :> IType
+
+        let matches (node : LNode) =
+            node.ArgCount = 2 && CodeSymbols.IsArrayKeyword node.Args.[0].Name
+
+        CreateConverter matches convTy

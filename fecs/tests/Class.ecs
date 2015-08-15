@@ -25,45 +25,11 @@ namespace Test
         }
     }
 
-    public class X
+    public static class Program
     {
-        public int abs(int n)
+        public static void Main(string[] Args)
         {
-            if (n >= 0)
-                return n;
-            else
-                return -n;
-        }
-
-        public X getThis() { return this; }
-
-        public int factorial(int n)
-        {
-            if (n <= 0)
-                return 1;
-            else
-                return this.factorial(n - 1) * n;
-        }
-
-        public int Never()
-        {
-            int x = 0;
-            do
-            {
-                continue;
-                x++;
-            } while (false);
-            return x;
-        }
-
-        public int Forever()
-        {
-            int x = 0;
-            do
-            {
-                x++;
-            } while (true);
-            return x;
+            Console.WriteLine("Hello, world!");
         }
     }
 }

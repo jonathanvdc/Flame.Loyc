@@ -48,7 +48,7 @@ module NodeConverterExtensions =
                 let message = if node.IsId then
                                     new LogEntry("Unrecognized identifier", 
                                                 "Identifier '" + node.Name.Name + "' was not recognized.")
-                                else
+                              else
                                     new LogEntry("Unknown node type", 
                                                 "The node converter didn't know what to do with '" + node.Print() + "'. " + 
                                                 "It was kind of hoping that the '" + node.Target.Print() + "' " + 
