@@ -16,6 +16,7 @@ using LeMP;
 using Loyc;
 using Loyc.Collections;
 using Loyc.Syntax;
+using Loyc.Syntax.Les;
 using Loyc.Syntax.Lexing;
 using System;
 using System.Collections.Generic;
@@ -44,12 +45,12 @@ namespace fecs
 
         public IEnumerable<string> Extensions
         {
-            get { return new string[] { "ecsproj", "ecs", "cs" }; }
+            get { return new string[] { "ecsproj", "ecs", "cs", "les" }; }
         }
 
         public IProject Parse(ProjectPath Path, ICompilerLog Log)
         {
-            if (Path.HasExtension("ecs") || Path.HasExtension("cs"))
+            if (Path.HasExtension("ecs") || Path.HasExtension("cs") || Path.HasExtension("les"))
             {
                 return new SingleFileProject(Path, Log.Options.GetTargetPlatform());
             }
@@ -146,6 +147,21 @@ namespace fecs
             return dict;
         }
 
+        private static IParsingService GetParsingService(ICompilerOptions Options, string Key, IParsingService Default)
+        {
+            switch (Options.GetOption<string>(Key, "").ToLower())
+            {
+                case "les":
+                    return LesLanguageService.Value;
+                case "ecs":
+                    return EcsLanguageService.Value;
+                case "cs":
+                    return EcsLanguageService.WithPlainCSharpPrinter;
+                default:
+                    return Default;
+            }
+        }
+
         public static Task<IFunctionalNamespace> ParseCompilationUnitAsync(IProjectSourceItem SourceItem, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
         {
             Parameters.Log.LogEvent(new LogEntry("Status", "Parsing " + SourceItem.SourceIdentifier));
@@ -159,11 +175,14 @@ namespace fecs
                 var namer = ECSharpTypeNamer.Instance;
                 var convRules = DefaultConversionRules.Create(namer.Convert);
                 var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers, GetParameters);
-                var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier);
+                bool isLes = Enumerable.Last(SourceItem.SourceIdentifier.Split('.')).Equals("les", StringComparison.OrdinalIgnoreCase);
+                var service = isLes ? (IParsingService)LesLanguageService.Value : EcsLanguageService.Value;
+                var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier, service);
 
                 if (Parameters.Log.Options.GetOption<bool>("E", false))
                 {
-                    string newFile = EcsLanguageService.Value.PrintMultiple(nodes, MessageSink.Console, indentString : new string(' ', 4));
+                    var outputService = GetParsingService(Parameters.Log.Options, "syntax-format", service);
+                    string newFile = outputService.PrintMultiple(nodes, MessageSink.Console, indentString: new string(' ', 4));
                     Parameters.Log.LogMessage(new LogEntry("'" + SourceItem.SourceIdentifier + "' after macro expansion", Environment.NewLine + newFile));
                 }
 
@@ -173,11 +192,11 @@ namespace fecs
             });
         }
 
-        public static IEnumerable<LNode> ParseNodes(string Text, string Identifier)
+        public static IEnumerable<LNode> ParseNodes(string Text, string Identifier, IParsingService Service)
         {
-            ILexer lexer = EcsLanguageService.Value.Tokenize(new UString(Text), Identifier, MessageSink.Console);
+            ILexer lexer = Service.Tokenize(new UString(Text), Identifier, MessageSink.Console);
 
-            var nodes = EcsLanguageService.Value.Parse(lexer, MessageSink.Console);
+            var nodes = Service.Parse(lexer, MessageSink.Console);
 
             return processor.ProcessSynchronously(new RVList<LNode>(nodes));
         }
