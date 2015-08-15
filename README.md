@@ -1,11 +1,12 @@
-# Flame.Loyc
+# Flame.Loyc and `fecs`
+
+## Flame.Loyc
 Flame.Loyc is an experimental [Loyc](https://github.com/qwertie/loyc) front-end for the [Flame compiler framework](https://github.com/jonathanvdc/Flame).
 
-However, Flame.Loyc is very much a work in progress.
-Everyday constructs like the import statement (`using` in C#)
-and the member access (dot, `.`) operator have not been implemented yet.
+Simple constructs such as classes and namespaces have already been implemented,
+but more complex features, such as generics, have not.
 
-The Flame.Loyc library itself is written in F#, and makes use of Flame.Functional.
+The Flame.Loyc library itself is written in F#, and makes use of Flame.Functional, which is also an F# library.
 
 ## `fecs`
 `fecs` is short for the Flame Enhanced C# compiler.
