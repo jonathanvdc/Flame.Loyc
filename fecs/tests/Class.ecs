@@ -3,7 +3,7 @@ using LeMP;
 
 namespace Test
 {
-    public class Vector
+    public struct Vector
     {
         public this(public double X, public double Y) { }
 

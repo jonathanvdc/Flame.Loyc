@@ -321,7 +321,9 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                        |> NodeConverter.ToMultiDictionary
 
         let nsMemberConverters   =  [|
-                                        CodeSymbols.Class,     MemberConverters.TypeDeclarationConverter
+                                        CodeSymbols.Class,     Seq.empty |> MemberConverters.TypeDeclarationConverter 
+                                        CodeSymbols.Struct,    Seq.singleton PrimitiveAttributes.Instance.ValueTypeAttribute |> MemberConverters.TypeDeclarationConverter
+                                        CodeSymbols.Interface, Seq.singleton PrimitiveAttributes.Instance.InterfaceAttribute |> MemberConverters.TypeDeclarationConverter
                                         CodeSymbols.Namespace, MemberConverters.NamespaceDeclarationConverter
                                         CodeSymbols.Braces,    MemberConverters.NamespaceMemberBlockConverter
                                         CodeSymbols.Import,    MemberConverters.ImportConverter

@@ -235,9 +235,13 @@ module MemberConverters =
         new TypeMemberConverter(recognizeProperty, convertProp)
 
     /// Converts a type declaration.
-    let ConvertTypeDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespace) =
+    let ConvertTypeDeclaration (kindAttributes : IAttribute seq) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespace) =
         let isStatic, attrs = ReadAttributes parent node scope
-        let newAttrs = if isStatic then Seq.singleton PrimitiveAttributes.Instance.StaticTypeAttribute |> Seq.append attrs else attrs
+        let inferredAttrs = Seq.append kindAttributes attrs
+        let newAttrs = if isStatic then 
+                           Seq.singleton PrimitiveAttributes.Instance.StaticTypeAttribute |> Seq.append inferredAttrs 
+                       else 
+                           inferredAttrs
         let name, tParams = ReadName parent node.Args.[0] scope
         let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs), declNs)
         let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
@@ -246,10 +250,10 @@ module MemberConverters =
         fType :> IType
     
     /// A namespace member converter for type declarations.
-    let TypeDeclarationConverter = 
+    let TypeDeclarationConverter (kindAttributes : IAttribute seq) = 
         let recognizeType (node : LNode) = node.ArgCount = 3
         let convDecl parent node (declNs : IFunctionalNamespace, scope) =
-            let t = ConvertTypeDeclaration parent node scope
+            let t = ConvertTypeDeclaration kindAttributes parent node scope
             declNs.WithType t, scope
 
         new NamespaceMemberConverter(recognizeType, convDecl)
