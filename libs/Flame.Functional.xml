@@ -1123,6 +1123,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.GlobalScope.TypeNamer">
 <summary>
  Gets this global scope&apos;s type namer.
@@ -1131,6 +1134,11 @@
 <member name="P:Flame.Functional.GlobalScope.Log">
 <summary>
  Gets this global scope&apos;s log.
+</summary>
+</member>
+<member name="P:Flame.Functional.GlobalScope.GetParameters">
+<summary>
+ Gets the given method&apos;s parameters, as a map of names mapped to variables.
 </summary>
 </member>
 <member name="P:Flame.Functional.GlobalScope.GetAllMembers">
@@ -1449,6 +1457,11 @@
  Gets this type name&apos;s &quot;tail&quot; type name.
 </summary>
 </member>
+<member name="P:Flame.Functional.TypeName.Start">
+<summary>
+ Gets this type name, without the last element.
+</summary>
+</member>
 <member name="P:Flame.Functional.TypeName.Path">
 <summary>
  Gets this type name&apos;s &quot;path&quot;.
@@ -1464,7 +1477,7 @@
 </member>
 <member name="P:Flame.Functional.TypeName.Head">
 <summary>
- Gets this type name&apos;s &quot;head&quot;.
+ Gets this type name&apos;s &quot;head&quot; element.
 </summary>
 </member>
 <member name="">

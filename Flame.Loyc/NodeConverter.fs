@@ -74,8 +74,6 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
     member private this.TryConvertIdNode (node : LNode) (scope : LocalScope) =
         if node.Name = CodeSymbols.Missing || node.Name = CodeSymbols.Void then
             Some (ExpressionBuilder.Void, scope)
-        else if node.Name = CodeSymbols.This then
-            Some (ExpressionBuilder.This scope, scope)
         else
             match scope.GetVariable(node.Name.Name) with
             | Some localVar -> Some (localVar.CreateGetExpression(), scope)

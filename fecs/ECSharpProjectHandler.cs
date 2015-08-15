@@ -3,6 +3,7 @@ using Flame;
 using Flame.Binding;
 using Flame.Compiler;
 using Flame.Compiler.Projects;
+using Flame.Compiler.Variables;
 using Flame.DSProject;
 using Flame.Front;
 using Flame.Front.Options;
@@ -94,6 +95,28 @@ namespace fecs
             return Task.WhenAll(units);
         }
 
+        private static IReadOnlyDictionary<string, IVariable> GetParameters(IMethod Value)
+        {
+            var dict = new Dictionary<string, IVariable>();
+            if (Value != null)
+            {
+                if (!Value.IsStatic && Value.DeclaringType != null)
+                {
+                    dict[CodeSymbols.This.Name] = ThisReferenceVariable.Instance.Create(Value.DeclaringType);
+                }
+
+                var parameters = Value.GetParameters();
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    dict[parameters[i].Name] = new ArgumentVariable(parameters[i], i);
+                }
+
+                return dict;
+            }
+
+            return dict;
+        }
+
         public static Task<IFunctionalNamespace> ParseCompilationUnitAsync(IProjectSourceItem SourceItem, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
         {
             Parameters.Log.LogEvent(new LogEntry("Status", "Parsing " + SourceItem.SourceIdentifier));
@@ -106,7 +129,7 @@ namespace fecs
                 }
                 var namer = ECSharpTypeNamer.Instance;
                 var convRules = DefaultConversionRules.Create(namer.Convert);
-                var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers);
+                var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers, GetParameters);
                 var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier);
                 var unit = ParseCompilationUnit(nodes, globalScope, DeclaringAssembly);
                 Parameters.Log.LogEvent(new LogEntry("Status", "Parsed " + SourceItem.SourceIdentifier));
