@@ -3,7 +3,12 @@ using LeMP;
 
 namespace Test
 {
-    public struct Vector
+    public interface IVector
+    {
+        
+    }
+
+    public struct Vector : IVector
     {
         public this(public double X, public double Y) { }
 

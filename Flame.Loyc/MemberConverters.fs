@@ -243,7 +243,9 @@ module MemberConverters =
                        else 
                            inferredAttrs
         let name, tParams = ReadName parent node.Args.[0] scope
+        let baseTypes     = node.Args.[1].Args |> Seq.map (fun x -> lazy parent.ConvertType x (new LocalScope(scope)))
         let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs), declNs)
+        let fType = baseTypes |> Seq.fold (fun (state : FunctionalType) item -> state.WithBaseType item) fType
         let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType, newScope) item -> parent.ConvertTypeMember item newScope state) (fType, scope)
                                        |> fst
