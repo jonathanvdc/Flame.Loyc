@@ -5,7 +5,7 @@ namespace Test
 {
     public interface IVector
     {
-        double Length { get; }
+        double GetLength();
     }
 
     public struct Vector : IVector
@@ -27,6 +27,11 @@ namespace Test
                 X *= ratio;
                 Y *= ratio;
             }
+        }
+
+        public double GetLength()
+        {
+            return Length;
         }
     }
 

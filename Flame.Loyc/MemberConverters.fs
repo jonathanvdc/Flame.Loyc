@@ -102,10 +102,13 @@ module MemberConverters =
         let fMethod         = node.Args.[2].Args |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithParameter (lazy (ConvertParameterDeclaration parent tempLocalScope item))) fMethod
 
         let getBody declMethod =
-            let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
-            let body            = parent.ConvertExpression node.Args.[3] localScope ||> ExpressionBuilder.Scope 
-                                                                                     |> ExpressionBuilder.ToStatement
-            body
+            if node.ArgCount > 3 then
+                let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
+                let body            = parent.ConvertExpression node.Args.[3] localScope ||> ExpressionBuilder.Scope 
+                                                                                         |> ExpressionBuilder.ToStatement
+                body
+            else
+                EmptyStatement.Instance :> IStatement
 
         fMethod.WithBody getBody
 
@@ -117,10 +120,20 @@ module MemberConverters =
         else
             body
 
+
+    /// Infers the given method's base types for the given global scope.
+    let InferBaseMethods (scope : GlobalScope) (target : IMethod) =
+        let allMembers = target.DeclaringType.GetBaseTypes() |> Seq.map scope.GetAllMembers
+                                                             |> Seq.concat
+        let allMethods = System.Linq.Enumerable.OfType<IMethod> allMembers
+        allMethods |> Seq.distinct
+                   |> Seq.filter (fun x -> x.HasSameSignature target)
+
     let ConvertMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let retType = lazy (parent.ConvertType node.Args.[0] (new LocalScope(scope)))
         let fMethod = fMethod.WithReturnType retType
+        let fMethod = fMethod.WithBaseMethods (InferBaseMethods scope)
         (fun (x : IMethod) -> AutoReturn x.ReturnType (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
@@ -133,7 +146,7 @@ module MemberConverters =
         let convertMethod (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
             let func = conv parent node scope
             declType.WithMethod func, scope
-        let recognizeMethod (node : LNode) = node.ArgCount = 4
+        let recognizeMethod (node : LNode) = node.ArgCount = 3 || node.ArgCount = 4
         new TypeMemberConverter(recognizeMethod, convertMethod)
 
     /// A type member converter for field declarations.

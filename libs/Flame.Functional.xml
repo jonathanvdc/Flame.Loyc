@@ -22,9 +22,6 @@
  The accessed type is a reference type.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.AccessedExpression.Describe(Microsoft.FSharp.Core.FSharpFunc{Flame.IType,System.String})">
 <summary>
  Gets a user-friendly member prefix for this accessed member.
@@ -56,25 +53,16 @@
  Gets a user-friendly member prefix for this accessed member.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.AccessedMember`1">
 <summary>
  Defines a way of classifying type members.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="M:Flame.Functional.DefaultConversionRules.Flame-Functional-IConversionRules-HasImplicitConversion(Flame.IType,Flame.IType)">
 <summary>
  Finds out whether a value of the given source type
  can be converted implicitly to the given target type.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="M:Flame.Functional.DefaultConversionRules.Flame-Functional-IConversionRules-ConvertImplicit(Flame.Compiler.IExpression,Flame.IType)">
 <summary>
@@ -86,88 +74,10 @@
  Converts the given expression to the given type explicitly.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.DefaultConversionRules">
 <summary>
  Defines a set of default conversion rules.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.DescribedAssembly">
 <summary>
@@ -176,30 +86,6 @@
  evaluating anything, then perform a bait-and-switch on this assembly&apos;s main namespace, 
  and some time after that evaluate all associated types.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionScope.Type">
 <summary>
@@ -232,49 +118,10 @@
  parameter with the given name directly.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionScope">
 <summary>
  Defines a scope as declared by a function.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalAccessor.ReturnType">
 <summary>
@@ -291,11 +138,11 @@
  Gets this functional-style accessor&apos;s body statement, with lazy evaluation.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
+<member name="P:Flame.Functional.FunctionalAccessor.LazyBaseMethods">
+<summary>
+ Gets this functional-style accessor&apos;s base methods, 
+ with a lazy evaluation scheme.
+</summary>
 </member>
 <member name="P:Flame.Functional.FunctionalAccessor.DeclaringProperty">
 <summary>
@@ -311,9 +158,6 @@
 <summary>
  Gets this functional-style accessor&apos;s base methods.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalAccessor.AccessorType">
 <summary>
@@ -332,60 +176,18 @@
 </member>
 <member name="M:Flame.Functional.FunctionalAccessor.WithBody(Microsoft.FSharp.Core.FSharpFunc{Flame.IMethod,Flame.Compiler.IStatement})">
 <summary>
- Sets this functional-style method&apos;s body.
+ Sets this functional-style accessor&apos;s body.
 </summary>
 </member>
-<member name="M:Flame.Functional.FunctionalAccessor.WithBaseMethod(System.Lazy{Flame.IMethod})">
+<member name="M:Flame.Functional.FunctionalAccessor.WithBaseMethods(Microsoft.FSharp.Core.FSharpFunc{Flame.IMethod,System.Collections.Generic.IEnumerable{Flame.IMethod}})">
 <summary>
- Adds a base method to this functional-style method.
+ Sets this functional-style accessor&apos;s base methods.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.FunctionalAccessor">
 <summary>
  Defines a functional-style accessor.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalBinder.Environment">
 <summary>
@@ -407,12 +209,6 @@
  Maps the given name to the given namespace.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.FunctionalBinder.Bind(System.String)">
 <summary>
  Binds the given name to a type.
@@ -423,39 +219,15 @@
  Binds the given name to a type.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalBinder">
 <summary>
  Defines a functional binder type.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalField.InitialValue">
 <summary>
  Gets this functional-style field&apos;s initial value.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalField.FieldType">
 <summary>
@@ -472,153 +244,45 @@
  Sets this functional-style field&apos;s field type.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalField">
 <summary>
  Defines a functional-style field that is possibly initialized.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalMemberBase.IsStatic">
 <summary>
  Figures out whether this functional-style member is static.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalMemberBase.DeclaringType">
 <summary>
  Gets this functional-style member&apos;s declaring type.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.FunctionalMemberBase">
 <summary>
  Defines a base class for functional-style members.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalMemberHeader.Name">
 <summary>
  Gets this functional-style member header&apos;s name.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalMemberHeader.Attributes">
 <summary>
  Gets this functional-style member header&apos;s attributes.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.FunctionalMemberHeader.WithAttribute(System.Lazy{Flame.IAttribute})">
 <summary>
  Adds an attribute to this functional-style member header.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalMemberHeader">
 <summary>
  A header for function members.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalMethod.ReturnType">
 <summary>
@@ -635,8 +299,11 @@
  Gets this functional-style method&apos;s body statement, with lazy evaluation.
 </summary>
 </member>
-<member name="">
-
+<member name="P:Flame.Functional.FunctionalMethod.LazyBaseMethods">
+<summary>
+ Gets this functional-style method&apos;s base methods, 
+ with a lazy evaluation scheme.
+</summary>
 </member>
 <member name="P:Flame.Functional.FunctionalMethod.IsConstructor">
 <summary>
@@ -693,66 +360,15 @@
  Sets this functional-style method&apos;s body.
 </summary>
 </member>
-<member name="M:Flame.Functional.FunctionalMethod.WithBaseMethod(System.Lazy{Flame.IMethod})">
+<member name="M:Flame.Functional.FunctionalMethod.WithBaseMethods(Microsoft.FSharp.Core.FSharpFunc{Flame.IMethod,System.Collections.Generic.IEnumerable{Flame.IMethod}})">
 <summary>
- Adds a base method to this functional-style method.
+ Sets this functional-style method&apos;s base method function.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.FunctionalMethod">
 <summary>
  Defines a functional-style method.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalNamespace.Types">
 <summary>
@@ -764,87 +380,30 @@
  Gets all child namespaces this functional-style namespace contains directly.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalNamespace.Name">
 <summary>
  Gets this functional-style namespace&apos;s name.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalNamespace.DeclaringAssembly">
 <summary>
  Gets this functional-style namespace&apos;s declaring assembly.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.FunctionalNamespace.WithType(Microsoft.FSharp.Core.FSharpFunc{Flame.INamespace,Flame.IType})">
 <summary>
  Sets this functional-style field&apos;s initial value.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="M:Flame.Functional.FunctionalNamespace.WithNamespace(Microsoft.FSharp.Core.FSharpFunc{Flame.INamespaceBranch,Flame.INamespaceBranch})">
 <summary>
  Sets this functional-style field&apos;s field type.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalNamespace">
 <summary>
  Defines a functional-style namespace.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalProperty.PropertyType">
 <summary>
@@ -881,73 +440,10 @@
  Adds an accessor to this functional-style property.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalProperty">
 <summary>
  Defines a functional-style property.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalType.Properties">
 <summary>
@@ -964,9 +460,6 @@
  Gets this functional type&apos;s nested namespaces.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalType.Methods">
 <summary>
  Gets this functional type&apos;s methods.
@@ -977,33 +470,15 @@
  Gets this functional type&apos;s members.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalType.GenericParameters">
 <summary>
  Gets this functional type&apos;s generic parameters.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.FunctionalType.Fields">
 <summary>
  Gets this functional type&apos;s fields.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.FunctionalType.Constructors">
 <summary>
@@ -1035,9 +510,6 @@
  Adds a nested namespace to this functional-style type.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.FunctionalType.WithMethod(Microsoft.FSharp.Core.FSharpFunc{Flame.IType,Flame.IMethod})">
 <summary>
  Adds a method to this functional-style type.
@@ -1068,92 +540,11 @@
  Adds an attribute to this functional-style type.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalType">
 <summary>
  Provides common functionality for objects that support
  constructing types in a functional fashion.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.GlobalScope.TypeNamer">
 <summary>
@@ -1196,12 +587,6 @@
  Creates a new global scope with the given binder.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.GlobalScope">
 <summary>
  Defines a &quot;global scope&quot;, i.e. a scope outside function.
@@ -1223,9 +608,6 @@
  Converts the given expression to the given type explicitly.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.IFunctionalNamespace.WithType(Microsoft.FSharp.Core.FSharpFunc{Flame.INamespace,Flame.IType})">
 <summary>
  Adds a type to this functional-style namespace.
@@ -1241,25 +623,10 @@
  Defines a functional-style namespace.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.LazyApplicationArray`2.Append(Microsoft.FSharp.Core.FSharpFunc{`0,`1})">
 <summary>
  Appends an item to the array.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.LazyApplicationArray`2">
 <summary>
@@ -1267,12 +634,6 @@
  array item at a time. This type is purely functional:
  it does not contain any mutable state.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.LazyArrayBuilder`1.Value">
 <summary>
@@ -1294,25 +655,10 @@
  Finds out if this lazy array has already been created.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.LazyArrayBuilder`1.Append(System.Lazy{`0})">
 <summary>
  Appends an item to the array.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.LazyArrayBuilder`1">
 <summary>
@@ -1321,41 +667,11 @@
  it does not contain any mutable state.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.LazyNamespaceBinder">
 <summary>
  A lazy namespace binder that performs a root namespace lookup
  every time a type is bound or requested.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.LocalScope.ReleaseStatement">
 <summary>
@@ -1418,58 +734,16 @@
  Declares a variable of the given type and name.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.LocalScope">
 <summary>
  Defines a scope within a function.
  Note: a local scope&apos;s variables are stored as an immutable dictionary.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.ResultExpression.Expression">
 <summary>
  Gets this result expression&apos;s inner expression.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.ResultExpression">
 <summary>
@@ -1477,9 +751,6 @@
 
  This information is discarded on optimization.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="P:Flame.Functional.TypeName.Tail">
 <summary>
@@ -1496,9 +767,6 @@
  Gets this type name&apos;s &quot;path&quot;.
 </summary>
 </member>
-<member name="">
-
-</member>
 <member name="P:Flame.Functional.TypeName.IsEmpty">
 <summary>
  Checks if this type name is empty.
@@ -1509,79 +777,10 @@
  Gets this type name&apos;s &quot;head&quot; element.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.TypeName.Append(Flame.Functional.TypeName)">
 <summary>
  Appends the given type name to this type name, and returns the result.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:Flame.Functional.VariableExpression">
 <summary>
@@ -1653,60 +852,15 @@
  given sequence of arguments. The scope provided is used to apply conversion rules.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Binary(Flame.Operator,Flame.Functional.LocalScope,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a binary expression.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Quickbind(Flame.Functional.LocalScope,Flame.Compiler.IExpression,System.String)">
 <summary>
  Declares and binds an expression to a variable.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Cast(Flame.Functional.LocalScope,Flame.Compiler.IExpression,Flame.IType)">
 <summary>
@@ -1990,27 +1144,6 @@
  Conservatively tries to determine whether the given
  expression may change the local or global state.
 </summary>
-</member>
-<member name="T:Flame.Functional.ExpressionBuilder">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="T:Flame.Functional.LazyHelpers">
-
 </member>
 </members>
 </doc>
