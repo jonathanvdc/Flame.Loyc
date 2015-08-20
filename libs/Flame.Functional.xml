@@ -1797,6 +1797,12 @@
  and contains the given error message.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.Default(Flame.IType)">
+<summary>
+ Creates an expression that represents the default value of the 
+ given type.
+</summary>
+</member>
 <member name="P:Flame.Functional.ExpressionBuilder.Void">
 <summary>
  Creates a void expression.

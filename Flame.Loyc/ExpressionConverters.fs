@@ -310,6 +310,14 @@ module ExpressionConverters =
                 
         CreateBinaryConverter convMemberAccess
 
+    /// Converts 'default' expressions.
+    let DefaultExpressionConverter =
+        let convDefault (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let exprType = parent.ConvertType node.Args.[0] scope
+            ExpressionBuilder.Default exprType, scope
+
+        CreateUnaryConverter convDefault
+
     /// Converts a `void` or `missing` identifier.
     let ConvertVoidIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option = 
         if node.Name = CodeSymbols.Void || node.Name = CodeSymbols.Missing then

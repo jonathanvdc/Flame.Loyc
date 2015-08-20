@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.dll</HintPath>
     </Reference>
+    <Reference Include="Flame.Analysis">
+      <HintPath>..\libs\Flame.Analysis.dll</HintPath>
+    </Reference>
     <Reference Include="Flame.Cecil, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Cecil.dll</HintPath>

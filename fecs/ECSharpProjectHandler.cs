@@ -1,5 +1,6 @@
 ﻿using Ecs.Parser;
 using Flame;
+using Flame.Analysis;
 using Flame.Binding;
 using Flame.Compiler;
 using Flame.Compiler.Projects;
@@ -217,13 +218,23 @@ namespace fecs
                 new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>[] 
                 { 
                     new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new LogPass(Log), "check-nodes", true),
+
+                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(
+                        AnalysisPasses.CreateValueTypeDelegatePass(Log),
+                        ValueTypeDelegateVisitor.ValueTypeDelegateWarningName,
+                        (optInfo, isPref) => optInfo.Log.UsePedanticWarnings(ValueTypeDelegateVisitor.ValueTypeDelegateWarningName)),
+
                     new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new VerifyingDeadCodePass(Log, 
                         "This method may not always return or throw. " + Warnings.Instance.GetWarningNameMessage("missing-return"), 
                         Log.UseDefaultWarnings("missing-return"),
                         "Unreachable code detected and removed. " + Warnings.Instance.GetWarningNameMessage("dead-code"),
                         Log.UsePedanticWarnings("dead-code")),
                         PassExtensions.EliminateDeadCodePassName, 
-                        true)
+                        true),
+
+                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new InitializationCountPass(Log),
+                        PassExtensions.InitializationPassName,
+                        (optInfo, isPref) => InitializationCountPass.IsUseful(Log))
                 });
         }
     }
