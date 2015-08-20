@@ -432,6 +432,12 @@
       <param name="Other" />
       <returns />
     </member>
+    <member name="P:Flame.MemberExtensions.IsPureInterface">
+      <summary>
+ Determines if this type is a "pure interface", i.e. an interface whose
+ base types are all pure interfaces.
+ </summary>
+    </member>
     <member name="P:Flame.MemberExtensions.IsGenericParameter">
       <summary>
  Gets a boolean value that indicates if the given type is a generic parameter.
@@ -473,6 +479,18 @@
  Filters out all method in the given array of method that have an override or implementation which is also present in the given array.
  </summary>
     </member>
+    <member name="M:Flame.PropertyExtensions.Shadows(Flame.IProperty,Flame.IProperty)">
+      <summary>
+ Tells if the first property "shadows" the second, i.e. it has the
+ same name, staticness and indexer parameter list, but its declaring type
+ is more derived than the second method's derived type.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.HasSameSignature(Flame.IProperty,Flame.IProperty)">
+      <summary>
+ Tests if the given properties have the same signature.
+ </summary>
+    </member>
     <member name="M:Flame.PropertyExtensions.GetAccessor(Flame.IProperty,Flame.AccessorType)">
       <summary>
  Gets the property's accessor of the provided accessor type.
@@ -507,6 +525,17 @@
  </summary>
       <param name="Property" />
       <returns />
+    </member>
+    <member name="T:Flame.SetExtensions">
+      <summary>
+ Defines operations on generic sets.
+ </summary>
+    </member>
+    <member name="M:Flame.SetExtensions.UpperBounds``1(System.Collections.Generic.IEnumerable`1{T},System.Boolean(T, T))">
+      <summary>
+ Gets the finite set of upper bounds for the given finite set,
+ based on the given less-than function.
+ </summary>
     </member>
     <member name="M:Flame.FieldExtensions.GetField(Flame.IField,Flame.IBoundObject)">
       <summary>
@@ -557,6 +586,13 @@
  arguably be considered its own, albeit trivial, implementation.
  This method still returns null in that case, however.
  </remarks>
+    </member>
+    <member name="M:Flame.MethodExtensions.Shadows(Flame.IMethod,Flame.IMethod)">
+      <summary>
+ Tells if the first method "shadows" the second, i.e. it has the
+ same name, staticness and parameter list, but its declaring type
+ is more derived than the second method's derived type.
+ </summary>
     </member>
     <member name="P:Flame.MethodExtensions.HasReturnValue">
       <summary>

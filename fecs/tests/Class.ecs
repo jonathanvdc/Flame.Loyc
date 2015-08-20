@@ -3,11 +3,6 @@ using LeMP;
 
 namespace Test
 {
-    public interface IVector
-    {
-        double GetLength();
-    }
-
     public struct Vector : IVector
     {
         public this(public double X, public double Y) { }
@@ -28,11 +23,11 @@ namespace Test
                 Y *= ratio;
             }
         }
+    }
 
-        public double GetLength()
-        {
-            return Length;
-        }
+    public interface IVector
+    {
+        double Length { get; }
     }
 
     public static class Program

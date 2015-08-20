@@ -10,6 +10,8 @@ open Flame.Compiler.Statements
 open Flame.Functional
 open ExpressionConverters
 open LazyHelpers
+open MemberHelpers
+open System
 
 module MemberConverters =
     let ReadAttributes (parent : INodeConverter) (node : LNode) (scope : GlobalScope) =
@@ -120,20 +122,11 @@ module MemberConverters =
         else
             body
 
-
-    /// Infers the given method's base types for the given global scope.
-    let InferBaseMethods (scope : GlobalScope) (target : IMethod) =
-        let allMembers = target.DeclaringType.GetBaseTypes() |> Seq.map scope.GetAllMembers
-                                                             |> Seq.concat
-        let allMethods = System.Linq.Enumerable.OfType<IMethod> allMembers
-        allMethods |> Seq.distinct
-                   |> Seq.filter (fun x -> x.HasSameSignature target)
-
     let ConvertMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let retType = lazy (parent.ConvertType node.Args.[0] (new LocalScope(scope)))
         let fMethod = fMethod.WithReturnType retType
-        let fMethod = fMethod.WithBaseMethods (InferBaseMethods scope)
+        let fMethod = fMethod.WithBaseMethods (InferBaseMethods (scope.GetAllMembers >> OfType))
         (fun (x : IMethod) -> AutoReturn x.ReturnType (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
@@ -187,6 +180,7 @@ module MemberConverters =
         let retType, parameters = GetAccessorSignature accType (lazy declProp.PropertyType) (lazy (declProp.GetIndexerParameters() |> Seq.ofArray))
         let acc = acc.WithReturnType retType
         let acc = evalLazy parameters |> Seq.fold (fun (x : FunctionalAccessor) y -> x.WithParameter (lazy y)) acc
+        let acc = acc.WithBaseMethods ((InferBaseAccessors (scope.GetAllMembers >> OfType<ITypeMember, IProperty>)) >> Seq.cast)
 
         let getBody declMethod =
             let localScope      = new LocalScope(new FunctionScope(scope, declMethod))

@@ -183,6 +183,11 @@
  Gets the delegate expression's parameter types.
  </summary>
     </member>
+    <member name="P:Flame.Compiler.IDelegateExpression.ReturnType">
+      <summary>
+ Gets the return type of the delegate expression's delegate.
+ </summary>
+    </member>
     <member name="T:Flame.Compiler.IStatement">
       <summary>
  Defines a statement: a code node focused on executing an action.
@@ -2136,6 +2141,44 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Expressions.DelegateInstanceExpression">
+      <summary>
+ Defines an expression type that provides delegate expression functionality
+ to a normal expression that yields a delegate instance.
+ Delegate instance expressions cannot be used to create generic instance delegates.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DelegateInstanceExpression.CreateInvocationExpression(System.Collections.Generic.IEnumerable`1{Flame.Compiler.IExpression})">
+      <summary>
+ Creates an invocation expression based on this delegate expression and
+ the given arguments.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DelegateInstanceExpression.MakeGenericExpression(System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Creates a generic delegate instantiation.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DelegateInstanceExpression.Signature">
+      <summary>
+ Gets the delegate signature of the delegate instance expression.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DelegateInstanceExpression.ParameterTypes">
+      <summary>
+ Gets the delegate expression's parameter types.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DelegateInstanceExpression.ReturnType">
+      <summary>
+ Gets the return type of the delegate expression's delegate.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DelegateInstanceExpression.Delegate">
+      <summary>
+ Gets the delegate instance expression's delegate instance expression.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.ThisGetExpression.GetVariable">
       <summary>
  Gets the variable node's underlying variable.
@@ -3208,11 +3251,6 @@
  Gets the variable node's underlying variable.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Expressions.PropertyGetExpression.ConvertMembers(Flame.Compiler.MemberConverter)">
-      <summary>
- Converts the node's members with the given member converter.
- </summary>
-    </member>
     <member name="M:Flame.Compiler.Expressions.PropertyGetExpression.AcceptPredicate(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts the predicate node visitor.
@@ -3220,15 +3258,6 @@
  Furthermore, calling 'AcceptPredicate' must always produce the same state changes
  as calling 'Accept' when using the same visitor, but may do so
  more efficiently.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.Expressions.PropertyGetExpression.Accept(Flame.Compiler.INodeVisitor)">
-      <summary>
- Accepts a node visitor.
- This method is applies the visitor to this node's children and
- returns a new node with the same structure as this node, but with
- the updated children.
- If this node has no children, this node is returned.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Expressions.GetExtensionMethodExpression.CreateInvocationExpression(System.Collections.Generic.IEnumerable`1{Flame.Compiler.IExpression})">
@@ -5108,6 +5137,35 @@
  prerogative.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Variables.PropertyVariable">
+      <summary>
+ Defines a type of variable that operates analogously to a property:
+ get-expressions call the 'get' accessor, and set-statements call the
+ 'set' accessor.
+ </summary>
+      <remarks>
+ In the past, property variables were actually associated with a single
+ property, but this doesn't work well with asymmetric property overrides.
+ Consider the following snippet of code:
+ <code>
+ public abstract VectorBase
+ {
+     double Length { virtual get { ... } virtual set { ... } }
+ }
+
+ public class Vector
+ {
+     public double Length { override get { ... } }
+     public double LengthSquared { get { return Length * Length; } }
+                                                ^~~~~~ refers to `Vector.Length`
+     public void SetLength(double Value)
+     {
+         Length = Value;
+         ^~~~~~ refers to `VectorBase.Length`
+     }
+ }
+ </code></remarks>
+    </member>
     <member name="M:Flame.Compiler.Variables.PropertyVariable.CreateGetExpression">
       <summary>
  Creates an expression that returns this variable's value.
@@ -5124,6 +5182,33 @@
  flag this variable for re-use within the scope of the current method.
  The actual re-use of the variable is the variable and the code generator's
  prerogative.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.PropertyVariable.HasGetter">
+      <summary>
+ Gets a boolean flag that indicates whether this property variable has a
+ getter.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.PropertyVariable.HasSetter">
+      <summary>
+ Gets a boolean flag that indicates whether this property variable has a
+ setter.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.PropertyVariable.Getter">
+      <summary>
+ Gets the property variable's 'get' accessor.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.PropertyVariable.Setter">
+      <summary>
+ Gets the property variable's 'set' accessor.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.PropertyVariable.IndexerArguments">
+      <summary>
+ Gets the property's indexer arguments.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Variables.ElementVariable.CreateAddressOfExpression">
