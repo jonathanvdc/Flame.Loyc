@@ -1800,6 +1800,14 @@
  and contains the given error message.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.Unknown(Flame.IType)">
+<summary>
+ Creates an unknown expression: an expression that cannot be represented by any code sequence,
+ which will therefore throw when calling its `Emit` implementation. Instead, it acts like
+ a non-constant expression which can be used to create a well-typed node tree, for debugging
+ or optimization purposes.
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Default(Flame.IType)">
 <summary>
  Creates an expression that represents the default value of the 

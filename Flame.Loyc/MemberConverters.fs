@@ -159,6 +159,10 @@ module MemberConverters =
             Some AccessorType.RemoveAccessor
         else
             None
+                
+    /// Tests if this member is either abstract or an interface member.
+    let IsAbstractOrInterface (item : #ITypeMember) =
+        item.get_IsAbstract() || item.DeclaringType.get_IsInterface()
 
     /// Gets an accessor's return type and parameters, based on its accessor type and the enclosing property's return type and parameters.
     let GetAccessorSignature (accType : AccessorType) (propType : Lazy<IType>) (indexerParams : Lazy<IParameter seq>) : Lazy<IType> * Lazy<IParameter seq> =
@@ -167,8 +171,8 @@ module MemberConverters =
         else
             lazy PrimitiveTypes.Void, lazy Seq.append (evalLazy indexerParams) ([| new DescribedParameter("value", evalLazy propType) |])
 
-    /// Converts an accessor declaration.
-    let ConvertAccessorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) : IAccessor =
+    /// Convert an accessor declaration's signature, but not its body.
+    let ConvertAccessorSignature (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) =
         let isStatic, attrs = ReadAttributes parent node scope
         if isStatic then
             let staticNode = node.Attrs |> Seq.find (fun x -> x.Name = CodeSymbols.Static)
@@ -181,34 +185,88 @@ module MemberConverters =
         let acc = acc.WithReturnType retType
         let acc = evalLazy parameters |> Seq.fold (fun (x : FunctionalAccessor) y -> x.WithParameter (lazy y)) acc
         let acc = acc.WithBaseMethods ((InferBaseAccessors (scope.GetAllMembers >> OfType<ITypeMember, IProperty>)) >> Seq.cast)
+        acc
+
+    /// Converts an accessor declaration.
+    let ConvertAccessorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) : IAccessor =
+        let acc = ConvertAccessorSignature parent node scope accType declProp
 
         let getBody declMethod =
-            let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
-            let body            = parent.ConvertExpression node.Args.[0] localScope ||> ExpressionBuilder.Scope 
-                                                                                     |> ExpressionBuilder.ToStatement
-            AutoReturn declMethod.ReturnType body
+            if node.ArgCount > 0 then
+                let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
+                let body            = parent.ConvertExpression node.Args.[0] localScope ||> ExpressionBuilder.Scope 
+                                                                                         |> ExpressionBuilder.ToStatement
+                AutoReturn declMethod.ReturnType body
+            else if IsAbstractOrInterface declMethod then
+                null // This accessor does not have a body, and that's okay.
+            else
+                ExpressionBuilder.Unknown declMethod.ReturnType |> ExpressionBuilder.Return
+                                                                |> ExpressionBuilder.Error (new LogEntry("Bodyless property accessor",
+                                                                                                         "The '" + accType.ToString().ToLower() + "' accessor of property '" + declProp.Name + 
+                                                                                                         "' does not have a body, but is neither abstract nor is it declared in an interface."))
+                                                                |> ExpressionBuilder.Source (NodeHelpers.GetTargetRange node |> NodeHelpers.ToSourceLocation)
+                                                                |> ExpressionBuilder.ToStatement
 
         acc.WithBody getBody :> IAccessor
 
+    /// Generates an autoprop field name for the given property name.
+    let private AutoPropertyFieldName propName =
+        propName + "$value"
+
+    /// Converts an autoprop accessor declaration.
+    let ConvertAutoAccessorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) : IAccessor =
+        let acc = ConvertAccessorSignature parent node scope accType declProp
+
+        let getBody (declMethod : IMethod) =
+            // An autoprop is syntactic sugar for `public T Property { get { return Property$value; } set { Property$value = value; return; } }`
+            let valueField = declMethod.DeclaringType.GetField(AutoPropertyFieldName declProp.Name, declProp.IsStatic)
+            let scope      = new LocalScope(new FunctionScope(scope, declMethod))
+            let thisExpr   = ExpressionBuilder.This scope |> ExpressionBuilder.GetAccessedExpression
+            let fieldAcc   = ExpressionBuilder.AccessField scope valueField thisExpr
+            if accType = AccessorType.GetAccessor then
+                fieldAcc |> ExpressionBuilder.Return
+                         |> ExpressionBuilder.ToStatement
+            else
+                [ExpressionBuilder.Assign scope fieldAcc ((scope.GetVariable "value").Value.CreateGetExpression()); ExpressionBuilder.ReturnVoid] 
+                    |> ExpressionBuilder.VoidBlock 
+                    |> ExpressionBuilder.ToStatement
+
+        acc.WithBody getBody :> IAccessor
 
     /// Converts a property "member", i.e. an accessor or a block that contains accessors.
-    let rec ConvertPropertyMember (parent : INodeConverter) (scope : GlobalScope) (prop : FunctionalProperty) (node : LNode) : FunctionalProperty =
+    let rec ConvertPropertyMember (convAcc : INodeConverter -> LNode -> GlobalScope -> AccessorType -> IProperty -> IAccessor) (parent : INodeConverter) (scope : GlobalScope) (prop : FunctionalProperty) (node : LNode) : FunctionalProperty =
         if node.Name = CodeSymbols.Braces then
-            node.Args |> Seq.fold (ConvertPropertyMember parent scope) prop
+            node.Args |> Seq.fold (ConvertPropertyMember convAcc parent scope) prop
         else
             match GetAccessorType node.Name with
             | None         ->
                 scope.Log.LogError(new LogEntry("Unrecognized accessor type", 
                                                 "'" + node.Name.Name + "' was not recognized as a type of accessor. ", 
-                                                NodeHelpers.ToSourceLocation node.Target.Range))
+                                                NodeHelpers.GetTargetRange node |> NodeHelpers.ToSourceLocation))
                 prop
             | Some accType ->
-                let createAcc = ConvertAccessorDeclaration parent node scope accType
+                let createAcc = convAcc parent node scope accType
                 prop.WithAccessor createAcc
 
-    /// Converts a single property declaration.
-    let ConvertPropertyDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (declType : IType) =
-        let isStatic, attrs = ReadAttributes parent node scope
+    /// Tests if the given node is an autoprop body node.
+    let rec IsAutoPropertyBody (parent : INodeConverter) (scope : GlobalScope) (node : LNode) =
+        if node.Name = CodeSymbols.Braces then
+            node.Args |> Seq.exists (IsAutoPropertyBody parent scope >> not)
+                      |> not
+        else if node.IsId && (node.Name = CodeSymbols.get || node.Name = CodeSymbols.set) then
+            let _, attrs = ReadAttributes parent node scope
+            attrs.GetAttributes(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) |> Seq.isEmpty
+        else
+            false
+
+    /// Tests if the given property node qualifies as an autoprop.
+    let IsAutoProperty (parent : INodeConverter) (scope : GlobalScope) (node : LNode) (declType : IType) (isStatic : bool, attrs : IAttribute seq) =
+        IsAutoPropertyBody parent scope node.Args.[2] && not (declType.get_IsInterface()) 
+                                                      && attrs.GetAttributes(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) 
+                                                         |> Seq.isEmpty
+
+    /// Converts a property declaration's signature, but not its contents.
+    let ConvertPropertySignature (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (isStatic : bool, attrs : IAttribute seq) (declType : IType) =
         let propType = lazy match parent.TryConvertType node.Args.[0] (new LocalScope(scope)) with
                             | None    ->
                                 let message = new LogEntry("Unresolved type",
@@ -222,7 +280,12 @@ module MemberConverters =
         let prop = new FunctionalProperty(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic)
         let prop = prop.WithPropertyType propType
         // TODO: add indexer parameters (if any)
-        let prop = ConvertPropertyMember parent scope prop node.Args.[2]
+        prop
+
+    /// Converts a single property declaration that is not an autoprop.
+    let ConvertPropertyDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (isStatic : bool, attrs : IAttribute seq) (convAcc : INodeConverter -> LNode -> GlobalScope -> AccessorType -> IProperty -> IAccessor) (declType : IType) =
+        let prop = ConvertPropertySignature parent node scope name (isStatic, attrs) declType
+        let prop = ConvertPropertyMember convAcc parent scope prop node.Args.[2]
         prop :> IProperty
 
     /// A type member converter for property declarations.
@@ -236,7 +299,18 @@ module MemberConverters =
                 scope.Log.LogError(message)
                 declType, scope
             | Some name ->
-                ConvertPropertyDeclaration parent node scope name |> declType.WithProperty, scope
+                let attrs   = ReadAttributes parent node scope
+                let declType, convAcc = if IsAutoProperty parent scope node declType attrs then
+                                            let createAutoPropField declType =
+                                                // synthesize a `private hidden (static|instance) T <name>$value;` field.
+                                                let fieldAttrs = [new AccessAttribute(AccessModifier.Private) :> IAttribute; 
+                                                                  PrimitiveAttributes.Instance.HiddenAttribute]
+                                                let header = new FunctionalMemberHeader(AutoPropertyFieldName name, fieldAttrs, NodeHelpers.ToSourceLocation node.Range)
+                                                new FunctionalField(header, declType, fst attrs, lazy declType.GetProperties().GetProperty(name, fst attrs).PropertyType) :> IField
+                                            declType.WithField createAutoPropField, ConvertAutoAccessorDeclaration
+                                        else
+                                            declType, ConvertAccessorDeclaration
+                ConvertPropertyDeclaration parent node scope name attrs convAcc |> declType.WithProperty, scope
                 
         let recognizeProperty (node : LNode) = node.ArgCount = 3
         new TypeMemberConverter(recognizeProperty, convertProp)

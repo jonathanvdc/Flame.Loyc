@@ -47,6 +47,13 @@ module NodeHelpers =
         let doc = new LoycSourceDocument(range.Source)
         new SourceLocation(doc, range.StartIndex, range.Length)
 
+    /// Gets the node's target range, if it has a target. Otherwise,
+    /// the node's range is returned.
+    let GetTargetRange (node : LNode) =
+        match node.Target with
+        | null -> node.Range
+        | x    -> x.Range
+
     let rec ToTypeName (node : LNode) : TypeName =
         if node.IsCall && (node.Name = CodeSymbols.Dot || node.Name = CodeSymbols.ColonColon) then
             (ToTypeName node.Args.[0]).Append (ToTypeName node.Args.[1])

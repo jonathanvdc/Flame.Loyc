@@ -5,8 +5,11 @@ namespace Test
 {
     public struct Vector : IVector
     {
-        public this(public double X, public double Y)
+        public this(set double X, set double Y)
         { }
+
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public double LengthSquared
         {
