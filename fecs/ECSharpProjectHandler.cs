@@ -232,9 +232,9 @@ namespace fecs
                         PassExtensions.EliminateDeadCodePassName, 
                         true),
 
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new InitializationCountPass(Log),
-                        PassExtensions.InitializationPassName,
-                        (optInfo, isPref) => InitializationCountPass.IsUseful(Log))
+                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new AutoInitializationPass(Log),
+                        AutoInitializationPass.AutoInitializationPassName,
+                        true)
                 });
         }
     }

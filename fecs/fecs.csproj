@@ -168,6 +168,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoInitializationPass.cs" />
     <Compile Include="ECSharpProjectHandler.cs" />
     <Compile Include="ECSharpTypeNamer.cs" />
     <Compile Include="LogPass.cs" />

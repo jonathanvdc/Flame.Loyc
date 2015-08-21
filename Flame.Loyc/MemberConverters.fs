@@ -250,9 +250,18 @@ module MemberConverters =
                        else 
                            inferredAttrs
         let name, tParams = ReadName parent node.Args.[0] scope
-        let baseTypes     = node.Args.[1].Args |> Seq.map (fun x -> lazy parent.ConvertType x (new LocalScope(scope)))
+
+        // Gets the type's base types, including the root type if there is no clear parent type and the given type is no interface.
+        let getBaseTypes (declType : IType) =
+            let bTypes = node.Args.[1].Args |> Seq.map (fun x -> parent.ConvertType x (new LocalScope(scope)))
+            let rootType = scope.Environment.RootType
+            if rootType = null || declType.get_IsInterface() || bTypes |> Seq.exists (fun x -> not (x.get_IsInterface())) then
+                bTypes
+            else
+                Seq.append (Seq.singleton rootType) bTypes
+
         let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs, NodeHelpers.ToSourceLocation node.Args.[0].Range), declNs)
-        let fType = baseTypes |> Seq.fold (fun (state : FunctionalType) item -> state.WithBaseType item) fType
+        let fType = fType.WithBaseTypes getBaseTypes
         let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType, newScope) item -> parent.ConvertTypeMember item newScope state) (fType, scope)
                                        |> fst

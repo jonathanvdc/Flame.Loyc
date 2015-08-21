@@ -967,6 +967,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalType.Properties">
 <summary>
  Gets this functional type&apos;s properties.
@@ -1076,9 +1079,9 @@
  Adds a field to this functional-style type.
 </summary>
 </member>
-<member name="M:Flame.Functional.FunctionalType.WithBaseType(System.Lazy{Flame.IType})">
+<member name="M:Flame.Functional.FunctionalType.WithBaseTypes(Microsoft.FSharp.Core.FSharpFunc{Flame.IType,System.Collections.Generic.IEnumerable{Flame.IType}})">
 <summary>
- Adds a base type to this functional-style type.
+ Sets this this functional-style type&apos;s base types.
 </summary>
 </member>
 <member name="M:Flame.Functional.FunctionalType.WithAttribute(System.Lazy{Flame.IAttribute})">
