@@ -65,7 +65,11 @@ module NodeConverterExtensions =
         member this.ConvertType node scope = 
             match this.TryConvertType node scope with
             | Some result -> result
-            | None        -> null
+            | None        -> 
+                scope.Global.Log.LogError(new LogEntry("Unresolved type", 
+                                          "Could not resolve '" + node.Print() + "' as a valid type.",
+                                          NodeHelpers.ToSourceLocation node.Range))
+                null
 
         /// Converts the given type member node to a type member.
         /// Constructs like fields, properties and methods are type members.

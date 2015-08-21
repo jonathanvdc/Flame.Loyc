@@ -61,7 +61,6 @@
     <Reference Include="Pixie">
       <HintPath>..\libs\Pixie.dll</HintPath>
     </Reference>
-    <Reference Include="Pixie" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />

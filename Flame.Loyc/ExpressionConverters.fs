@@ -119,6 +119,15 @@ module ExpressionConverters =
     let ConvertScopedExpression (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
         parent.ConvertExpression node scope.ChildScope ||> ExpressionBuilder.Scope
 
+    /// A converter for an ambiguous `+` operator.
+    let AddOrConcatConverter =
+        let convAdd (scope : LocalScope) (left : IExpression) (right : IExpression) =
+            if left.Type = PrimitiveTypes.String || right.Type = PrimitiveTypes.String then
+                ExpressionBuilder.Binary Operator.Concat scope (ExpressionBuilder.Cast scope left PrimitiveTypes.String) (ExpressionBuilder.Cast scope right PrimitiveTypes.String)
+            else
+                ExpressionBuilder.Binary Operator.Add scope left right
+        DefineScopedBinaryOperator convAdd
+
     /// A converter for if-then expressions, which are of type void.
     let IfConverter = 
         let convIf (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
@@ -286,6 +295,13 @@ module ExpressionConverters =
     let ConvertInvocation (target : IExpression) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let args, scope = parent.ConvertExpressions node.Args scope
         ExpressionBuilder.Invoke scope target args, scope
+
+    /// Converts a new-instance expression.
+    let ConvertNewInstance (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+        let call         = node.Args.[0]
+        let instanceType = parent.ConvertType call.Target scope
+        let args, scope  = parent.ConvertExpressions call.Args scope
+        ExpressionBuilder.Invoke scope (ExpressionBuilder.NewInstanceDelegates scope instanceType) args, scope
 
     /// Converts member access.
     let MemberAccessConverter =

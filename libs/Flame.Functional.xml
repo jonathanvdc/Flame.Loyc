@@ -1620,13 +1620,28 @@
  Accesses the given sequence of type members on the given expression.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.ConstructorDelegates(Flame.Functional.LocalScope,Flame.IType,Flame.Functional.AccessedExpression)">
+<summary>
+ Computes the intersection expression of the constructor delegates
+ for the given type and constructed instance expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.NewInstanceDelegates(Flame.Functional.LocalScope,Flame.IType)">
+<summary>
+ Computes the intersection expression of the new type instance  
+ delegates for the given type.
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.IntersectedMemberAccess(Flame.Functional.LocalScope,System.Collections.Generic.IEnumerable{Flame.ITypeMember},Flame.Functional.AccessedExpression)">
 <summary>
  Accesses the given sequence of type members on the given expression, and computes their intersection.
 </summary>
 </member>
-<member name="">
-
+<member name="M:Flame.Functional.ExpressionBuilder.AllOfType``2(System.Collections.Generic.IEnumerable{``0})">
+<summary>
+ Checks if all elements of the given sequence are of a 
+ specific type.
+</summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AccessMember(Flame.Functional.LocalScope,Flame.ITypeMember,Flame.Functional.AccessedExpression)">
 <summary>

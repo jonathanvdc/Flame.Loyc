@@ -197,7 +197,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
         let makeBinAssignmentOp loycOp op = makePair loycOp (ExpressionBuilder.Binary op |> ExpressionConverters.DefineBinaryAssignmentOperator)
 
         let callConverters = Seq.ofArray [|
-                                             makeBinOp CodeSymbols.Add Operator.Add;
+                                             makePair CodeSymbols.Add ExpressionConverters.AddOrConcatConverter;
                                              makeBinAssignmentOp CodeSymbols.AddSet Operator.Add;
                                              makeBinOp CodeSymbols.Sub Operator.Subtract;
                                              makeBinAssignmentOp CodeSymbols.SubSet Operator.Subtract;
@@ -268,6 +268,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.Result (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Result);
 
                                              makePair CodeSymbols.Throw (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Throw);
+                                             makePair CodeSymbols.New (ExpressionConverters.CreateUnaryConverter ExpressionConverters.ConvertNewInstance);
 
                                              makePair CodeSymbols.Assign (ExpressionConverters.DefineScopedBinaryOperator ExpressionBuilder.Assign);
                                              makePair CodeSymbols.QuickBind ExpressionConverters.QuickbindConverter;
