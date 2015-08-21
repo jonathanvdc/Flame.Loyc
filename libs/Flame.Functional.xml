@@ -2061,6 +2061,17 @@
 <member name="T:Flame.Functional.LazyHelpers">
 
 </member>
+<member name="M:Flame.Functional.MemberHelpers.InheritAttributes``1(System.Collections.Generic.IEnumerable{Flame.IType},``0,System.Collections.Generic.IEnumerable{Flame.IAttribute})">
+<summary>
+ Inherits all attributes of the given types from the declaring member that are not present in the
+ sequence of pre-existing attributes, and concatenates these attributes with said pre-existing attributes.
+</summary>
+</member>
+<member name="M:Flame.Functional.MemberHelpers.IsAbstractOrInterface``1(``0)">
+<summary>
+ Tests if the given member is either abstract or an interface member.
+</summary>
+</member>
 <member name="M:Flame.Functional.MemberHelpers.InferBaseAccessors(Microsoft.FSharp.Core.FSharpFunc{Flame.IType,System.Collections.Generic.IEnumerable{Flame.IProperty}},Flame.IAccessor)">
 <summary>
  Infers the given accesor&apos;s base accessors based on the given property-getting function.

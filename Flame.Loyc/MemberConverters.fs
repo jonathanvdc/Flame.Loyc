@@ -159,10 +159,6 @@ module MemberConverters =
             Some AccessorType.RemoveAccessor
         else
             None
-                
-    /// Tests if this member is either abstract or an interface member.
-    let IsAbstractOrInterface (item : #ITypeMember) =
-        item.get_IsAbstract() || item.DeclaringType.get_IsInterface()
 
     /// Gets an accessor's return type and parameters, based on its accessor type and the enclosing property's return type and parameters.
     let GetAccessorSignature (accType : AccessorType) (propType : Lazy<IType>) (indexerParams : Lazy<IParameter seq>) : Lazy<IType> * Lazy<IParameter seq> =
@@ -170,25 +166,17 @@ module MemberConverters =
             propType, indexerParams
         else
             lazy PrimitiveTypes.Void, lazy Seq.append (evalLazy indexerParams) ([| new DescribedParameter("value", evalLazy propType) |])
-
+           
     /// Inherits accessor attributes from the declaring property, and merges
     /// them with the accessor's own attributes.
-    let InheritAccessorAttributes (declProp : IProperty) (accAttrs : IAttribute seq) : IAttribute seq =
+    let InheritAccessorAttributes =
         // We intend to inherit:
         //  * access modifier/visibility
         //  * virtualness, abstractness
 
-        let extraAttrs = if accAttrs.HasAttribute(AccessAttribute.AccessAttributeType) then
-                             []
-                         else
-                             [new AccessAttribute(declProp.get_Access()) :> IAttribute]
-        let extraAttrs = if declProp.get_IsAbstract() then
-                             PrimitiveAttributes.Instance.AbstractAttribute :: extraAttrs
-                         else if declProp.get_IsVirtual() then
-                             PrimitiveAttributes.Instance.VirtualAttribute :: extraAttrs
-                         else 
-                             extraAttrs
-        Seq.append accAttrs extraAttrs
+        InheritAttributes [AccessAttribute.AccessAttributeType; 
+                           PrimitiveAttributes.Instance.AbstractAttribute.AttributeType; 
+                           PrimitiveAttributes.Instance.VirtualAttribute.AttributeType]
                             
 
     /// Convert an accessor declaration's signature, but not its body.
