@@ -171,6 +171,26 @@ module MemberConverters =
         else
             lazy PrimitiveTypes.Void, lazy Seq.append (evalLazy indexerParams) ([| new DescribedParameter("value", evalLazy propType) |])
 
+    /// Inherits accessor attributes from the declaring property, and merges
+    /// them with the accessor's own attributes.
+    let InheritAccessorAttributes (declProp : IProperty) (accAttrs : IAttribute seq) : IAttribute seq =
+        // We intend to inherit:
+        //  * access modifier/visibility
+        //  * virtualness, abstractness
+
+        let extraAttrs = if accAttrs.HasAttribute(AccessAttribute.AccessAttributeType) then
+                             []
+                         else
+                             [new AccessAttribute(declProp.get_Access()) :> IAttribute]
+        let extraAttrs = if declProp.get_IsAbstract() then
+                             PrimitiveAttributes.Instance.AbstractAttribute :: extraAttrs
+                         else if declProp.get_IsVirtual() then
+                             PrimitiveAttributes.Instance.VirtualAttribute :: extraAttrs
+                         else 
+                             extraAttrs
+        Seq.append accAttrs extraAttrs
+                            
+
     /// Convert an accessor declaration's signature, but not its body.
     let ConvertAccessorSignature (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) =
         let isStatic, attrs = ReadAttributes parent node scope
@@ -180,6 +200,7 @@ module MemberConverters =
                                             "'static' attributes cannot be applied to accessors directly. " + 
                                             "Apply them to the enclosing property instead.", 
                                             NodeHelpers.ToSourceLocation staticNode.Range))
+        let attrs = InheritAccessorAttributes declProp attrs
         let acc = new FunctionalAccessor(new FunctionalMemberHeader(accType.ToString().ToLower() + "_" + declProp.Name, attrs, NodeHelpers.ToSourceLocation node.Range), declProp, accType)
         let retType, parameters = GetAccessorSignature accType (lazy declProp.PropertyType) (lazy (declProp.GetIndexerParameters() |> Seq.ofArray))
         let acc = acc.WithReturnType retType
@@ -255,15 +276,15 @@ module MemberConverters =
                       |> not
         else if node.IsId && (node.Name = CodeSymbols.get || node.Name = CodeSymbols.set) then
             let _, attrs = ReadAttributes parent node scope
-            attrs.GetAttributes(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) |> Seq.isEmpty
+            attrs.HasAttribute(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) |> not
         else
             false
 
     /// Tests if the given property node qualifies as an autoprop.
     let IsAutoProperty (parent : INodeConverter) (scope : GlobalScope) (node : LNode) (declType : IType) (isStatic : bool, attrs : IAttribute seq) =
         IsAutoPropertyBody parent scope node.Args.[2] && not (declType.get_IsInterface()) 
-                                                      && attrs.GetAttributes(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) 
-                                                         |> Seq.isEmpty
+                                                      && attrs.HasAttribute(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) 
+                                                         |> not
 
     /// Converts a property declaration's signature, but not its contents.
     let ConvertPropertySignature (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (isStatic : bool, attrs : IAttribute seq) (declType : IType) =

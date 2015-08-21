@@ -5,27 +5,19 @@ namespace Test
 {
     public struct Vector : IVector
     {
-        public this(set double X, set double Y)
-        { }
+        public this(set double X, set double Y) { }
 
-        public double X { get; set; }
-        public double Y { get; set; }
+        public double X { get; private set; }
+        public double Y { get; private set; }
 
         public double LengthSquared
         {
             get { return X * X + Y * Y; }
-            set { Length = Math.Sqrt(value); }
         }
 
         public double Length
         {
             get { return Math.Sqrt(LengthSquared); }
-            set
-            {
-                double ratio = value / Length;
-                X *= ratio;
-                Y *= ratio;
-            }
         }
     }
 

@@ -39,9 +39,9 @@ namespace fecs
                 if (Log.UsePedanticWarnings(StructAutoInitializationWarningName) && DeclaringType.get_IsValueType())
                 {
                     var entry = new LogEntry("Value type auto-initialization",
-                                             "A value type's constructed was auto-initialized, because its constructor did not manually initialize it" +
+                                             "A value type's constructed instance ('this') was auto-initialized, because the constructor did not manually initialize it" +
                                              (Visitor.CurrentFlow.Max.Value == 0 ? ". " : " in every control flow path. ") +
-                                             "Consider rewriting the constructor to initialize it with a 'this = default(...);' statement. " +
+                                             "Consider rewriting the constructor to initialize the constructed instance with a 'this = default(...);' statement. " +
                                              Warnings.Instance.GetWarningNameMessage(StructAutoInitializationWarningName),
                                              DeclaringMethod.GetSourceLocation());
                     Log.LogWarning(entry);
