@@ -26,3 +26,6 @@ For example, these commands are equivalent (iff `Test.ecs` and `Test.ds` are equ
 
     fecs Test.ecs -platform clr
     dsc  Test.ds  -platform clr
+
+## Building Flame.Loyc and `fecs`
+Opening `Flame.Loyc.sln` in Visual Studio and hitting the "Build Solution" button should work fine if you have both a C# and an F# compiler installed.
