@@ -67,8 +67,8 @@ module NodeConverterExtensions =
             | Some result -> result
             | None        -> 
                 scope.Global.Log.LogError(new LogEntry("Unresolved type", 
-                                          "Could not resolve '" + node.Print() + "' as a valid type.",
-                                          NodeHelpers.ToSourceLocation node.Range))
+                                                       "Could not resolve '" + node.Print() + "' as a valid type.",
+                                                       NodeHelpers.ToSourceLocation node.Range))
                 null
 
         /// Converts the given type member node to a type member.

@@ -74,6 +74,7 @@
     <Compile Include="MemberConverters.fs" />
     <Compile Include="AttributeConverters.fs" />
     <Compile Include="NodeConverter.fs" />
+    <Compile Include="CompilerLogMessageSink.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

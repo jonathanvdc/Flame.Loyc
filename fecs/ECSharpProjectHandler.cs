@@ -30,18 +30,11 @@ namespace fecs
 {
     public class ECSharpProjectHandler : IProjectHandler
     {
-        public ECSharpProjectHandler()
+        static ECSharpProjectHandler()
         {
-            processor = new MacroProcessor(typeof(LeMP.Prelude.Macros), MessageSink.Console);
-
-            processor.AddMacros(typeof(global::LeMP.StandardMacros).Assembly, false);
-            /*processor.PreOpenedNamespaces.Add((Symbol)"LeMP", false);
-            processor.PreOpenedNamespaces.Add((Symbol)"LeMP.Prelude", false);*/
-
             converter = NodeConverter.DefaultNodeConverter;
         }
 
-        private static MacroProcessor processor;
         private static NodeConverter converter;
 
         public IEnumerable<string> Extensions
@@ -117,11 +110,21 @@ namespace fecs
 
         public static Task<IFunctionalNamespace[]> ParseCompilationUnitsAsync(List<IProjectSourceItem> SourceItems, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
         {
+            var sink = new CompilerLogMessageSink(Parameters.Log);
+            var processor = new MacroProcessor(typeof(LeMP.Prelude.Macros), sink);
+
+            processor.AddMacros(typeof(global::LeMP.StandardMacros).Assembly, false);
+
+            return ParseCompilationUnitsAsync(SourceItems, Parameters, Binder, DeclaringAssembly, processor, sink);
+        }
+
+        public static Task<IFunctionalNamespace[]> ParseCompilationUnitsAsync(List<IProjectSourceItem> SourceItems, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly, MacroProcessor Processor, IMessageSink Sink)
+        {
             var units = new Task<IFunctionalNamespace>[SourceItems.Count];
             for (int i = 0; i < units.Length; i++)
             {
                 var item = SourceItems[i];
-                units[i] = ParseCompilationUnitAsync(item, Parameters, Binder, DeclaringAssembly);
+                units[i] = ParseCompilationUnitAsync(item, Parameters, Binder, DeclaringAssembly, Processor, Sink);
             }
             return Task.WhenAll(units);
         }
@@ -163,7 +166,7 @@ namespace fecs
             }
         }
 
-        public static Task<IFunctionalNamespace> ParseCompilationUnitAsync(IProjectSourceItem SourceItem, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
+        public static Task<IFunctionalNamespace> ParseCompilationUnitAsync(IProjectSourceItem SourceItem, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly, MacroProcessor Processor, IMessageSink Sink)
         {
             Parameters.Log.LogEvent(new LogEntry("Status", "Parsing " + SourceItem.SourceIdentifier));
             return Task.Run(() =>
@@ -178,12 +181,12 @@ namespace fecs
                 var globalScope = new GlobalScope(new FunctionalBinder(Binder), convRules, Parameters.Log, namer, new Flame.Syntax.MemberProvider(Binder).GetMembers, GetParameters);
                 bool isLes = Enumerable.Last(SourceItem.SourceIdentifier.Split('.')).Equals("les", StringComparison.OrdinalIgnoreCase);
                 var service = isLes ? (IParsingService)LesLanguageService.Value : EcsLanguageService.Value;
-                var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier, service);
+                var nodes = ParseNodes(code.Source, SourceItem.SourceIdentifier, service, Processor, Sink);
 
                 if (Parameters.Log.Options.GetOption<bool>("E", false))
                 {
                     var outputService = GetParsingService(Parameters.Log.Options, "syntax-format", service);
-                    string newFile = outputService.PrintMultiple(nodes, MessageSink.Console, indentString: new string(' ', 4));
+                    string newFile = outputService.PrintMultiple(nodes, Sink, indentString: new string(' ', 4));
                     Parameters.Log.LogMessage(new LogEntry("'" + SourceItem.SourceIdentifier + "' after macro expansion", Environment.NewLine + newFile));
                 }
 
@@ -193,13 +196,13 @@ namespace fecs
             });
         }
 
-        public static IEnumerable<LNode> ParseNodes(string Text, string Identifier, IParsingService Service)
+        public static IEnumerable<LNode> ParseNodes(string Text, string Identifier, IParsingService Service, MacroProcessor Processor, IMessageSink Sink)
         {
-            ILexer lexer = Service.Tokenize(new UString(Text), Identifier, MessageSink.Console);
+            ILexer lexer = Service.Tokenize(new UString(Text), Identifier, Sink);
 
-            var nodes = Service.Parse(lexer, MessageSink.Console);
+            var nodes = Service.Parse(lexer, Sink);
 
-            return processor.ProcessSynchronously(new RVList<LNode>(nodes));
+            return Processor.ProcessSynchronously(new RVList<LNode>(nodes));
         }
 
         public static IFunctionalNamespace ParseCompilationUnit(IEnumerable<LNode> Nodes, GlobalScope Scope, IAssembly DeclaringAssembly)
