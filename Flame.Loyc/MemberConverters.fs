@@ -95,6 +95,18 @@ module MemberConverters =
         let name, _ = ReadName parent node.Args.[1] scope.Global
         new DescribedParameter(name, varType) :> IParameter
 
+    /// Appends a `return(void);` statement to the given statement, provided the given
+    /// type is either `null` or `void`.
+    let AutoReturn (scope : LocalScope) (retType : IType) (body : IExpression) =
+        if retType = null || retType.Equals(PrimitiveTypes.Void) then
+            new BlockStatement([| ExpressionBuilder.ToStatement body; new ReturnStatement() :> IStatement |]) :> IStatement
+        else if body.Type <> PrimitiveTypes.Void then
+            ExpressionBuilder.CastImplicit scope body retType
+                 |> ExpressionBuilder.Return
+                 |> ExpressionBuilder.ToStatement
+        else
+            ExpressionBuilder.ToStatement body
+
     let private ConvertCommonMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let isStatic, attrs = ReadAttributes parent node scope
         let name, tParams   = ReadName parent node.Args.[1] scope
@@ -104,35 +116,26 @@ module MemberConverters =
         let fMethod         = node.Args.[2].Args |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithParameter (lazy (ConvertParameterDeclaration parent tempLocalScope item))) fMethod
 
         let getBody declMethod =
-            if node.ArgCount > 3 then
-                let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
-                let body            = parent.ConvertExpression node.Args.[3] localScope ||> ExpressionBuilder.Scope 
-                                                                                         |> ExpressionBuilder.ToStatement
-                body
-            else
-                EmptyStatement.Instance :> IStatement
+            let localScope = new LocalScope(new FunctionScope(scope, declMethod))
+            let body = if node.ArgCount > 3 then
+                           parent.ConvertExpression node.Args.[3] localScope ||> ExpressionBuilder.Scope 
+                       else
+                           ExpressionBuilder.Void
+            AutoReturn localScope declMethod.ReturnType body
 
         fMethod.WithBody getBody
-
-    /// Appends a `return(void);` statement to the given statement, provided the given
-    /// type is either `null` or `void`.
-    let AutoReturn (retType : IType) (body : IStatement) =
-        if retType = null || retType.Equals(PrimitiveTypes.Void) then
-            new BlockStatement([| body; new ReturnStatement() :> IStatement |]) :> IStatement
-        else
-            body
 
     let ConvertMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let retType = lazy (parent.ConvertType node.Args.[0] (new LocalScope(scope)))
         let fMethod = fMethod.WithReturnType retType
         let fMethod = fMethod.WithBaseMethods (InferBaseMethods (scope.GetAllMembers >> OfType))
-        (fun (x : IMethod) -> AutoReturn x.ReturnType (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
+        fMethod :> IMethod
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let fMethod = fMethod.AsConstructor 
-        (fun (x : IMethod) -> AutoReturn PrimitiveTypes.Void (fMethod.CreateBody x)) |> fMethod.WithBody :> IMethod
+        fMethod :> IMethod
 
     /// Creates a type member converter based on the given method definition converter.
     let MethodDeclarationConverter conv =
@@ -204,8 +207,7 @@ module MemberConverters =
             if node.ArgCount > 0 then
                 let localScope      = new LocalScope(new FunctionScope(scope, declMethod))
                 let body            = parent.ConvertExpression node.Args.[0] localScope ||> ExpressionBuilder.Scope 
-                                                                                         |> ExpressionBuilder.ToStatement
-                AutoReturn declMethod.ReturnType body
+                AutoReturn localScope declMethod.ReturnType body
             else if IsAbstractOrInterface declMethod then
                 null // This accessor does not have a body, and that's okay.
             else

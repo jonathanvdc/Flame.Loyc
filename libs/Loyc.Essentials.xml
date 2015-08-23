@@ -76,49 +76,49 @@
         <member name="T:Loyc.Collections.IListSource`1">
             <summary>A read-only list indexed by an integer.</summary>
             <remarks>
-            The .NET collection classes have a very simple and coarse interface.
-            <para/>
             Member list:
             <code>
-            public T this[int index] { get; }
-            public T TryGet(int index, ref bool fail);
-            public Iterator&lt;T&gt; GetIterator();
-            public int Count { get; }
-            public IEnumerator&lt;T&gt; GetEnumerator();
+            public IEnumerator&lt;T&gt; GetEnumerator(); // inherited
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator();
+            public T this[int index] { get; }         // inherited
+            public int Count { get; }                 // inherited
+            public T TryGet(int index, out bool fail);
+            IRange&lt;T&gt; Slice(int start, int count = int.MaxValue);
             </code>
             The term "source" means a read-only collection, as opposed to a "sink" which
-            is a write-only collection. The purpose of IListSource is to make it easier
-            to implement a read-only list, by lifting IList's requirement to write 
-            implementations for Add(), Remove(), etc. A secondary purpose is, of course,
-            to guarantee users don't mistakenly call those methods on a read-only
-            collection.
+            is a write-only collection. The purpose of IListSource is to support slices,
+            eliminate the need to call <c>Count</c> before reading from the list, and to
+            make it easier to implement a read-only list, by lifting IList's requirement 
+            to write implementations for Add(), Remove(), etc. A secondary purpose is, 
+            of course, to guarantee users don't mistakenly call those methods on a 
+            read-only collection.
             <para/>
             I have often wanted to access the "next" or "previous" item in a list, e.g.
             during parsing, but it inconvenient if you have to worry about whether the 
             the current item is the first or last. In that case you must check whether
             the array index is valid, which is both inconvenient and wasteful, because
-            the list class will check the array index again, and then the .NET runtime
-            will check the index a third time when reading the internal array. To make
-            this more efficient, IListSource has a TryGet() method that does not throw
-            on failure, but returns default(T).
+            the list class itself will check the array index a second time, and then the 
+            .NET runtime will check the index a third time when reading the internal 
+            array. The <c>TryGet(index, defaultValue)</c> extension method can be used 
+            to return a default value if the index is not valid, using only one 
+            interface call.
             <para/>
-            As IListSource is supposed to be a simpler alternative to IList, I didn't
-            want to require implementers to implement more than two indexers. There are
-            two additional TryGet extension methods, though:
+            Design footnote: I would have preferred to define <c>TryGet</c> with one of 
+            these signatures:
             <code>
-                bool TryGet(int index, ref T value);
-                T TryGet(int, T defaultValue);
+                bool TryGet(int index, out T value);
+                T? TryGet(int index);
+                Maybe&lt;T&gt; TryGet(int index);
             </code>
-            If T is defined as "out" (covariant) in C# 4, these methods are not allowed 
-            in IListSource anyway and MUST be extension methods.
-            <para/>
-            Note that "value" is a "ref" rather than an "out" parameter, unlike
-            Microsoft's own TryGetValue() implementations. Using ref parameter allows
-            the caller to choose his own default value in case TryGet() returns false.
+            However, these signatures don't allow T to be covariant (<c>out T</c>). 
+            The first signature doesn't work because the .NET runtime doesn't distinguish
+            between <c>ref</c> and <c>out</c>, so T could not be covariant. The second
+            signature doesn't work if <c>T</c> is not a value type. The third signature
+            doesn't work because, as a struct, <c>Maybe&lt;T&gt;</c> is not allowed to be
+            covariant (even though the JIT could, theoretically, treat it covariantly).
             <para/>
             Using <see cref="T:Loyc.Collections.Impl.ListSourceBase`1"/> as your base class can help you
-            implement this interface faster.
+            implement this interface more quickly.
             </remarks>
         </member>
         <member name="M:Loyc.Collections.IListSource`1.TryGet(System.Int32,System.Boolean@)">
@@ -314,6 +314,12 @@
         <member name="M:Loyc.Collections.DictionaryExt.TryGetValue``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
             <inheritdoc cref="M:Loyc.Collections.DictionaryExt.TryGetValue``2(System.Collections.Generic.Dictionary{``0,``1},``0,``1)"/>
         </member>
+        <member name="M:Loyc.Collections.DictionaryExt.TryGetValue``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+            <summary>Same as IDictionary.TryGetValue() except that this method does 
+            not throw an exception when <c>key==null</c> (it simply returns NoValue),
+            and it returns the result as <see cref="T:Loyc.Maybe`1"/> instead of storing
+            the result in an "out" parameter.</summary>
+        </member>
         <member name="M:Loyc.Collections.DictionaryExt.TryGetValueSafe``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1@)">
             <summary>Same as IDictionary.TryGetValue() except that this method does 
             not throw an exception when <c>key==null</c> (it simply returns false).</summary>
@@ -344,7 +350,7 @@
         </member>
         <member name="M:Loyc.Collections.EnumerableExt.SelectFilter``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,Loyc.Maybe{``1}})">
             <summary>Combines 'Select' and 'Where' in a single operation.</summary>
-            <param name="filter">If this function returns <see cref="F:Loyc.Maybe`1.Null"/> 
+            <param name="filter">If this function returns <see cref="P:Loyc.Maybe`1.NoValue"/> 
             then the element is suppressed from the output; otherwise the 
             <see cref="P:Loyc.Maybe`1.Value"/> is sent to the output.</param>
             <returns>A sequence filtered and changed by <c>filter</c>.</returns>
@@ -469,6 +475,17 @@
         <member name="T:Loyc.Collections.UpCastListSource`2">
             <summary>Helper class for treating a collection of a derived type as a collection of a base type or interface.</summary>
             <see cref="M:Loyc.Collections.LCExt.UpCast``2(System.Collections.Generic.IReadOnlyCollection{``0})"/>
+        </member>
+        <member name="T:Loyc.Collections.LinqToCollections">
+            <summary>
+            Work in progress. This class will enhance LINQ-to-Objects with 
+            type-preserving and/or higher-performance extension methods.
+            </summary><remarks>
+            For example, the <see cref="!:Enumerable.Last(IEnumerable&lt;T&gt;)"/> extension 
+            method scans the entire list before returning the last item, while 
+            <see cref="!:Last(IReadOnlyList&lt;T&gt;)"/> and <see cref="!:Last(IList&lt;T&gt;)"/> simply
+            return the last item directly.
+            </remarks>
         </member>
         <member name="T:Loyc.Collections.ListExt">
             <summary>Extension methods and helper methods for <see cref="T:System.Collections.Generic.List`1"/>,
@@ -607,9 +624,6 @@
         <member name="M:Loyc.Collections.ListExt.Reverse``1(Loyc.Collections.IListAndListSource{``0})">
             <summary>Returns a reversed view of a list.</summary>
             <remarks>This was originally named <c>ReverseView</c>. Changed to <c>Reverse</c> to match Linq's <c>Reverse(IEnumerable)</c>.</remarks>
-        </member>
-        <member name="T:Loyc.Collections.ListExtTests">
-            <summary>Unit tests for <see cref="T:Loyc.Collections.ListExt"/>.</summary>
         </member>
         <member name="T:Loyc.Collections.ListSourceAsSparse`1">
             <summary>Adapter from <see cref="T:Loyc.Collections.IListSource`1"/> to <see cref="T:Loyc.Collections.ISparseListSource`1"/>.</summary>
@@ -1509,15 +1523,16 @@
             </remarks>
         </member>
         <member name="T:Loyc.UString">
-            <summary>UString is a wrapper around string that provides a range of 21-bit 
-            UCS-4 characters. "U" stands for "Unicode", as in UCS-4, as opposed to a 
-            normal string that is UTF-16.</summary>
+            <summary>UString is a slice of a string. It is a wrapper around string that 
+            provides a <see cref="T:Loyc.Collections.IBRange`1"/> of 21-bit UCS-4 characters. "U" stands for 
+            "Unicode", as in UCS-4, as opposed to a normal string that is UTF-16.</summary>
             <remarks>
-            .NET strings are converted implicitly to UString.
+            UString is a slice type: it represents either an entire string, or a region
+            of characters in a string. .NET strings are converted implicitly to UString.
             <para/>
             It has been suggested that Java and .NET's reliance on 16-bit "unicode" 
             characters was a mistake, because it turned out that 16 bits was not enough 
-            to represent all the world's characters. And I agree.
+            to represent all the world's characters.
             <para/>
             Instead it has been suggested that we should use <a href="http://www.utf8everywhere.org/">
             UTF-8 everywhere</a>. To scan UTF-8 data instead of UTF-16 while still 
@@ -1537,7 +1552,7 @@
             The difference between StringSlice and UString is that StringSlice is a
             random-access range of char, while UString is a bidirectional range of
             uchar (int). Since UString implements <see cref="T:Loyc.Collections.IListSource`1"/>,
-            it requires StringSlice in order to support the Slice method.
+            it requires <see cref="T:Loyc.Collections.StringSlice"/> in order to support the Slice method.
             <para/>
             UString has a <see cref="M:Loyc.UString.DecodeAt(System.Int32)"/> method that tries to decode
             a UTF character to UCS at a particular index.
@@ -1645,150 +1660,8 @@
             or a default value if the specified index was out of range.</summary>
         </member>
         <member name="P:Loyc.UString.Item(System.Int32,System.Int32)">
-            <summary>Returns the code unit (16-bit value) at the specified index,
+            <summary>Returns the code point (21-bit value) at the specified index,
             or a default value if the specified index was out of range.</summary>
-        </member>
-        <member name="T:Loyc.MiniTest.Assert">
-            <summary>
-            The Assert class contains a collection of static methods that mirror
-            the most common assertions used in NUnit.
-            </summary>
-            <remarks>
-            WORK IN PROGRESS. TEST RUNNER IS NOT FINISHED YET.
-            <para/>
-            This class is mostly a drop-in replacement for "old-style" NUnit tests, 
-            i.e. those that do not use constraint classes or the "Is" class.
-            <para/>
-            Some methods were dropped to keep this class small. Use the full NUnit 
-            framework if the remaining methods are not sufficient for you.
-            <ul>
-            <li>When the same assertion was known by multiple similar names (e.g. 
-            True and IsTrue), I kept only one of the names. However, I did keep 
-            That(), Expect() and IsTrue() even though they all do the same thing.</li>
-            <li>Some less-common overloads that take a format string and arguments 
-            were dropped.</li>
-            <li>Some overloads were dropped when the compiler can automatically
-            select a different overload instead. In particular, most overloads that 
-            take a message string (without arguments) were dropped. Code that relied
-            on those overloads will still compile, because the compiler will 
-            construct an empty argument list and call the overload that takes a
-            variable argument list.</li>
-            </ul>
-            </remarks>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.#ctor">
-            <summary>
-            You may find it useful to derive a test fixture from Assert so that 
-            you do not need to prefix every test with "Assert."
-            </summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Fail(System.String,System.Object[])">
-            <summary>Fails a test via StopTestHandler, which, by default, 
-            throws an AssertionException.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Fail(System.String)">
-            <summary>Fails a test by invoking <see cref="F:Loyc.MiniTest.Assert.StopTestHandler"/>.Value(), 
-            which, by default, throws an AssertionException.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Ignore(System.String,System.Object[])">
-            <summary>Stops a test via StopTestHandler, which, by default, throws
-            an IgnoreException. This causes the test to be reported as ignored.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Inconclusive(System.String,System.Object[])">
-            <summary>Stops a test via StopTestHandler, which, by default, throws 
-            an InconclusiveException. This causes the test to be reported as 
-            inconclusive.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Success(System.String,System.Object[])">
-            <summary>Stops a test via StopTestHandler, which, by default, 
-            throws a SuccessException.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Fail">
-            <summary>Short for Fail("").</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Ignore">
-            <summary>Short for Ignore("").</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Inconclusive">
-            <summary>Short for Inconclusive("").</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Success">
-            <summary>Short for Success("").</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Equals(System.Object,System.Object)">
-            <summary>
-            Equals() is inherited from object; you probably want to call AreEqual instead.
-            </summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.ReferenceEquals(System.Object,System.Object)">
-            <summary>
-            Verifies that two references are equal.
-            </summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean,System.String,System.Object[])">
-            <summary>Calls Fail(message, args) if condition is false.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean,System.String)">
-            <summary>Calls Fail(message) if condition is false.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean)">
-            <summary>Calls Fail() if condition is false.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Expect(System.Boolean)">
-            <summary>Calls Fail() if condition is false.</summary>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Throws(System.Type,System.Action,System.String,System.Object[])">
-            <summary>
-            Verifies that a delegate throws a particular exception when called.
-            </summary>
-            <param name="expectedExceptionType">The exception Type expected</param>
-            <param name="code">A method to run</param>
-            <param name="message">The message that will be displayed on failure</param>
-            <param name="args">Arguments to be used in formatting the message</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Catch(System.Action,System.String,System.Object[])">
-            <summary>
-            Verifies that a delegate throws an exception when called and returns it.
-            </summary>
-            <param name="code">A method to run</param>
-            <param name="message">The message that will be displayed on failure</param>
-            <param name="args">Arguments to be used in formatting the message</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Catch(System.Action)">
-            <summary>
-            Verifies that a delegate throws an exception when called
-            and returns it.
-            </summary>
-            <param name="code">A TestDelegate</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.DoesNotThrow(System.Action,System.String,System.Object[])">
-            <summary>
-            Verifies that a delegate does not throw an exception
-            </summary>
-            <param name="code">Code to run</param>
-            <param name="message">The message that will be displayed on failure</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.DoesNotThrow(System.Action)">
-            <summary>
-            Verifies that a delegate does not throw an exception.
-            </summary>
-            <param name="code">Code to run</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Contains(System.Object,System.Collections.IEnumerable,System.String,System.Object[])">
-            <summary>
-            Asserts that an object is contained in a list.
-            </summary>
-            <param name="expected">The expected object</param>
-            <param name="actual">The list to be examined</param>
-            <param name="message">The message to display in case of failure</param>
-            <param name="args">Array of objects to be used in formatting the message</param>
-        </member>
-        <member name="M:Loyc.MiniTest.Assert.Contains(System.Object,System.Collections.IEnumerable)">
-            <summary>
-            Asserts that an object is contained in a list.
-            </summary>
-            <param name="expected">The expected object</param>
-            <param name="actual">The list to be examined</param>
         </member>
         <member name="T:Loyc.Collections.ValueCollection`2">
             <summary>Adapter: this is a read-only collection of Values read from a 
@@ -2128,6 +2001,11 @@
             <param name="index">The index to access. Valid indexes are between 0 and Count-1.</param>
             <param name="defaultValue">A value to return if the index is not valid.</param>
             <returns>The retrieved value, or defaultValue if the index provided was not valid.</returns>
+        </member>
+        <member name="M:Loyc.Collections.LCInterfaces.TryGet``1(Loyc.Collections.IListSource{``0},System.Int32)">
+            <summary>Tries to get a value from the list at the specified index.</summary>
+            <param name="index">The index to access. Valid indexes are between 0 and Count-1.</param>
+            <returns>The retrieved value wrapped in <see cref="T:Loyc.Maybe`1"/>, if any.</returns>
         </member>
         <member name="M:Loyc.Collections.LCInterfaces.HasIndex``1(Loyc.Collections.IListSource{``0},System.Int32)">
             <summary>Uses list.TryGet(index) to find out if the specified index is valid.</summary>
@@ -2820,6 +2698,148 @@
         <member name="F:Loyc.G.ParseFlag.AllowCommaDecimalPoint">
             <summary>Whether to treat comma as a decimal point when parsing a float. 
             The dot '.' is always treated as a decimal point.</summary>
+        </member>
+        <member name="T:Loyc.MiniTest.Assert">
+            <summary>
+            The Assert class contains a collection of static methods that mirror
+            the most common assertions used in NUnit.
+            </summary>
+            <remarks>
+            WORK IN PROGRESS. TEST RUNNER IS NOT FINISHED YET.
+            <para/>
+            This class is mostly a drop-in replacement for "old-style" NUnit tests, 
+            i.e. those that do not use constraint classes or the "Is" class.
+            <para/>
+            Some methods were dropped to keep this class small. Use the full NUnit 
+            framework if the remaining methods are not sufficient for you.
+            <ul>
+            <li>When the same assertion was known by multiple similar names (e.g. 
+            True and IsTrue), I kept only one of the names. However, I did keep 
+            That(), Expect() and IsTrue() even though they all do the same thing.</li>
+            <li>Some less-common overloads that take a format string and arguments 
+            were dropped.</li>
+            <li>Some overloads were dropped when the compiler can automatically
+            select a different overload instead. In particular, most overloads that 
+            take a message string (without arguments) were dropped. Code that relied
+            on those overloads will still compile, because the compiler will 
+            construct an empty argument list and call the overload that takes a
+            variable argument list.</li>
+            </ul>
+            </remarks>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.#ctor">
+            <summary>
+            You may find it useful to derive a test fixture from Assert so that 
+            you do not need to prefix every test with "Assert."
+            </summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Fail(System.String,System.Object[])">
+            <summary>Fails a test via StopTestHandler, which, by default, 
+            throws an AssertionException.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Fail(System.String)">
+            <summary>Fails a test by invoking <see cref="F:Loyc.MiniTest.Assert.StopTestHandler"/>.Value(), 
+            which, by default, throws an AssertionException.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Ignore(System.String,System.Object[])">
+            <summary>Stops a test via StopTestHandler, which, by default, throws
+            an IgnoreException. This causes the test to be reported as ignored.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Inconclusive(System.String,System.Object[])">
+            <summary>Stops a test via StopTestHandler, which, by default, throws 
+            an InconclusiveException. This causes the test to be reported as 
+            inconclusive.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Success(System.String,System.Object[])">
+            <summary>Stops a test via StopTestHandler, which, by default, 
+            throws a SuccessException.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Fail">
+            <summary>Short for Fail("").</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Ignore">
+            <summary>Short for Ignore("").</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Inconclusive">
+            <summary>Short for Inconclusive("").</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Success">
+            <summary>Short for Success("").</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Equals(System.Object,System.Object)">
+            <summary>
+            Equals() is inherited from object; you probably want to call AreEqual instead.
+            </summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.ReferenceEquals(System.Object,System.Object)">
+            <summary>
+            Verifies that two references are equal.
+            </summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean,System.String,System.Object[])">
+            <summary>Calls Fail(message, args) if condition is false.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean,System.String)">
+            <summary>Calls Fail(message) if condition is false.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.That(System.Boolean)">
+            <summary>Calls Fail() if condition is false.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Expect(System.Boolean)">
+            <summary>Calls Fail() if condition is false.</summary>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Throws(System.Type,System.Action,System.String,System.Object[])">
+            <summary>
+            Verifies that a delegate throws a particular exception when called.
+            </summary>
+            <param name="expectedExceptionType">The exception Type expected</param>
+            <param name="code">A method to run</param>
+            <param name="message">The message that will be displayed on failure</param>
+            <param name="args">Arguments to be used in formatting the message</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Catch(System.Action,System.String,System.Object[])">
+            <summary>
+            Verifies that a delegate throws an exception when called and returns it.
+            </summary>
+            <param name="code">A method to run</param>
+            <param name="message">The message that will be displayed on failure</param>
+            <param name="args">Arguments to be used in formatting the message</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Catch(System.Action)">
+            <summary>
+            Verifies that a delegate throws an exception when called
+            and returns it.
+            </summary>
+            <param name="code">A TestDelegate</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.DoesNotThrow(System.Action,System.String,System.Object[])">
+            <summary>
+            Verifies that a delegate does not throw an exception
+            </summary>
+            <param name="code">Code to run</param>
+            <param name="message">The message that will be displayed on failure</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.DoesNotThrow(System.Action)">
+            <summary>
+            Verifies that a delegate does not throw an exception.
+            </summary>
+            <param name="code">Code to run</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Contains(System.Object,System.Collections.IEnumerable,System.String,System.Object[])">
+            <summary>
+            Asserts that an object is contained in a list.
+            </summary>
+            <param name="expected">The expected object</param>
+            <param name="actual">The list to be examined</param>
+            <param name="message">The message to display in case of failure</param>
+            <param name="args">Array of objects to be used in formatting the message</param>
+        </member>
+        <member name="M:Loyc.MiniTest.Assert.Contains(System.Object,System.Collections.IEnumerable)">
+            <summary>
+            Asserts that an object is contained in a list.
+            </summary>
+            <param name="expected">The expected object</param>
+            <param name="actual">The list to be examined</param>
         </member>
         <member name="T:Loyc.Geometry.BoundingBox`1">
             <summary>Holds a mutable 2D bounding rectangle.</summary>
@@ -4402,8 +4422,8 @@
             converts the object to a string.</summary>
             <param name="context">A value whose string representation you want to get.</param>
             <returns>
-            If <c>context</c> implements <see cref="T:Loyc.ILocationString"/>,
-            this function returns <see cref="P:Loyc.ILocationString.LocationString"/>; 
+            If <c>context</c> implements <see cref="T:Loyc.IHasLocation"/>,
+            this function returns <see cref="P:Loyc.IHasLocation.Location"/>; 
             if <c>context</c> is null, this method returns <c>null</c>; otherwise 
             it returns <c>context.ToString()</c>.
             </returns>
@@ -4419,9 +4439,13 @@
             <para/>
             Therefore, message sinks that display a message in text form will call
             this method to convert the context object to a string, and if available,
-            this method calls the <see cref="P:Loyc.ILocationString.LocationString"/>
+            this method calls the <see cref="P:Loyc.IHasLocation.Location"/>
             property of the context object.
             </remarks>
+        </member>
+        <member name="M:Loyc.MessageSink.LocationOf(System.Object)">
+            <summary>Returns context.Location if context implements 
+            <see cref="T:Loyc.IHasLocation"/>; otherwise, returns context itself.</summary>
         </member>
         <member name="F:Loyc.MessageSink.Trace">
             <summary>Sends all messages to <see cref="M:System.Diagnostics.Trace.WriteLine(System.String)"/>.</summary>
@@ -4438,7 +4462,7 @@
         <member name="T:Loyc.MessageSink.PushedCurrent">
             <summary>Returned by <see cref="M:Loyc.MessageSink.PushCurrent(Loyc.IMessageSink)"/>.</summary>
         </member>
-        <member name="T:Loyc.ILocationString">
+        <member name="T:Loyc.IHasLocation">
             <summary>This interface allows an object to declare its "location". It is
             used by <see cref="M:Loyc.MessageSink.LocationString(System.Object)"/>, which helps convert
             the "context" of a message into a string.</summary>
@@ -4464,17 +4488,27 @@
             <param name="args">Optional arguments to fill in placeholders in the format 
             string.</param>
         </member>
+        <member name="T:Loyc.LogException">
+            <summary>An exception that includes a "context" object as part of a
+            <see cref="T:Loyc.LogMessage"/> structure, typically used to indicate where an 
+            error occurred.</summary>
+        </member>
+        <member name="P:Loyc.LogException.Msg">
+            <summary>Contains additional information about the error that occurred.</summary>
+        </member>
         <member name="T:Loyc.Localize">
             <summary>
             Localize is a global hook into which a string-mapping localizer can be
             installed. It is designed to make internationalization exceptionally easy
             for developers. TODO: expand I18N features based on Mozilla's L20N.
             </summary><remarks>
-            All Loyc code should call this hook in order to localize text. Use it like
+            All Loyc code should call this hook in order to localize text (although
+            as of June 2015, no one has made any translation tables). Use it like
             this:
             <code>
             string result = Localize.From("Hello, {0}", userName);
-            </code>. If you use this facility frequently in a given class, you may want
+            </code>
+            If you use this facility frequently in a given class, you may want
             to shorten your typing using a static variable:
             <code>
             protected static readonly FormatterDelegate L = Localize.From;
@@ -4484,13 +4518,13 @@
             return a translation. If no translation to the end user's language is
             available, an appropriate default translation should be returned: either the
             original text, or a translation to some default language, e.g. English.
-            <p/>
+            <para/>
             Alternately, assuming you have the ability to change the table of
             translations, you can use a Symbol in your code and call the other overload
             of From() to look up the text that should be shown to the end user:
             <code>
-            string result = Localize.From(GSymbol.Get("MY_STRING"));
-            string result = Localize.From(:MY_STRING); // Loyc syntax
+            string result = Localize.From((Symbol)"MY_STRING"));
+            string result = Localize.From(@@MY_STRING); // EC# syntax
             </code>
             This is most useful for long strings or paragraphs of text, but I expect
             that some projects, as a policy, will use symbols for all localizable text.
@@ -4631,7 +4665,7 @@
             parameter as the format string.
             </summary>
         </member>
-        <member name="M:Loyc.Maybe.Just``1(``0)">
+        <member name="M:Loyc.Maybe.Value``1(``0)">
             <summary>Returns <c>new Maybe&lt;T>(value)</c>. (exists for type inference)</summary>
         </member>
         <member name="T:Loyc.Maybe`1">
@@ -4639,10 +4673,23 @@
             normal type, i.e. (1) T is allowed to be a reference type and (2) you can
             nest them, as in <c>Maybe{Maybe{int}}</c>.</summary>
             <remarks>The name of this type comes from some functional programming 
-            languages which define a type such as <c>data Maybe t = Null | Just t</c>.
+            languages which define a type such as <c>data Maybe t = Nothing | Just t</c>.
             <para/>
-            There is an implicit conversion from T that returns <c>new Maybe{T}(value)</c>.
+            There is an implicit conversion from T that returns <c>new Maybe{T}(value)</c>,
+            and from <see cref="!:NoValue.Value"/> that returns <see cref="P:Loyc.Maybe`1.NoValue"/>.
+            Since C# doesn't allow us to define conversions to/from <c>T?</c>, these
+            conversions can be accomplished with the extension methods <see cref="M:Loyc.Maybe.AsNullable``1(Loyc.Maybe{``0})"/>
+            and <see cref="M:Loyc.Maybe.AsMaybe``1(System.Nullable{``0})"/>.
+            <para/>
+            The <see cref="M:Loyc.Maybe`1.Or(`0)"/> method replicates the C# <c>??</c> operator.
             </remarks>
+        </member>
+        <member name="T:Loyc.IHasValue`1">
+            <summary>Interface for things that have a Value property.</summary>
+        </member>
+        <member name="M:Loyc.Maybe`1.Or(`0)">
+            <summary>Converts <see cref="T:Loyc.Maybe`1"/> to T, returning a default value if <see cref="P:Loyc.Maybe`1.HasValue"/> is false.</summary>
+            <remarks>This is equivalent to the <c>??</c> operator of <c>T?</c>.</remarks>
         </member>
         <member name="T:Loyc.MemoizedTypeName">
             <summary>.NET Framework reflection doesn't offer complete type names for 
@@ -4697,14 +4744,15 @@
         <member name="M:Loyc.TraceMessageSink.IsEnabled(Loyc.Severity)">
             <summary>Always returns true.</summary>
         </member>
+        <member name="T:Loyc.LogMessage">
+            <summary>Holds an argument list compatible with <see cref="M:Loyc.IMessageSink.Write(Loyc.Severity,System.Object,System.String)"/>.
+            Typically used with <see cref="T:Loyc.MessageHolder"/>.</summary>
+        </member>
         <member name="T:Loyc.MessageHolder">
-            <summary>A message sink that stores all messages it receives.</summary>
+            <summary>A message sink that puts the messages it receives in a list.</summary>
         </member>
         <member name="M:Loyc.MessageHolder.IsEnabled(Loyc.Severity)">
             <summary>Always returns true.</summary>
-        </member>
-        <member name="T:Loyc.MessageHolder.Message">
-            <summary>Holds an argument list of <see cref="M:Loyc.IMessageSink.Write(Loyc.Severity,System.Object,System.String)"/>.</summary>
         </member>
         <member name="T:Loyc.MessageFilter">
             <summary>A decorator that uses a delegate to accept or ignore messages.</summary>
@@ -4926,14 +4974,14 @@
         </member>
         <member name="T:Loyc.Holder`1">
             <summary>A trivial class that holds a single value of type T in the 
-            <see cref="P:Loyc.Holder`1.Value"/> property.
+            <see cref="F:Loyc.Holder`1.Value"/> property.
             </summary><remarks>
             This class is useful mainly as an alternative to standard boxing. When you 
             box a structure in C#, you lose access to the members of that structure.
             This class, in contrast, provides access to the "boxed" value.
             </remarks>
         </member>
-        <member name="P:Loyc.Holder`1.Value">
+        <member name="F:Loyc.Holder`1.Value">
             <summary>Any value of type T.</summary>
         </member>
         <member name="T:Loyc.Threading.PushedTLV`1">
@@ -5635,6 +5683,8 @@
             For example, this is used by the the <see cref="!:Loyc.Syntax.LNode.Value"/>
             class, in which <c>NoValue</c> has a different meaning than both 
             <c>null</c> and <c>void</c>.
+            <para/>
+            Also, this value converts implicitly to <see cref="P:Loyc.Maybe`1.NoValue"/>.
             </remarks>
         </member>
     </members>

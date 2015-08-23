@@ -92,15 +92,14 @@
             </remarks>
         </member>
         <member name="T:Ecs.Parser.EcsLexer">
-            <summary>Lexer for EC# source code (see <see cref="T:Loyc.Syntax.Lexing.ILexer"/>).</summary>
-            <seealso cref="!:WhitespaceFilter"/>
+            <summary>Lexer for EC# source code (see <see cref="T:Loyc.Syntax.Lexing.ILexer`1"/>).</summary>
             <seealso cref="T:Loyc.Syntax.Lexing.TokensToTree"/>
         </member>
         <member name="T:Ecs.Parser.EcsParser">
             <summary>Parses Enhanced C# code into a sequence of Loyc trees 
             (<see cref="T:Loyc.Syntax.LNode"/>), one per top-level statement.</summary>
             <remarks>
-            You can use <see cref="F:Ecs.Parser.EcsLanguageService.Value"/> with <see cref="M:Loyc.Syntax.ParsingService.Parse(Loyc.Syntax.IParsingService,System.String,Loyc.IMessageSink,Loyc.Symbol)"/>
+            You can use <see cref="F:Ecs.Parser.EcsLanguageService.Value"/> with <see cref="M:Loyc.Syntax.ParsingService.Parse(Loyc.Syntax.IParsingService,Loyc.UString,Loyc.IMessageSink,Loyc.Symbol)"/>
             to easily parse a text string (holding zero or more EC# statements) into a 
             Loyc tree. One does not normally use this class directly.
             </remarks>
@@ -153,7 +152,7 @@
             <summary>Converts <c>t.TypeInt</c> to <see cref="T:Ecs.Parser.TokenType"/>.</summary>
         </member>
         <member name="M:Ecs.Parser.TokenExt.ToString(Loyc.Syntax.Lexing.Token)">
-            <summary>Expresses an LES token as a string.</summary>
+            <summary>Expresses an EC# token as a string.</summary>
             <remarks>Note that some Tokens do not contain enough information to
             reconstruct a useful token string, e.g. comment tokens do not store the 
             comment but merely contain the location of the comment in the source code.
@@ -236,7 +235,7 @@
             e.g. for input like <c>Foo."Hello"</c>.</remarks>
         </member>
         <member name="M:Ecs.EcsNodePrinter.SetPlainCSharpMode">
-            <summary>Sets <see cref="P:Ecs.EcsNodePrinter.AllowChangeParenthesis"/>, <see cref="P:Ecs.EcsNodePrinter.PreferOldStyleCasts"/> 
+            <summary>Sets <see cref="P:Ecs.EcsNodePrinter.AllowChangeParenthesis"/>, <see cref="P:Ecs.EcsNodePrinter.PreferPlainCSharp"/> 
             and <see cref="P:Ecs.EcsNodePrinter.DropNonDeclarationAttributes"/> to true.</summary>
             <returns>this.</returns>
         </member>
@@ -246,11 +245,25 @@
             most one #in or #out attribute, and at most one #where attribute with
             an argument list consisting of complex identifiers.</remarks>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Ecs.EcsNodePrinter.SanitizeIdentifier(System.String)" -->
+        <member name="M:Ecs.EcsNodePrinter.SanitizeIdentifier(System.String)">
+            <summary>Eliminates punctuation and special characters from a string so
+            that the string can be used as a plain C# identifier, e.g. 
+            "I'd" => "I_aposd", "123" => "_123", "+5" => "_plus5".</summary>
+            <remarks>The empty string "" becomes "__", ASCII punctuation becomes 
+            "_xyz" where xyz is an HTML entity name, e.g. '!' becomes "_excl",
+            and all other characters become "Xxx" where xx is the hexadecimal 
+            representation of the code point. Designed for the Unicode BMP only.</remarks>
+        </member>
         <member name="P:Ecs.EcsNodePrinter.Errors">
             <summary>Any error that occurs during printing is printed to this object.</summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ecs.EcsNodePrinter.MixImmiscibleOperators" -->
+        <member name="P:Ecs.EcsNodePrinter.MixImmiscibleOperators">
+            <summary>Allows operators to be mixed that will cause the parser to 
+            produce a warning. An example is <c>x &amp; @==(y, z)</c>: if you enable 
+            this option, it will be printed as <c>x &amp; y == z</c>, which the parser
+            will complain about because mixing those operators is deprecated.
+            </summary>
+        </member>
         <member name="P:Ecs.EcsNodePrinter.AllowChangeParenthesis">
             <summary>Permits extra parenthesis to express precedence, instead of
             resorting to prefix notation (defaults to true). Also permits removal
@@ -274,10 +287,6 @@
             problem can be resolved either by adding braces around <c>if (c2) x++;</c>,
             or by printing <c>#if(c2, x++)</c> in prefix notation.
             </remarks>
-        </member>
-        <member name="P:Ecs.EcsNodePrinter.PreferOldStyleCasts">
-            <summary>Prefers plain C# syntax for cast operators even when the 
-            syntax tree requests the new cast style, e.g. x(->int) becomes (int) x.</summary>
         </member>
         <member name="P:Ecs.EcsNodePrinter.DropNonDeclarationAttributes">
             <summary>Suppresses printing of all attributes that are not on 
@@ -315,12 +324,17 @@
         </member>
         <member name="P:Ecs.EcsNodePrinter.AllowConstructorAmbiguity">
             <summary>Causes the ambiguity between constructors and method calls to
-            be ignored; see <see cref="!:EcsNodePrinterTests.ConstructorAmbiguities()"/>.</summary>
+            be ignored; see <see cref="M:Ecs.EcsPrinterAndParserTests.ConstructorAmbiguities"/>.</summary>
         </member>
         <member name="P:Ecs.EcsNodePrinter.AvoidMacroSyntax">
             <summary>Prints statements like "foo (...) bar()" in the equivalent form
             "foo (..., bar())" instead. Does not affect foo {...} because property
             and event definitions require this syntax (get {...}, set {...}).</summary>
+        </member>
+        <member name="P:Ecs.EcsNodePrinter.PreferPlainCSharp">
+            <summary>Prefers plain C# syntax for certain other things (not covered
+            by the other options), even when the syntax tree requests a different 
+            style, e.g. EC# cast operators are blocked so x(->int) becomes (int) x.</summary>
         </member>
         <member name="P:Ecs.EcsNodePrinter.SpaceOptions">
             <summary>Controls the locations where spaces should be emitted.</summary>
@@ -339,7 +353,12 @@
             "(x + y, int z)" and then down to "int y" and "x + y", but it 
             doesn't propagate down to "x", "y" and "int".</summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:Ecs.EcsNodePrinter.Ambiguity.CastRhs" -->
+        <member name="F:Ecs.EcsNodePrinter.Ambiguity.CastRhs">
+            <summary>The expression is the right side of a traditional cast, so 
+            the printer must avoid ambiguity in case of the following prefix 
+            operators: <c>(Foo)&amp;x, (Foo)*x, (Foo)++(x), (Foo)--(x)</c> 
+            (the (Foo)++(x) case is parsed as a post-increment and a call).</summary>
+        </member>
         <member name="F:Ecs.EcsNodePrinter.Ambiguity.IsCallTarget">
             <summary>The expression is in a location where, if it is parenthesized
             and has the syntax of a data type inside, it will be treated as a cast.
@@ -386,9 +405,6 @@
         </member>
         <member name="F:Ecs.EcsNodePrinter.Ambiguity.ElseClause">
             <summary>After 'else', valid 'if' statements are not indented.</summary>
-        </member>
-        <member name="F:Ecs.EcsNodePrinter.Ambiguity.RecursivePrefixNotation">
-            <summary>Use prefix notation recursively.</summary>
         </member>
         <member name="F:Ecs.EcsNodePrinter.Ambiguity.AllowThisAsCallTarget">
             <summary>Print #this(...) as this(...) inside a method</summary>

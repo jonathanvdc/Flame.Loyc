@@ -198,7 +198,7 @@ namespace fecs
 
         public static IEnumerable<LNode> ParseNodes(string Text, string Identifier, IParsingService Service, MacroProcessor Processor, IMessageSink Sink)
         {
-            ILexer lexer = Service.Tokenize(new UString(Text), Identifier, Sink);
+            var lexer = Service.Tokenize(new UString(Text), Identifier, Sink);
 
             var nodes = Service.Parse(lexer, Sink);
 

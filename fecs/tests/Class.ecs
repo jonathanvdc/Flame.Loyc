@@ -12,7 +12,7 @@ namespace Test
 
         public double LengthSquared
         {
-            get { return X * X + Y * Y; }
+            get { X * X + Y * Y }
         }
 
         public double Length

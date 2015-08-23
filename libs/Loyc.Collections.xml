@@ -79,9 +79,9 @@
             It's also a good choice when you're just too busy to think about 
             performance, such as in a scripting environment.
             <para/>
-            Plus, you can subscribe to the <see cref="!:ListChanging"/> event to
-            find out when the list changes. AList's observability is more lightweight 
-            than that of <see cref="!:ObservableCollection&lt;T&gt;"/>.
+            Plus, you can subscribe to the <see cref="E:Loyc.Collections.AListBase`2.ListChanging"/> 
+            event to find out when the list changes. AList's observability is more 
+            lightweight than that of ObservableCollection{T}.
             <para/>
             Although single insertions, deletions, and random access require O(log N)
             time, you can get better performance using any overload of 
@@ -144,7 +144,7 @@
             main difference between them is that BList is sorted and AList is not. 
             <see cref="T:Loyc.Collections.DList`1"/>, meanwhile, is a simpler data structure with a 
             faster indexer and lower memory requirements. In fact, the leaf nodes
-            of this class are built upon <see cref="!:DListInternal&lt;T&gt;"/>.
+            of this class are built upon <see cref="T:Loyc.Collections.Impl.InternalDList`1"/>.
             <para/>
             Classes derived from AListBase typically have the following abilities:
             <ul>
@@ -165,11 +165,10 @@
             of persistence that A-lists support.</li>
             <li>Changes can be observed through the <see cref="E:Loyc.Collections.AListBase`2.ListChanging"/> event.
             The performance penalty for this feature is lower than for the standard
-            <see cref="!:ObservableCollection&lt;T&gt;"/> class.</li>
-            <li>Changes to the tree structure can be observed through the object 
-            returned by <see cref="!:MakeObserver"/>(). The performance penalty for this 
-            feature is significant, but can be largely avoided by not calling 
-            MakeObserver().</li>
+            ObservableCollection{T} class.</li>
+            <li>Changes to the tree structure can be observed by writing a class that
+            implements <see cref="T:Loyc.Collections.Impl.IAListTreeObserver`2"/> and calling 
+            <see cref="M:Loyc.Collections.AListBase`2.AddObserver(Loyc.Collections.Impl.IAListTreeObserver{`0,`1})"/>.</li>
             <li>A section of the list can be cloned in O(log N) time, although there is 
             no time savings when extracting a small section.</li>
             <li>Removing a contiguous group of items takes O(log N + M) time, where M is
@@ -281,7 +280,7 @@
         </member>
         <member name="M:Loyc.Collections.AListBase`2.#ctor(Loyc.Collections.AListBase{`0,`1},System.Boolean)">
             <summary>Cloning constructor. Does not duplicate the observer 
-            (<see cref="!:IAListTreeObserver&lt;T&gt;"/>), if any, because it may not be 
+            (<see cref="T:Loyc.Collections.Impl.IAListTreeObserver`2"/>), if any, because it may not be 
             cloneable.</summary>
             <param name="items">Original list</param>
             <param name="keepListChangingHandlers">Whether to duplicate the 
@@ -536,19 +535,19 @@
         </member>
         <member name="M:Loyc.Collections.Impl.IAListTreeObserver`2.ItemAdded(`1,Loyc.Collections.Impl.AListLeaf{`0,`1})">
             <summary>Called when an item is added to a leaf node.</summary>
-            <param name="isMoving">true if the item is being transferred from another node.</param>
+            <remarks>Note: this may be called as part of a move operation (remove+add)</remarks>
         </member>
         <member name="M:Loyc.Collections.Impl.IAListTreeObserver`2.ItemRemoved(`1,Loyc.Collections.Impl.AListLeaf{`0,`1})">
             <summary>Called when an item is removed from a leaf node.</summary>
-            <param name="isMoving">true if the item is being transferred to another node.</param>
+            <remarks>Note: this may be called as part of a move operation (remove+add)</remarks>
         </member>
         <member name="M:Loyc.Collections.Impl.IAListTreeObserver`2.NodeAdded(Loyc.Collections.Impl.AListNode{`0,`1},Loyc.Collections.Impl.AListInnerBase{`0,`1})">
             <summary>Called when a child node is added to an inner node.</summary>
-            <param name="isMoving">true if the node is being transferred from another inner node.</param>
+            <remarks>Note: this may be called as part of a move operation (remove+add)</remarks>
         </member>
         <member name="M:Loyc.Collections.Impl.IAListTreeObserver`2.NodeRemoved(Loyc.Collections.Impl.AListNode{`0,`1},Loyc.Collections.Impl.AListInnerBase{`0,`1})">
             <summary>Called when a child node is removed from an inner node.</summary>
-            <param name="isMoving">true if the node is being transferred to another inner node.</param>
+            <remarks>Note: this may be called as part of a move operation (remove+add)</remarks>
         </member>
         <member name="M:Loyc.Collections.Impl.IAListTreeObserver`2.RemoveAll(Loyc.Collections.Impl.AListNode{`0,`1})">
             <summary>Called when all children are being removed from a node (leaf 
@@ -1254,9 +1253,9 @@
             Comparison(T) delegate to perform comparisons.
             <para/>
             This class offers the following additional features beyond what's offered 
-            by <see cref="!:SortedDictionary&lt;T&gt;"/>: indexed access, a find-nearest-key
-            operation called <see cref="M:Loyc.Collections.BDictionary`2.FindLowerBound(`0)"/> (similar to lower_bound in 
-            C++), observability, fast cloning, freezability, fast cloning of an 
+            by the standard SortedDictionary{T} class: indexed access, a find-nearest-
+            key operation called <see cref="M:Loyc.Collections.BDictionary`2.FindLowerBound(`0)"/> (similar to lower_bound 
+            in C++), observability, fast cloning, freezability, fast cloning of an 
             arbitrary range of items in a large collection, enumeration of part
             of the list (not just the entire list), and reverse enumeration, and a 
             few compound operations.
@@ -1421,7 +1420,7 @@
             IndexOf, this[]) plus and O(1) fast cloning and O(1)-per-element enumeration.</li>
             <li>Changes can be observed through the <see cref="E:Loyc.Collections.AListBase`2.ListChanging"/> event.
             The performance penalty for this feature is lower than for the standard
-            <see cref="!:ObservableCollection&lt;T&gt;"/> class.</li>
+            ObservableCollection{T} class.</li>
             <li>Changes to the tree structure can be observed too (see <see cref="T:Loyc.Collections.Impl.IAListTreeObserver`2"/>).</li>
             <li>The list can be frozen with <see cref="M:Loyc.Collections.AListBase`2.Freeze"/>, making it read-only.</li>
             <li><see cref="M:Loyc.Collections.BList`1.FindLowerBound(`0)"/> and <see cref="M:Loyc.Collections.BList`1.FindUpperBound(`0)"/> operations
@@ -1557,7 +1556,7 @@
             <param name="keepListChangingHandlers">If true, ListChanging handlers
             will be copied from the existing list of items to the new list. Note: 
             if it exists, the NodeObserver is never copied. 
-            <see cref="!:NodeObserver"/> will be null in the new list.</param>
+            <see cref="P:Loyc.Collections.AListBase`2.ObserverCount"/> will be zero in the new list.</param>
             <remarks>
             Cloning is performed in O(1) time by marking the tree root as frozen 
             and sharing it between the two lists. However, the new list itself will 
@@ -1812,7 +1811,7 @@
             Contains(item) and Remove(item).
             </summary>
             <remarks>
-            The <see cref="M:Loyc.Collections.IndexedAList`1.IndexOf(`0)"/>, <see cref="!:AList&lt;T&gt;.Remove"/> and <see cref="!:AList&lt;T&gt;.Contains"/>
+            The <see cref="M:Loyc.Collections.IndexedAList`1.IndexOf(`0)"/>, <see cref="M:Loyc.Collections.AListBase`1.Remove(`0)"/> and <see cref="M:Loyc.Collections.AListBase`1.Contains(`0)"/>
             methods are accelerated by the indexer, but please note that the indexer
             is expensive in terms of memory usage and CPU time. In total, once the 
             index has been built, IndexedAList typically uses about three times as
@@ -2404,7 +2403,7 @@
             <c>map.Inverse.Inverse == map</c>.
             <para/>
             This collection itself is not safe for multithreaded access, even if it is 
-            constructed out of two <see cref="!:ConcurrentDictionary&lt;K,V&gt;"/> objects.
+            constructed out of two ConcurrentDictionary{K,V} objects.
             </remarks>
         </member>
         <member name="M:Loyc.Collections.Bijection`2.#ctor">
@@ -2529,8 +2528,8 @@
             the exception; it will be thrown directly into whatever foreach loop (or
             other code) that is enumerating the sequence.
             <para/>
-            This class solves the same problem as <see cref="!:NestedEnumerator&lt;F,T&gt;"/> in
-            a way that is very easy to use. You should use <see cref="!:NestedEnumerator&lt;F,T&gt;"/>
+            This class solves the same problem as <see cref="T:Loyc.Collections.NestedEnumerator`2"/> in
+            a way that is very easy to use. You should use <see cref="T:Loyc.Collections.NestedEnumerator`2"/>
             instead if you need the highest possible performance.
             </remarks>
             <typeparam name="T">Type of item being enumerated.</typeparam>
@@ -2754,6 +2753,9 @@
             TODO: try supporting hashtables with non-power-of-2 sizes for possible speedup.
             </remarks>
         </member>
+        <member name="T:Loyc.Collections.Impl.TestHelpers">
+            <summary>Helpers methods for unit tests for Loyc collection classes.</summary>
+        </member>
         <member name="T:Loyc.Collections.Impl.InternalSet`1">
             <summary>A hash-trie data structure for use inside other data structures.</summary>
             <remarks>
@@ -2889,7 +2891,7 @@
             T values that have an immutable "key" part and a mutable "value" part.
             Call <see cref="M:Loyc.Collections.Impl.InternalSet`1.Find(`0@,System.Collections.Generic.IEqualityComparer{`0})"/> to retrieve the value associated with a key, and
             call <see cref="M:Loyc.Collections.Impl.InternalSet`1.Add(`0@,System.Collections.Generic.IEqualityComparer{`0},System.Boolean)"/> with replaceIfPresent=true to change the "value" 
-            associated with a key. The <see cref="!:Map"/> and <see cref="!:MMap"/> 
+            associated with a key. The <see cref="T:Loyc.Collections.Map`2"/> and <see cref="T:Loyc.Collections.MMap`2"/> 
             classes rely on this feature to implement a dictionary.
             <para/>
             <b>How it works</b>: I call this data structure a "hash-trie" because it
@@ -3351,7 +3353,7 @@
             </remarks>
         </member>
         <member name="T:Loyc.Collections.Impl.InternalSetStats">
-            <summary>Statistics returned from <see cref="!:InternalSet&lt;T&gt;.CountMemory()"/>.</summary>
+            <summary>Statistics returned from <see cref="M:Loyc.Collections.Impl.InternalSet`1.CountMemory(System.Int32)"/>.</summary>
         </member>
         <member name="F:Loyc.Collections.Impl.InternalSetStats.NodeCount">
             <summary>Total number of nodes.</summary>
@@ -3398,19 +3400,19 @@
             </remarks>
         </member>
         <member name="M:Loyc.Collections.InvertibleSet`1.IsSubsetOf(Loyc.Collections.InvertibleSet{`0})">
-            <summary>Returns true if all items in this set are present in the other set.</summary>
+            <summary>TODO NOT IMPLEMENTED Returns true if all items in this set are present in the other set.</summary>
         </member>
         <member name="M:Loyc.Collections.InvertibleSet`1.IsSupersetOf(Loyc.Collections.InvertibleSet{`0})">
-            <summary>Returns true if all items in the other set are present in this set.</summary>
+            <summary>TODO NOT IMPLEMENTED Returns true if all items in the other set are present in this set.</summary>
         </member>
         <member name="M:Loyc.Collections.InvertibleSet`1.Overlaps(Loyc.Collections.InvertibleSet{`0})">
-            <summary>Returns true if this set contains at least one item from 'other'.</summary>
+            <summary>TODO NOT IMPLEMENTED Returns true if this set contains at least one item from 'other'.</summary>
         </member>
         <member name="M:Loyc.Collections.InvertibleSet`1.IsProperSubsetOf(Loyc.Collections.InvertibleSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.InvertibleSet`1.IsProperSupersetOf(Loyc.Collections.InvertibleSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="T:Loyc.Collections.MapOrMMap`2">
             <summary>Common base class that contains code shared between 
@@ -3537,7 +3539,43 @@
             contains only keys that are present either in the current map or in 
             the specified other map, but not both.</summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:Loyc.Collections.MMap`2" -->
+        <member name="T:Loyc.Collections.MMap`2">
+            <summary>
+            A dictionary class built on top of <c>InternalSet&lt;KeyValuePair&lt;K,V&gt;&gt;</c>.
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+            <remarks>
+            Benchmarks show that this class is not as fast as the standard <see cref="T:System.Collections.Generic.Dictionary`2"/> in most cases. however, it does have some 
+            advantages:
+            <ul>
+            <li>MMap allows null as a key (assuming it is based on the second version
+            of <see cref="T:Loyc.Collections.Impl.InternalSet`1"/>).</li>
+            <li><see cref="M:Loyc.Collections.MapOrMMap`2.TryGetValue(`0,`1@)"/> and <see cref="M:Loyc.Collections.MapOrMMap`2.ContainsKey(`0)"/> do not throw
+            an incredibly annoying exception if you have the audacity to ask whether 
+            there is a null key in the collection.</li>
+            <li>This class supports fast cloning in O(1) time.</li>
+            <li>You can convert a mutable <see cref="T:Loyc.Collections.MMap`2"/> into an immutable
+            <see cref="T:Loyc.Collections.Map`2"/>, a read-only dictionary that does not change when 
+            you change the original MMap.</li>
+            <li>This class has an <see cref="M:Loyc.Collections.MMap`2.AddRange(Loyc.Collections.MMap{`0,`1},System.Boolean)"/> method.</li>
+            <li>This class has some bonus features: <see cref="M:Loyc.Collections.MapOrMMap`2.TryGetValue(`0,`1)"/>
+            returns a default value if the key is not present; <see cref="M:Loyc.Collections.MMap`2.AddIfNotPresent(`0,`1)"/>
+            only adds a pair if the collection does not already contain the key;
+            <see cref="M:Loyc.Collections.MMap`2.AddOrFind(System.Collections.Generic.KeyValuePair{`0,`1}@,System.Boolean)"/> can retrieve the current value and change it to
+            a new value at the same time; and <see cref="M:Loyc.Collections.MMap`2.GetAndRemove(`0,`1@)"/> can get a
+            value while it is being deleted.</li>
+            <li>The persistent map operations <see cref="M:Loyc.Collections.MMap`2.Union(Loyc.Collections.MapOrMMap{`0,`1})"/>, 
+            <see cref="M:Loyc.Collections.MMap`2.Intersect(Loyc.Collections.MapOrMMap{`0,`1})"/>, <see cref="M:Loyc.Collections.MMap`2.Except(Loyc.Collections.MapOrMMap{`0,`1})"/> and <see cref="M:Loyc.Collections.MMap`2.Xor(Loyc.Collections.MapOrMMap{`0,`1})"/> 
+            combine two dictionaries to create a new dictionary, without modifying 
+            either of the original dictionaries. Equally interesting, the methods
+            <see cref="M:Loyc.Collections.MMap`2.With(`0,`1,System.Boolean)"/> and <see cref="M:Loyc.Collections.MMap`2.Without(`0)"/> create a new dictionary
+            with a single item added or removed.</li>
+            </ul>
+            The documentation of <see cref="T:Loyc.Collections.Impl.InternalSet`1"/> describes how the data 
+            structure works.
+            </remarks>
+        </member>
         <member name="M:Loyc.Collections.MMap`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
             <summary>Creates an empty map with the specified key comparer.</summary>
         </member>
@@ -3546,6 +3584,9 @@
         </member>
         <member name="M:Loyc.Collections.MMap`2.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{`0,`1}},System.Collections.Generic.IEqualityComparer{`0})">
             <summary>Creates a map with the specified elements and key comparer.</summary>
+        </member>
+        <member name="M:Loyc.Collections.MMap`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MMap`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
             <summary>Removes a pair from the map.</summary>
@@ -3703,7 +3744,7 @@
             <remarks>
             Once the set is cloned, modifications to both sets take
             longer because portions of the set must be duplicated. See 
-            <see cref="!:InternalSet&lt;T&gt;"/> for details about the fast-
+            <see cref="T:Loyc.Collections.Impl.InternalSet`1"/> for details about the fast-
             cloning technique.</remarks>
         </member>
         <member name="M:Loyc.Collections.MSet`1.Add(`0)">
@@ -3720,7 +3761,7 @@
             <param name="other">The set whose members should be removed from this set.</param>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IntersectWith(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IntersectWith(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IntersectWith(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0})"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IntersectWith(Loyc.Collections.Set{`0})">
             <summary>Removes all items from this set that are not present in 'other'.</summary>
@@ -3736,7 +3777,7 @@
             present either in this set or in the other collection, but not both.</summary>
         </member>
         <member name="M:Loyc.Collections.MSet`1.SymmetricExceptWith(System.Collections.Generic.IEnumerable{`0},System.Boolean)">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SymmetricExceptWith(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, bool)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SymmetricExceptWith(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Boolean)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsSubsetOf(System.Collections.Generic.IEnumerable{`0})">
             <summary>Returns true if all items in this set are present in the other set.</summary>
@@ -3748,40 +3789,40 @@
             <summary>Returns true if this set contains at least one item from 'other'.</summary>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSubsetOf(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSubsetOf(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSupersetOf(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSupersetOf(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.IsProperSupersetOf(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.SetEquals(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.SetEquals(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.SetEquals(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.SetEquals(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.MSet`1.RemoveWhere(System.Predicate{`0})">
             <summary>Removes all elements that match the conditions defined by the 
@@ -3795,7 +3836,7 @@
         <member name="M:Loyc.Collections.MSet`1.CountMemory(System.Int32)">
             <summary>Measures the total size of all objects allocated to this 
             collection, in bytes, including the size of this object itself; see
-            <see cref="!:InternalSet&lt;T&gt;.CountMemory"/>.</summary>
+            <see cref="M:Loyc.Collections.Impl.InternalSet`1.CountMemory(System.Int32)"/>.</summary>
         </member>
         <member name="T:Loyc.Collections.Set`1">
             <summary>An immutable set.</summary>
@@ -3807,7 +3848,7 @@
             single items to the set using operators + and -.
             <para/>
             For more information, please read the documentation of <see cref="T:Loyc.Collections.Set`1"/> 
-            and <see cref="!:InternalSet&lt;T&gt;"/>.
+            and <see cref="T:Loyc.Collections.Impl.InternalSet`1"/>.
             <para/>
             Performance warning: GetHashCode() XORs the hashcodes of all items in the
             set, while Equals() is a synonym for SetEquals(). Be aware that these 
@@ -3827,40 +3868,40 @@
             <summary>Returns true if this set contains at least one item from 'other'.</summary>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSubsetOf(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSubsetOf(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSubsetOf(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSupersetOf(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSupersetOf(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(ISet&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.ISet{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.IsProperSupersetOf(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.IsProperSupersetOf(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.IsProperSupersetOf(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.SetEquals(Loyc.Collections.Set{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.SetEquals(Loyc.Collections.MSet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.SetEquals(System.Collections.Generic.ISet{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(ISet&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.ISet{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.SetEquals(System.Collections.Generic.IEnumerable{`0})">
-            <inheritdoc cref="!:InternalSet&lt;T&gt;.SetEquals(IEnumerable&lt;T&gt;, IEqualityComparer&lt;T&gt;, int)"/>
+            <inheritdoc cref="M:Loyc.Collections.Impl.InternalSet`1.SetEquals(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0},System.Int32)"/>
         </member>
         <member name="M:Loyc.Collections.Set`1.Where(System.Predicate{`0})">
             <summary>Returns a new set that contains only items that match the 
@@ -3869,50 +3910,12 @@
         <member name="M:Loyc.Collections.Set`1.CountMemory(System.Int32)">
             <summary>Measures the total size of all objects allocated to this 
             collection, in bytes, including the size of this object itself; see
-            <see cref="!:InternalSet&lt;T&gt;.CountMemory"/>.</summary>
+            <see cref="M:Loyc.Collections.Impl.InternalSet`1.CountMemory(System.Int32)"/>.</summary>
         </member>
         <member name="T:Loyc.Collections.Set`1.Enumerator">
             <summary>Enumerator for <see cref="T:Loyc.Collections.MSet`1"/>.</summary>
-            <remarks>This is a wrapper of <see cref="!:InternalSet&lt;T&gt;.Enumerator"/> 
+            <remarks>This is a wrapper of <see cref="T:Loyc.Collections.Impl.InternalSet`1.Enumerator"/> 
             that blocks editing functionality.</remarks>
-        </member>
-        <member name="T:Loyc.Collections.Tests.AListTestBase`2">
-            <summary>
-            Contains tests common to AList, BList and BDictionary.
-            </summary>
-        </member>
-        <member name="T:Loyc.Collections.Impl.TestHelpers">
-            <summary>Helpers methods for unit tests for Loyc collection classes.</summary>
-        </member>
-        <member name="M:Loyc.Collections.Tests.AListTestBase`2.AddToBoth(`0,System.Collections.Generic.List{`1},System.Int32,System.Int32)">
-            <summary>Adds an item to an AList and then to a List at the same place.</summary>
-            <param name="preferredIndex">Index to use if alist is an AList. 
-            If it is a B+ tree then the item is always added in sorted order.</param>
-        </member>
-        <member name="M:Loyc.Collections.Tests.AListTestBase`2.Add(`0,System.Int32,System.Int32)">
-            <summary>Adds an item to an AList.</summary>
-        </member>
-        <member name="M:Loyc.Collections.Tests.AListTestBase`2.RemoveAtInBoth(`0,System.Collections.Generic.List{`1},System.Int32)">
-            <summary>Remove an item from an AList and then from a List at the same location.</summary>
-        </member>
-        <member name="T:Loyc.Collections.Tests.ListCollectionTests`1">
-            <summary>A test class for collections that implement IListSource{int} and 
-            are cloneable, such as AList, BList and DList.</summary>
-        </member>
-        <member name="T:Loyc.Collections.Tests.AddRangeTest`1">
-            <summary>Tests the IAddRange interface of a list class.</summary>
-        </member>
-        <member name="T:Loyc.Collections.Tests.ListRangeTests`1">
-            <summary>Tests the IAddRange and IListRangeMethod interfaces of a list class.</summary>
-        </member>
-        <member name="T:Loyc.Collections.Tests.ListTests`1">
-            <summary>A test class for unsorted list classes that implement IList{int} 
-            and are cloneable, such as AList and DList.</summary>
-        </member>
-        <member name="T:Loyc.Collections.Tests.SetTestItem">
-            <summary>An class used for testing purposes with three parts: a hashcode,
-            a mutable value (ignored for equality testing) and an extended key int
-            which affects equality but not the hashcode.</summary>
         </member>
         <member name="T:Loyc.Collections.FVList`1">
             <summary>
