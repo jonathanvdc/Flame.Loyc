@@ -339,9 +339,10 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                         CodeSymbols.ProtectedIn, AttributeConverters.AccessAttributeConverter AccessModifier.ProtectedAndAssembly
                                         CodeSymbols.Internal,    AttributeConverters.AccessAttributeConverter AccessModifier.Assembly
                                         CodeSymbols.Public,      AttributeConverters.AccessAttributeConverter AccessModifier.Public
-                                        CodeSymbols.Const,       AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.ConstantAttribute
-                                        CodeSymbols.Abstract,    AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.AbstractAttribute
-                                        CodeSymbols.Virtual,     AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute
+                                        CodeSymbols.Const,       AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.ConstantAttribute "const"
+                                        CodeSymbols.Abstract,    AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.AbstractAttribute "abstract"
+                                        CodeSymbols.Virtual,     AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute "virtual"
+                                        CodeSymbols.Sealed,      AttributeConverters.RemoveAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute.AttributeType "sealed" "virtual"
                                         CodeSymbols.Static,      AttributeConverters.EmptyAttributeConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
