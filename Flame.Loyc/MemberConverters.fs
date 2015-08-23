@@ -434,8 +434,8 @@ module MemberConverters =
             if genDecl = null then
                 null
             else
-                let genArgs = Seq.skip 1 node.Args |> Seq.map (fun x -> parent.ConvertType x scope)
-                genDecl.MakeGenericType genArgs
+                Seq.skip 1 node.Args |> Seq.map (fun x -> parent.ConvertType x scope)
+                                     |> genDecl.MakeGenericType
 
         let matches (node : LNode) =
             node.ArgCount > 1

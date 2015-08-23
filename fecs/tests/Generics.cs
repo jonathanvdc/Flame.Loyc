@@ -8,9 +8,7 @@ namespace GenericsTest
     {
         public static void Main(string[] Args)
         {
-            var list = new List<int>();
-            list.Add(1);
-            list.Add(2);
+            var list = new List<string>(Args);
             Console.WriteLine(list.Count);
         }
     }
