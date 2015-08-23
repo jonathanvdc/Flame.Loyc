@@ -423,3 +423,21 @@ module MemberConverters =
             node.ArgCount = 2 && CodeSymbols.IsArrayKeyword node.Args.[0].Name
 
         CreateConverter matches convTy
+
+    /// A converter that converts generic type instantiations.
+    let GenericInstanceTypeConverter =
+        let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
+            let rank    = node.ArgCount - 1
+            let genName = NodeHelpers.ToTypeName node.Args.[0]
+            let genName = new TypeName(Array.append genName.Start.Path [| genName.Name + "<" + (new System.String(',', rank - 1)) + ">" |])
+            let genDecl = scope.Global.Binder.Bind genName
+            if genDecl = null then
+                null
+            else
+                let genArgs = Seq.skip 1 node.Args |> Seq.map (fun x -> parent.ConvertType x scope)
+                genDecl.MakeGenericType genArgs
+
+        let matches (node : LNode) =
+            node.ArgCount > 1
+
+        CreateConverter matches convTy
