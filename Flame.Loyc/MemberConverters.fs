@@ -14,11 +14,8 @@ open MemberHelpers
 open System
 
 module MemberConverters =
-    let ReadAttributes (parent : INodeConverter) (node : LNode) (scope : GlobalScope) =
-        let attrs    = node.Attrs |> Seq.map (parent.TryConvertAttribute scope)
-                                  |> Seq.filter (fun x -> x.IsSome)
-                                  |> Seq.map (fun x -> x.Value)
-
+    let ReadAttributes (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (attrs : IAttribute seq) =
+        let attrs    = node.Attrs |> Seq.fold (fun state attr -> parent.ConvertAttribute attr scope state) attrs
         let isStatic = node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Static)
         isStatic, attrs
 
@@ -66,7 +63,7 @@ module MemberConverters =
                 Some name, Some inferredType, expr
 
     let ConvertFieldDeclaration (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
-        let isStatic, attrs = ReadAttributes parent node scope
+        let isStatic, attrs = ReadAttributes parent node scope []
         let typeNode = node.Args.[0]
 
         let inferType = if typeNode.Name = CodeSymbols.Missing then 
@@ -108,7 +105,7 @@ module MemberConverters =
             ExpressionBuilder.ToStatement body
 
     let private ConvertCommonMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
-        let isStatic, attrs = ReadAttributes parent node scope
+        let isStatic, attrs = ReadAttributes parent node scope []
         let name, tParams   = ReadName parent node.Args.[1] scope
         let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic)
         let fMethod         = tParams |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithGenericParameter item) fMethod
@@ -184,7 +181,7 @@ module MemberConverters =
 
     /// Convert an accessor declaration's signature, but not its body.
     let ConvertAccessorSignature (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (accType : AccessorType) (declProp : IProperty) =
-        let isStatic, attrs = ReadAttributes parent node scope
+        let isStatic, attrs = ReadAttributes parent node scope []
         if isStatic then
             let staticNode = node.Attrs |> Seq.find (fun x -> x.Name = CodeSymbols.Static)
             scope.Log.LogError(new LogEntry("Invalid 'static' attribute", 
@@ -265,7 +262,7 @@ module MemberConverters =
             node.Args |> Seq.exists (IsAutoPropertyBody parent scope >> not)
                       |> not
         else if node.IsId && (node.Name = CodeSymbols.get || node.Name = CodeSymbols.set) then
-            let _, attrs = ReadAttributes parent node scope
+            let _, attrs = ReadAttributes parent node scope []
             attrs.HasAttribute(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) |> not
         else
             false
@@ -310,7 +307,7 @@ module MemberConverters =
                 scope.Log.LogError(message)
                 declType, scope
             | Some name ->
-                let attrs   = ReadAttributes parent node scope
+                let attrs   = ReadAttributes parent node scope []
                 let declType, convAcc = if IsAutoProperty parent scope node declType attrs then
                                             let createAutoPropField declType =
                                                 // synthesize a `private hidden (static|instance) T <name>$value;` field.
@@ -328,12 +325,11 @@ module MemberConverters =
 
     /// Converts a type declaration.
     let ConvertTypeDeclaration (kindAttributes : IAttribute seq) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespace) =
-        let isStatic, attrs = ReadAttributes parent node scope
-        let inferredAttrs = Seq.append kindAttributes attrs
+        let isStatic, attrs = ReadAttributes parent node scope kindAttributes
         let newAttrs = if isStatic then 
-                           Seq.singleton PrimitiveAttributes.Instance.StaticTypeAttribute |> Seq.append inferredAttrs 
+                           Seq.singleton PrimitiveAttributes.Instance.StaticTypeAttribute |> Seq.append attrs 
                        else 
-                           inferredAttrs
+                           attrs
         let name, tParams = ReadName parent node.Args.[0] scope
 
         // Gets the type's base types, including the root type if there is no clear parent type and the given type is no interface.
@@ -363,7 +359,7 @@ module MemberConverters =
 
     /// Converts a namespace declaration.
     let ConvertNamespaceDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declNs : INamespaceBranch) =
-        let _, attrs = ReadAttributes parent node scope
+        let _, attrs = ReadAttributes parent node scope []
         let name, _ = ReadName parent node.Args.[0] scope
         let fNs = new FunctionalNamespace(new FunctionalMemberHeader(MemberExtensions.CombineNames(declNs.FullName, name), attrs, NodeHelpers.ToSourceLocation node.Args.[0].Range), declNs.DeclaringAssembly)
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : IFunctionalNamespace, newScope) item -> parent.ConvertNamespaceMember item newScope state) (fNs :> IFunctionalNamespace, scope.Binder.UseNamespace fNs |> scope.WithBinder)

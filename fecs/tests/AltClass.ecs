@@ -1,0 +1,10 @@
+using LeMP;
+
+namespace AltClassTest
+{
+    public alt class MaybeInt
+    {
+        public alt Just(int Value);
+        public alt None();
+    }
+}

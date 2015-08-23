@@ -13,9 +13,10 @@ type CompilerLogMessageSink(log : ICompilerLog) =
     member this.Log = log
 
     static member GetContextMarkupNode (context : obj) =
-        match context with
+        match context with        
         | :? SourceRange as ran  -> (NodeHelpers.ToSourceLocation ran).CreateDiagnosticsNode()
         | :? LNode as node       -> (NodeHelpers.ToSourceLocation node.Range).CreateDiagnosticsNode()
+        | :? IHasLocation as loc -> CompilerLogMessageSink.GetContextMarkupNode loc.Location
         | null                   -> new MarkupNode(NodeConstants.TextNodeType, "") :> IMarkupNode
         | _                      -> new MarkupNode(NodeConstants.RemarksNodeType, context.ToString()) :> IMarkupNode
 
@@ -29,7 +30,7 @@ type CompilerLogMessageSink(log : ICompilerLog) =
 
     /// Splits the message's title from the rest of the message based on its punctuation.
     static member SplitPunctuationTitle (msg : string) = 
-        let punc = [| '.'; ';'; ','; '?'; '!'; '('; ')' |]
+        let punc = [| '.'; ';'; ','; '?'; '!'; '('; ')'; '['; ']' |]
         let colonIndex = msg.IndexOf ':'
         if colonIndex < msg.IndexOfAny punc then
             msg.Substring(0, colonIndex).TrimEnd(), msg.Substring(colonIndex + 1).TrimStart()

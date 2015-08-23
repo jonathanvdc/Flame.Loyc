@@ -118,8 +118,8 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
         | result -> result
 
     /// Tries to convert an attribute node.
-    member this.TryConvertAttribute (scope : GlobalScope) (node : LNode) =
-        this.tryConvertNullableNode attrConverters node scope
+    member this.TryConvertAttribute (scope : GlobalScope) (node : LNode) (attrs : IAttribute seq) =
+        this.tryConvertNullableNode attrConverters node (attrs, scope)
 
     /// Tries to convert the given type member node to a type member.
     /// Constructs like fields, properties and methods are type members.
@@ -145,7 +145,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
         member this.TryConvertNamespaceMember node scope declNs = this.TryConvertNamespaceMember node scope declNs
 
         /// Tries to convert an attribute node.
-        member this.TryConvertAttribute scope node = this.TryConvertAttribute scope node
+        member this.TryConvertAttribute node scope attrs = this.TryConvertAttribute scope node attrs
 
     static member private MakePair key value = key, value
 
@@ -324,7 +324,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                        |> NodeConverter.ToMultiDictionary
 
         let nsMemberConverters   =  [|
-                                        CodeSymbols.Class,     Seq.empty |> MemberConverters.TypeDeclarationConverter 
+                                        CodeSymbols.Class,     Seq.singleton PrimitiveAttributes.Instance.VirtualAttribute |> MemberConverters.TypeDeclarationConverter 
                                         CodeSymbols.Struct,    Seq.singleton PrimitiveAttributes.Instance.ValueTypeAttribute |> MemberConverters.TypeDeclarationConverter
                                         CodeSymbols.Interface, Seq.singleton PrimitiveAttributes.Instance.InterfaceAttribute |> MemberConverters.TypeDeclarationConverter
                                         CodeSymbols.Namespace, MemberConverters.NamespaceDeclarationConverter
@@ -342,6 +342,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                         CodeSymbols.Const,       AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.ConstantAttribute
                                         CodeSymbols.Abstract,    AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.AbstractAttribute
                                         CodeSymbols.Virtual,     AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute
+                                        CodeSymbols.Static,      AttributeConverters.EmptyAttributeConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary
 

@@ -24,8 +24,10 @@ type INodeConverter =
     /// Things like types, namespaces and modules are namespace members.
     abstract member TryConvertNamespaceMember : LNode -> GlobalScope -> IFunctionalNamespace -> (IFunctionalNamespace * GlobalScope) option
 
-    /// Tries to convert the given attribute node to an attribute.
-    abstract member TryConvertAttribute : GlobalScope -> LNode -> IAttribute option
+    /// Tries to convert the given attribute node to an attribute. 
+    /// Instead of yielding a single attribute value,
+    /// the given sequence of attributes is transformed and returned.
+    abstract member TryConvertAttribute : LNode -> GlobalScope -> IAttribute seq -> (IAttribute seq) option
 
 [<AutoOpen>]
 module NodeConverterExtensions =
@@ -80,3 +82,15 @@ module NodeConverterExtensions =
         /// Things like types, namespaces and modules are namespace members.
         member this.ConvertNamespaceMember node scope decl =
             this.convertMember this.TryConvertNamespaceMember node scope decl
+
+        /// Converts an attribute node. Instead of yielding a single attribute value,
+        /// the given sequence of attributes is transformed and returned.
+        member this.ConvertAttribute node scope attrs =
+            match this.TryConvertAttribute node scope attrs with
+            | Some result -> result
+            | None        ->
+                let message = new LogEntry("Unknown attribute node type", 
+                                           "The node converter didn't know what to do with '" + node.Print() + "'.",
+                                           NodeHelpers.ToSourceLocation node.Range)
+                scope.Log.LogError(message) // TODO: log this in a somewhat functional way
+                attrs

@@ -26,7 +26,7 @@ type TypeConverter            = SingleNodeConverter<IType>
 type NamespaceMemberConverter = ScopedNodeConverter<IFunctionalNamespace * GlobalScope, IFunctionalNamespace * GlobalScope>
 type TypeMemberConverter      = ScopedNodeConverter<FunctionalType * GlobalScope, FunctionalType * GlobalScope>
 
-type AttributeConverter       = ScopedNodeConverter<IAttribute, GlobalScope>
+type AttributeConverter       = ScopedNodeConverter<IAttribute seq, IAttribute seq * GlobalScope>
 
 type LiteralConverter         = obj -> IExpression
 type IdentifierConverter      = INodeConverter -> LNode -> LocalScope -> IExpression option
