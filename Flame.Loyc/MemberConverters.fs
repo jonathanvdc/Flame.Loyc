@@ -24,66 +24,73 @@ module MemberConverters =
         let descParam = new DescribedGenericParameter(name, declMember)
         descParam :> IGenericParameter
 
+    let AliasGenericParameters (genMember : IGenericMember) (scope : GlobalScope) = 
+        let foldParam (binder : FunctionalBinder) (tParam : IGenericParameter) = binder.AliasType (new TypeName(tParam.Name)) (lazy (tParam :> IType))
+        genMember.GetGenericParameters() |> Seq.fold foldParam scope.Binder
+                                         |> scope.WithBinder
+
     let rec ReadName (parent : INodeConverter) (node : LNode) (scope : GlobalScope) =
         if node.Name = CodeSymbols.Of then
-            let tParams            = node.Args.Slice(1) |> Seq.map (ConvertGenericParameter parent scope)
+            let tParams declMember = node.Args.Slice(1) |> Seq.map (fun node -> ConvertGenericParameter parent scope node declMember)
             let name, innerTParams = ReadName parent node.Args.[0] scope
             
-            name, Seq.append innerTParams tParams
+            name, fun declMember -> Seq.append (innerTParams declMember) (tParams declMember)
         else if node.Name = CodeSymbols.Dot then
             let lName, lParams     = ReadName parent node.Args.[0] scope
             let rName, rParams     = ReadName parent node.Args.[1] scope
-            MemberExtensions.CombineNames(lName, rName), Seq.append lParams rParams
+            MemberExtensions.CombineNames(lName, rName), fun declMember -> Seq.append (lParams declMember) (rParams declMember)
         else
-            node.Name.Name, Seq.empty
+            node.Name.Name, fun _ -> Seq.empty
 
-    let private ConvertSingleField (inferType : IExpression -> IType) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
+    let private ConvertSingleField (inferType : LocalScope -> IExpression -> IType) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         match NodeHelpers.GetIdNode node with
         | None -> 
             let message = new LogEntry("Invalid field declaration",
                                        "A field declaration must reference an identifier node, " +
                                        "which was not found in '" + node.Print() + "'.")
-            None, None, lazy (ExpressionBuilder.VoidError message)
+            None, (lazy null), lazy (ExpressionBuilder.VoidError message)
         | Some identifier ->
             let name = identifier.Name.Name
-            match (inferType null, NodeHelpers.GetAssignedValueNode node) with
+            let localScope = new LocalScope(AliasGenericParameters declType scope)
+            match (inferType localScope null, NodeHelpers.GetAssignedValueNode node) with
             | (null, None) -> 
                 let message = new LogEntry("Invalid field declaration",
                                            "A field declaration that infers its type must be assigned a value, " +
                                            "which was not found in '" + node.Print() + "'.")
-                Some name, None, lazy (ExpressionBuilder.VoidError message)
+                Some name, (lazy null), lazy (ExpressionBuilder.VoidError message)
 
             | (varType, None) ->
-                Some name, Some (lazy varType), lazy null
+                Some name, (lazy varType), lazy null
 
             | (_, Some assignedVal) ->
                 let name         = identifier.Name.Name
-                let expr         = lazy (parent.ConvertExpression assignedVal (new LocalScope(scope)) |> fst)
-                let inferredType = expr |~ inferType
-                Some name, Some inferredType, expr
+                let expr         = lazy (parent.ConvertExpression assignedVal localScope |> fst)
+                let inferredType = expr |~ inferType localScope
+                Some name, inferredType, expr
 
     let ConvertFieldDeclaration (parent : INodeConverter) (node : LNode) (declType : FunctionalType, scope : GlobalScope) =
         let isStatic, attrs = ReadAttributes parent node scope []
         let typeNode = node.Args.[0]
 
-        let inferType = if typeNode.Name = CodeSymbols.Missing then 
-                            fun (arg : IExpression) -> arg.get_TypeOrNull()
-                        else 
-                            parent.ConvertType typeNode (new LocalScope(scope)) |> Constant
+        let inferType declScope (expr : IExpression) = 
+            if typeNode.Name = CodeSymbols.Missing then 
+                expr.get_TypeOrNull()
+            else 
+                parent.ConvertType typeNode declScope
 
         let defineField name fieldType isStatic (attrs : seq<IAttribute>) initValue srcLoc (parentType : IType) =
             let header = new FunctionalMemberHeader(name, attrs, srcLoc)
             new FunctionalField(header, parentType, isStatic, fieldType, initValue) :> IField
 
         let foldDef (parentType : FunctionalType) item =
-            match ConvertSingleField inferType parent item scope parentType with
-            | (None, _, expr) 
-            | (_, None, expr) -> 
-                // Something went horribly wrong. Abort here.
-                // TODO: log this!
-                parentType
-            | (Some name, Some fieldType, expr) ->
-                defineField name fieldType isStatic attrs expr (NodeHelpers.ToSourceLocation item.Range) |> parentType.WithField
+            let conv declType =
+                match ConvertSingleField inferType parent item scope declType with
+                | (None, fieldType, expr) ->
+                    defineField "__bad_field" fieldType isStatic attrs expr (NodeHelpers.ToSourceLocation item.Range) declType
+                | (Some name, fieldType, expr) ->
+                    defineField name fieldType isStatic attrs expr (NodeHelpers.ToSourceLocation item.Range) declType
+
+            parentType.WithField conv
 
         node.Args.Slice(1) |> Seq.fold foldDef declType, scope
 
@@ -98,8 +105,7 @@ module MemberConverters =
         if retType = null || retType.Equals(PrimitiveTypes.Void) then
             new BlockStatement([| ExpressionBuilder.ToStatement body; new ReturnStatement() :> IStatement |]) :> IStatement
         else if body.Type <> PrimitiveTypes.Void then
-            ExpressionBuilder.CastImplicit scope body retType
-                 |> ExpressionBuilder.Return
+            body |> ExpressionBuilder.Return scope
                  |> ExpressionBuilder.ToStatement
         else
             ExpressionBuilder.ToStatement body
@@ -107,12 +113,17 @@ module MemberConverters =
     let private ConvertCommonMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let isStatic, attrs = ReadAttributes parent node scope []
         let name, tParams   = ReadName parent node.Args.[1] scope
-        let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic)
-        let fMethod         = tParams |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithGenericParameter item) fMethod
-        let tempLocalScope  = new LocalScope(scope)
-        let fMethod         = node.Args.[2].Args |> Seq.fold (fun (state : FunctionalMethod) item -> state.WithParameter (lazy (ConvertParameterDeclaration parent tempLocalScope item))) fMethod
+        let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic) 
+        let fMethod         = fMethod.WithGenericParameters tParams
+
+        let getParameters declMethod = 
+            let localScope = new LocalScope(AliasGenericParameters declMethod scope)
+            node.Args.[2].Args |> Seq.map (fun item -> ConvertParameterDeclaration parent localScope item)
+
+        let fMethod         = fMethod.WithParameters getParameters
 
         let getBody declMethod =
+            let scope      = AliasGenericParameters declMethod scope
             let localScope = new LocalScope(new FunctionScope(scope, declMethod))
             let body = if node.ArgCount > 3 then
                            parent.ConvertExpression node.Args.[3] localScope ||> ExpressionBuilder.Scope 
@@ -123,13 +134,15 @@ module MemberConverters =
         fMethod.WithBody getBody
 
     let ConvertMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
+        let scope   = AliasGenericParameters declType scope
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
-        let retType = lazy (parent.ConvertType node.Args.[0] (new LocalScope(scope)))
+        let retType declMethod = parent.ConvertType node.Args.[0] (new LocalScope(AliasGenericParameters declMethod scope))
         let fMethod = fMethod.WithReturnType retType
         let fMethod = fMethod.WithBaseMethods (InferBaseMethods (scope.GetAllMembers >> OfType))
         fMethod :> IMethod
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
+        let scope   = AliasGenericParameters declType scope
         let fMethod = ConvertCommonMethodDeclaration parent node scope declType
         let fMethod = fMethod.AsConstructor 
         fMethod :> IMethod
@@ -208,7 +221,7 @@ module MemberConverters =
             else if IsAbstractOrInterface declMethod then
                 null // This accessor does not have a body, and that's okay.
             else
-                ExpressionBuilder.Unknown declMethod.ReturnType |> ExpressionBuilder.Return
+                ExpressionBuilder.Unknown declMethod.ReturnType |> ExpressionBuilder.ReturnUnchecked
                                                                 |> ExpressionBuilder.Error (new LogEntry("Bodyless property accessor",
                                                                                                          "The '" + accType.ToString().ToLower() + "' accessor of property '" + declProp.Name + 
                                                                                                          "' does not have a body, but is neither abstract nor is it declared in an interface."))
@@ -227,12 +240,20 @@ module MemberConverters =
 
         let getBody (declMethod : IMethod) =
             // An autoprop is syntactic sugar for `public T Property { get { return Property$value; } set { Property$value = value; return; } }`
-            let valueField = declMethod.DeclaringType.GetField(AutoPropertyFieldName declProp.Name, declProp.IsStatic)
             let scope      = new LocalScope(new FunctionScope(scope, declMethod))
-            let thisExpr   = ExpressionBuilder.This scope |> ExpressionBuilder.GetAccessedExpression
+            let thisExpr   = if declMethod.IsStatic then 
+                                 let declType = declMethod.DeclaringType
+                                 let finalType = if declType.get_IsGeneric() && declType.get_IsGenericDeclaration() then
+                                                     declType.MakeGenericType(declType.GetGenericParameters() |> Seq.cast)
+                                                 else
+                                                     declType
+                                 Global finalType
+                             else 
+                                 ExpressionBuilder.This scope |> ExpressionBuilder.GetAccessedExpression
+            let valueField = thisExpr.Type.GetField(AutoPropertyFieldName declProp.Name, declProp.IsStatic)
             let fieldAcc   = ExpressionBuilder.AccessField scope valueField thisExpr
             if accType = AccessorType.GetAccessor then
-                fieldAcc |> ExpressionBuilder.Return
+                fieldAcc |> ExpressionBuilder.ReturnUnchecked
                          |> ExpressionBuilder.ToStatement
             else
                 [ExpressionBuilder.Assign scope fieldAcc ((scope.GetVariable "value").Value.CreateGetExpression()); ExpressionBuilder.ReturnVoid] 
@@ -292,8 +313,9 @@ module MemberConverters =
 
     /// Converts a single property declaration that is not an autoprop.
     let ConvertPropertyDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (isStatic : bool, attrs : IAttribute seq) (convAcc : INodeConverter -> LNode -> GlobalScope -> AccessorType -> IProperty -> IAccessor) (declType : IType) =
-        let prop = ConvertPropertySignature parent node scope name (isStatic, attrs) declType
-        let prop = ConvertPropertyMember convAcc parent scope prop node.Args.[2]
+        let scope = AliasGenericParameters declType scope
+        let prop  = ConvertPropertySignature parent node scope name (isStatic, attrs) declType
+        let prop  = ConvertPropertyMember convAcc parent scope prop node.Args.[2]
         prop :> IProperty
 
     /// A type member converter for property declarations.
@@ -334,6 +356,7 @@ module MemberConverters =
 
         // Gets the type's base types, including the root type if there is no clear parent type and the given type is no interface.
         let getBaseTypes (declType : IType) =
+            let scope  = AliasGenericParameters declType scope
             let bTypes = node.Args.[1].Args |> Seq.map (fun x -> parent.ConvertType x (new LocalScope(scope)))
             let rootType = scope.Environment.RootType
             if rootType = null || declType.get_IsInterface() || bTypes |> Seq.exists (fun x -> not (x.get_IsInterface())) then
@@ -343,7 +366,7 @@ module MemberConverters =
 
         let fType = new FunctionalType(new FunctionalMemberHeader(name, newAttrs, NodeHelpers.ToSourceLocation node.Args.[0].Range), declNs)
         let fType = fType.WithBaseTypes getBaseTypes
-        let fType = tParams |> Seq.fold (fun (state : FunctionalType) item -> state.WithGenericParameter item) fType
+        let fType = fType.WithGenericParameters tParams
         let fType = node.Args.Slice(2) |> Seq.fold (fun (state : FunctionalType, newScope) item -> parent.ConvertTypeMember item newScope state) (fType, scope)
                                        |> fst
         fType :> IType

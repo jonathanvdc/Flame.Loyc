@@ -263,7 +263,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.Continue (ExpressionConverters.DefineScopedNullaryOperator ExpressionBuilder.Continue);
 
                                              makePair CodeSymbols.Return (ExpressionConverters.DefineNullaryOperator ExpressionBuilder.ReturnVoid); 
-                                             makePair CodeSymbols.Return (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Return);
+                                             makePair CodeSymbols.Return (ExpressionConverters.DefineScopedUnaryOperator ExpressionBuilder.Return);
 
                                              makePair CodeSymbols.Result (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Result);
 

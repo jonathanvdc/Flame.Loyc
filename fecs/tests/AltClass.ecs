@@ -2,9 +2,9 @@ using LeMP;
 
 namespace AltClassTest
 {
-    public alt class MaybeInt
+    public alt class Maybe<T>
     {
-        public alt Just(int Value);
-        public alt None();
+        public alt Just(T Value);
+        public alt Nothing();
     }
 }
