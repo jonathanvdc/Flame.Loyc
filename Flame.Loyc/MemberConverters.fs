@@ -96,9 +96,12 @@ module MemberConverters =
 
     /// Converts a parameter attribute.
     let ConvertParameterAttribute (parent : INodeConverter) (scope : LocalScope) (parameter : DescribedParameter, attrs : IAttribute seq) (node : LNode) =
-        if node.Name = CodeSymbols.Ref then
+        if node.Name = CodeSymbols.Ref || node.Name = CodeSymbols.Out then
             let descParam = new DescribedParameter(parameter.Name, parameter.ParameterType.MakePointerType(PointerKind.ReferencePointer))
-            descParam, attrs
+            if node.Name = CodeSymbols.Out then
+                descParam, Seq.singleton PrimitiveAttributes.Instance.OutAttribute |> Seq.append attrs
+            else
+                descParam, attrs
         else
             parameter, parent.ConvertAttribute node scope.Global attrs
 

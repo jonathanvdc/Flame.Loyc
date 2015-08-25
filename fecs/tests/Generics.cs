@@ -15,7 +15,7 @@ namespace GenericsTest
             return default(U);
         }
 
-        public static void Assign<U>(ref U Target, U Value)
+        public static void Assign<U>(out U Target, U Value)
         {
             Target = Value;
         }
