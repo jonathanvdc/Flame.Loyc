@@ -51,5 +51,17 @@ namespace fecs
                 return base.ConvertPrimitiveType(Type);
             }
         }
+
+        protected override string ConvertPointerType(IPointerType Type)
+        {
+            if (Type.PointerKind.Equals(PointerKind.ReferencePointer))
+            {
+                return "ref " + Convert(Type.GetElementType());
+            }
+            else
+            {
+                return base.ConvertPointerType(Type);
+            }
+        }
     }
 }

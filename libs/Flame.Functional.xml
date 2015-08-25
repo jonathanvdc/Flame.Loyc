@@ -1671,13 +1671,6 @@
  Accesses a single type member on the given expression.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.Intersection(System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
-<summary>
- Gets the intersection expression of the given sequence of expressions.
- An intersection expression may be used when resolving overloads, but 
- code generators do not support them.
-</summary>
-</member>
 <member name="M:Flame.Functional.ExpressionBuilder.AccessProperty(Flame.Functional.LocalScope,Flame.IMethod,Flame.IMethod,Flame.Functional.AccessedExpression)">
 <summary>
  Accesses a property on a target expression with no index arguments, within the given local scope. 
@@ -1718,6 +1711,11 @@
 <summary>
  Creates an expression that represents the invocation of the given function on the
  given sequence of arguments. The scope provided is used to apply conversion rules.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.InstantiateGenericDelegates(Flame.Functional.LocalScope,Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable{Flame.IType})">
+<summary>
+ Instatiates the given generic delegates expression with the given type arguments.
 </summary>
 </member>
 <member name="">
@@ -1819,6 +1817,13 @@
 <member name="M:Flame.Functional.ExpressionBuilder.IsError(Flame.Compiler.IExpression)">
 <summary>
  Determines if the given expression is an error expression.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.Intersection(System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Gets the intersection expression of the given sequence of expressions.
+ An intersection expression may be used when resolving overloads, but 
+ code generators do not support them.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Source(Flame.Compiler.SourceLocation,Flame.Compiler.IExpression)">

@@ -279,6 +279,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.Default ExpressionConverters.DefaultExpressionConverter;
                                              
                                              makePair CodeSymbols.Dot ExpressionConverters.MemberAccessConverter;
+                                             makePair CodeSymbols.Of ExpressionConverters.GenericInstanceConverter;
 
                                              makePair CodeSymbols.Error ExpressionConverters.ErrorConverter
                                              makePair CodeSymbols.Warning ExpressionConverters.WarningConverter

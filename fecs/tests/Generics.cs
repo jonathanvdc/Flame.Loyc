@@ -6,7 +6,7 @@ namespace GenericsTest
 {
     public class Ref<T>
     {
-        public Ref() { this.Value = default(T); }
+        public Ref() { this.Value = GetDefault<T>(); }
 
         public T Value;
         public static U GetDefault<U>() { return default(U); }

@@ -291,6 +291,16 @@ module ExpressionConverters =
         let getRootType (scope : LocalScope) = scope.Global.Environment.RootType
         CreateConverter (Constant true) (getRootType |> Constant |> Constant)
 
+    /// A converter for generic instance expressions.
+    let GenericInstanceConverter =
+        let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let tgt, scope = parent.ConvertExpression node.Args.[0] scope
+            let tArgs      = node.Args.Slice(1) |> Seq.map (parent.ConvertType >> ((|>) scope))
+            ExpressionBuilder.InstantiateGenericDelegates scope tgt tArgs, scope
+        let matches (node : LNode) =
+            node.ArgCount > 1
+        CreateConverter matches conv
+
     /// Converts an invocation expression.
     let ConvertInvocation (target : IExpression) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let args, scope = parent.ConvertExpressions node.Args scope
