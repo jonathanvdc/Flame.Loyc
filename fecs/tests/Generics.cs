@@ -10,6 +10,11 @@ namespace GenericsTest
 
         public T Value;
         public static U GetDefault<U>() { return default(U); }
+
+        public static void Assign<T>(ref T Target, T Value)
+        {
+            Target = Value;
+        }
     }
 
     public static class Program

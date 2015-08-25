@@ -142,7 +142,15 @@ namespace fecs
                 var parameters = Value.GetParameters();
                 for (int i = 0; i < parameters.Length; i++)
                 {
-                    dict[parameters[i].Name] = new ArgumentVariable(parameters[i], i);
+                    var arg = new ArgumentVariable(parameters[i], i);
+                    if (parameters[i].ParameterType.get_IsPointer() && parameters[i].ParameterType.AsContainerType().AsPointerType().PointerKind.Equals(PointerKind.ReferencePointer))
+                    {
+                        dict[parameters[i].Name] = new AtAddressVariable(arg.CreateGetExpression());
+                    }
+                    else
+                    {
+                        dict[parameters[i].Name] = arg;
+                    }
                 }
 
                 return dict;

@@ -94,15 +94,27 @@ module MemberConverters =
 
         node.Args.Slice(1) |> Seq.fold foldDef declType, scope
 
+    /// Converts a parameter attribute.
+    let ConvertParameterAttribute (parent : INodeConverter) (scope : LocalScope) (parameter : DescribedParameter, attrs : IAttribute seq) (node : LNode) =
+        if node.Name = CodeSymbols.Ref then
+            let descParam = new DescribedParameter(parameter.Name, parameter.ParameterType.MakePointerType(PointerKind.ReferencePointer))
+            descParam, attrs
+        else
+            parameter, parent.ConvertAttribute node scope.Global attrs
+
+    /// Converts a parameter declaration node.
     let ConvertParameterDeclaration (parent : INodeConverter) (scope : LocalScope) (node : LNode) =
-        let varType = parent.ConvertType node.Args.[0] scope
-        let name, _ = ReadName parent node.Args.[1] scope.Global
-        new DescribedParameter(name, varType) :> IParameter
+        let varType          = parent.ConvertType node.Args.[0] scope
+        let name, _          = ReadName parent node.Args.[1] scope.Global
+        let descParam        = new DescribedParameter(name, varType)
+        let descParam, attrs = node.Attrs |> Seq.fold (ConvertParameterAttribute parent scope) (descParam, Seq.empty)
+        attrs |> Seq.iter descParam.AddAttribute
+        descParam :> IParameter
 
     /// Appends a `return(void);` statement to the given statement, provided the given
     /// type is either `null` or `void`.
     let AutoReturn (scope : LocalScope) (retType : IType) (body : IExpression) =
-        if retType = null || retType.Equals(PrimitiveTypes.Void) then
+        if retType = null || retType = PrimitiveTypes.Void then
             new BlockStatement([| ExpressionBuilder.ToStatement body; new ReturnStatement() :> IStatement |]) :> IStatement
         else if body.Type <> PrimitiveTypes.Void then
             body |> ExpressionBuilder.Return scope
