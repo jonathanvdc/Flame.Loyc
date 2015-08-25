@@ -301,9 +301,19 @@ module ExpressionConverters =
             node.ArgCount > 1
         CreateConverter matches conv
 
+
+    /// Converts an argument expression, which may have a `#ref` attribute.
+    let ConvertArgumentExpression (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+        let expr, scope = parent.ConvertExpression node scope
+        if node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Ref) then
+            ExpressionBuilder.AddressOf expr, scope
+        else
+            expr, scope
+
     /// Converts an invocation expression.
     let ConvertInvocation (target : IExpression) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
-        let args, scope = parent.ConvertExpressions node.Args scope
+        let args, scope = node.Args |> Seq.fold (fun (results, scope) arg -> let res, scope = ConvertArgumentExpression parent arg scope in res :: results, scope) ([], scope)
+        let args        = List.rev args
         ExpressionBuilder.Invoke scope target args, scope
 
     /// Converts a new-instance expression.

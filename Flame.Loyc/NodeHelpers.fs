@@ -25,7 +25,7 @@ module NodeHelpers =
         else
             None
 
-    /// Gets the name of the id id node that is encapsulated by the given node, if any.
+    /// Gets the name of the id node that is encapsulated by the given node, if any.
     /// Otherwise, None.
     let GetIdName (node : LNode) =
         match GetIdNode node with
