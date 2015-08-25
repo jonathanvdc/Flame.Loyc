@@ -306,7 +306,7 @@ module ExpressionConverters =
     let ConvertArgumentExpression (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let expr, scope = parent.ConvertExpression node scope
         if node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Ref) then
-            ExpressionBuilder.AddressOf expr, scope
+            ExpressionBuilder.AddressOf expr |> ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range), scope
         else
             expr, scope
 
