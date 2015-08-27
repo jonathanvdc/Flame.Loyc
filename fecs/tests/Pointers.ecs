@@ -3,9 +3,9 @@ namespace PointersTest
 {
     public static class Program
     {
-        public static void Assign<T>(ref T Target, T Value)
+        public static unsafe void Assign<T>(ref T Target, T Value)
         {
-            Target = Value;
+            Assign<T>(&Target, Value);
         }
 
         public static unsafe void Assign<T>(T* Target, T Value)
