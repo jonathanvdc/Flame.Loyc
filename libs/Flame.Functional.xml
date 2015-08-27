@@ -1707,6 +1707,16 @@
  Analyzes the given expression as the target of a member access operation.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.NewArray(Flame.IType,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Creates a new array of the given element types and dimensions.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.Index(Flame.Functional.LocalScope,Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Indexes the given expression with the given arguments.
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.Invoke(Flame.Functional.LocalScope,Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
  Creates an expression that represents the invocation of the given function on the

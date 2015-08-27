@@ -325,10 +325,14 @@ module ExpressionConverters =
             ExpressionBuilder.AddressOf expr |> ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range), scope
         else
             expr, scope
+    
+    /// Converts a sequence of argument expressions, which may have `#ref` attributes.
+    let ConvertArgumentExpressions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) =
+        nodes |> Seq.fold (fun (results, scope) arg -> let res, scope = ConvertArgumentExpression parent arg scope in res :: results, scope) ([], scope)
 
     /// Converts an invocation expression.
     let ConvertInvocation (target : IExpression) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
-        let args, scope = node.Args |> Seq.fold (fun (results, scope) arg -> let res, scope = ConvertArgumentExpression parent arg scope in res :: results, scope) ([], scope)
+        let args, scope = ConvertArgumentExpressions parent node.Args scope
         let args        = List.rev args
         ExpressionBuilder.Invoke scope target args, scope
 
@@ -336,8 +340,37 @@ module ExpressionConverters =
     let ConvertNewInstance (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let call         = node.Args.[0]
         let instanceType = parent.ConvertType call.Target scope
-        let args, scope  = parent.ConvertExpressions call.Args scope
+        let args, scope  = ConvertArgumentExpressions parent call.Args scope
         ExpressionBuilder.Invoke scope (ExpressionBuilder.NewInstanceDelegates scope instanceType) args, scope
+
+
+    /// Matches and converts new-array expressions.
+    let NewArrayConverter =
+        let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let call         = node.Args.[0]
+            let elemType     = parent.ConvertType call.Target.Args.[1] scope
+            let args, scope  = parent.ConvertExpressions call.Args scope
+            ExpressionBuilder.NewArray elemType args, scope
+
+        let matches (node : LNode) = 
+            // match anything that looks like:
+            //
+            // #new(#of(@`[]`, T)(args...))
+
+            node.ArgCount = 1 && 
+            let arrType = node.Args.[0].Target in 
+                arrType <> null && 
+                arrType.Target.Name = CodeSymbols.Of && 
+                arrType.ArgCount = 2 &&
+                CodeSymbols.IsArrayKeyword arrType.Args.[0].Name
+
+        CreateConverter matches conv
+
+    /// Converts an indexed expression, such as `arr[0]`.
+    let ConvertIndexed (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+        let inner, scope = parent.ConvertExpression node.Args.[0] scope
+        let args, scope  = ConvertArgumentExpressions parent (node.Args.Slice(1)) scope
+        ExpressionBuilder.Index scope inner args, scope
 
     /// Converts member access.
     let MemberAccessConverter =
