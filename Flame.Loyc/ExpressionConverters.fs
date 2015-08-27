@@ -409,10 +409,31 @@ module ExpressionConverters =
 
             node.ArgCount > 1 && 
             let arrType = node.Args.[0].Target in 
-                arrType <> null && 
-                arrType.Target.Name = CodeSymbols.Of && 
-                arrType.ArgCount = 2 &&
-                CodeSymbols.IsArrayKeyword arrType.Args.[0].Name
+                (arrType <> null && 
+                 arrType.Target <> null &&
+                 arrType.Target.Name = CodeSymbols.Of && 
+                 arrType.ArgCount = 2 &&
+                 CodeSymbols.IsArrayKeyword arrType.Args.[0].Name)
+
+        CreateConverter matches conv
+
+    /// Matches and converts automatically typed initialized array expressions.
+    let InitializedAutoArrayConverter =
+        let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let args, scope  = parent.ConvertExpressions (node.Args.Slice(1)) scope
+            let lowerBounds  = SetExtensions.UpperBounds(args |> Seq.map (fun x -> x.Type), fun x y -> not(x.Is(y)))
+            if lowerBounds |> Seq.skip 1 |> Seq.isEmpty then
+                ExpressionBuilder.NewInitializedArray (Seq.exactlyOne lowerBounds) args, scope
+            else
+                ExpressionBuilder.NewInitializedArray scope.Global.Environment.RootType args |> 
+                    ExpressionBuilder.Error (new LogEntry("Ambiguous array type", 
+                                                          "Could not infer the automatically typed array's element type.")), scope
+        
+        let matches (node : LNode) = 
+            // Matches anything that looks like:
+            //
+            // #new([], args...)
+            node.ArgCount > 1 && node.Args.[0].Name = CodeSymbols.Array
 
         CreateConverter matches conv
 
