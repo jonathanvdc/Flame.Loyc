@@ -112,6 +112,22 @@ module ExpressionConverters =
     let DefineBinaryAssignmentOperator (converter : LocalScope -> IExpression -> IExpression -> IExpression) =
         DefineScopedBinaryOperator (fun scope lhs rhs -> ExpressionBuilder.Assign scope lhs (converter scope lhs rhs))
 
+    let MakeUnsafeConverter (converter : SingleNodeConverter<IExpression * LocalScope>) : SingleNodeConverter<IExpression * LocalScope> =
+        let convUnsafe parent node scope =
+            let inner, scope = converter.Convert parent node scope
+            let logWarning = match scope.Function.Function with
+                             | Some declFunc -> not(UnsafeHelpers.IsUnsafe declFunc) && scope.Global.Log.UsePedanticWarnings(UnsafeHelpers.MissingUnsafeWarningName)
+                             | None          -> false
+            if logWarning then
+                inner |> ExpressionBuilder.Warning (new LogEntry("Missing 'unsafe' attribute", 
+                                                                 "Unsafe code should not appear outside of an unsafe context. " +
+                                                                 "Add 'unsafe' to the enclosing member to make this warning go away. " +
+                                                                 Warnings.Instance.GetWarningNameMessage(UnsafeHelpers.MissingUnsafeWarningName))), scope
+            else
+                inner, scope
+
+        new SingleNodeConverter<IExpression * LocalScope>(converter.Matches, convUnsafe)
+
     /// Converts a scoped expression. 
     /// Note that an IExpression is returned, instead of an IExpression * LocalScope,
     /// as this function should not be exposed as a converter directly.

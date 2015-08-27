@@ -236,6 +236,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.NullCoalesce (ExpressionBuilder.CoalesceNull |> ExpressionConverters.DefineBinaryOperator);
                                              makePair CodeSymbols.NullCoalesceSet (ExpressionBuilder.CoalesceNull |> ExpressionConverters.Constant |> ExpressionConverters.DefineBinaryAssignmentOperator);
 
+                                             makePair CodeSymbols._Dereference (ExpressionConverters.DefineScopedUnaryOperator ExpressionBuilder.Dereference |> ExpressionConverters.MakeUnsafeConverter)
                                              makePair CodeSymbols._UnaryPlus (ExpressionConverters.DefineUnaryOperator id);
                                              makePair CodeSymbols.Not (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Not);
                                              makePair CodeSymbols.NotBits (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Not);
@@ -311,6 +312,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                  makePair CodeSymbols.Dot MemberConverters.ScopeOperatorConverter;
                                  makePair CodeSymbols.ColonColon MemberConverters.ScopeOperatorConverter;
                                  makePair CodeSymbols.Of MemberConverters.ArrayTypeConverter;
+                                 makePair CodeSymbols.Of (MemberConverters.PointerTypeConverter CodeSymbols._Pointer PointerKind.TransientPointer);
                                  makePair CodeSymbols.Of MemberConverters.GenericInstanceTypeConverter;
                              |] |> Seq.ofArray 
                                 |> NodeConverter.ToMultiDictionary
@@ -345,6 +347,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                         CodeSymbols.Abstract,    AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.AbstractAttribute "abstract"
                                         CodeSymbols.Virtual,     AttributeConverters.ConstantAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute "virtual"
                                         CodeSymbols.Sealed,      AttributeConverters.RemoveAttributeConverter PrimitiveAttributes.Instance.VirtualAttribute.AttributeType "sealed" "virtual"
+                                        CodeSymbols.Unsafe,      AttributeConverters.ConstantAttributeConverter UnsafeHelpers.UnsafeAttribute "unsafe"
                                         CodeSymbols.Static,      AttributeConverters.EmptyAttributeConverter
                                     |] |> Seq.ofArray
                                        |> NodeConverter.ToMultiDictionary

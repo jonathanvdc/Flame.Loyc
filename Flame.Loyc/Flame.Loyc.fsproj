@@ -66,6 +66,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UnsafeHelpers.fs" />
     <Compile Include="LoycSourceDocument.fs" />
     <Compile Include="NodeHelpers.fs" />
     <Compile Include="INodeConverter.fs" />

@@ -13,7 +13,7 @@ open LazyHelpers
 open MemberHelpers
 open System
 
-module MemberConverters =
+module MemberConverters =        
     let ReadAttributes (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (attrs : IAttribute seq) =
         let attrs    = node.Attrs |> Seq.fold (fun state attr -> parent.ConvertAttribute attr scope state) attrs
         let isStatic = node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Static)
@@ -459,6 +459,18 @@ module MemberConverters =
 
         let matches (node : LNode) =
             node.ArgCount = 2 && CodeSymbols.IsArrayKeyword node.Args.[0].Name
+
+        CreateConverter matches convTy
+
+    /// A converter that converts pointer suffixes.
+    let PointerTypeConverter pointerSymbol pointerKind =
+        let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
+            match parent.ConvertType node.Args.[1] scope with
+            | null -> null
+            | ty   -> ty.MakePointerType(pointerKind) :> IType
+
+        let matches (node : LNode) =
+            node.ArgCount = 2 && node.Args.[0].Name = pointerSymbol
 
         CreateConverter matches convTy
 
