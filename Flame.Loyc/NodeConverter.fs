@@ -272,6 +272,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
 
                                              makePair CodeSymbols.Throw (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Throw);
                                              makePair CodeSymbols.New ExpressionConverters.NewArrayConverter;
+                                             makePair CodeSymbols.New ExpressionConverters.InitializedTypedArrayConverter;
                                              makePair CodeSymbols.New (ExpressionConverters.CreateUnaryConverter ExpressionConverters.ConvertNewInstance);
                                              makePair CodeSymbols.IndexBracks (ExpressionConverters.CreateConverter (fun x -> x.ArgCount > 1) ExpressionConverters.ConvertIndexed)
 

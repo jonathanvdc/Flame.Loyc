@@ -343,21 +343,71 @@ module ExpressionConverters =
         let args, scope  = ConvertArgumentExpressions parent call.Args scope
         ExpressionBuilder.Invoke scope (ExpressionBuilder.NewInstanceDelegates scope instanceType) args, scope
 
+    let private convertArrayDimensions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) : IExpression seq * LocalScope = 
+        let dims, scope  = parent.ConvertExpressions nodes scope
+        let dims         = dims |> Seq.map (ExpressionBuilder.CastImplicit scope >> (|>) PrimitiveTypes.Int32)
+        dims, scope
 
     /// Matches and converts new-array expressions.
     let NewArrayConverter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
             let call         = node.Args.[0]
             let elemType     = parent.ConvertType call.Target.Args.[1] scope
-            let args, scope  = parent.ConvertExpressions call.Args scope
-            ExpressionBuilder.NewArray elemType args, scope
+            let dims, scope  = convertArrayDimensions parent call.Args scope
+            ExpressionBuilder.NewArray elemType dims, scope
 
         let matches (node : LNode) = 
-            // match anything that looks like:
+            // Matches anything that looks like:
             //
-            // #new(#of(@`[]`, T)(args...))
+            // #new(#of(@`[...]`, T)(dims...))
 
             node.ArgCount = 1 && 
+            let arrType = node.Args.[0].Target in 
+                arrType <> null && 
+                arrType.Target.Name = CodeSymbols.Of && 
+                arrType.ArgCount = 2 &&
+                CodeSymbols.IsArrayKeyword arrType.Args.[0].Name
+
+        CreateConverter matches conv
+
+    let private convertInitializedArrayItems (parent : INodeConverter) (elemType : IType) (nodes : LNode seq) (scope : LocalScope) = 
+        let args, scope  = parent.ConvertExpressions nodes scope
+        let args         = args |> Seq.map (ExpressionBuilder.CastImplicit scope >> (|>) elemType)
+        args, scope
+
+    /// Matches and converts manually typed initialized array expressions.
+    let InitializedTypedArrayConverter =
+        let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
+            let call         = node.Args.[0]
+            let elemType     = parent.ConvertType call.Target.Args.[1] scope
+            let dims, scope  = convertArrayDimensions parent call.Args scope
+            let args, scope  = convertInitializedArrayItems parent elemType (node.Args.Slice(1)) scope
+            
+            let resultExpr = ExpressionBuilder.NewInitializedArray elemType args
+            
+            let dimsRank = Seq.length dims
+            if dimsRank = 0 then
+                resultExpr, scope // Easy. Just infer the array's length.
+            else if dimsRank <> 1 then
+                resultExpr |> ExpressionBuilder.Error (new LogEntry("Unsupported feature",
+                                                                    "Initialized arrays of rank greater than one are not supported yet.")), scope
+            else
+                let constDim = dims |> Seq.exactlyOne |> NodeExtensions.EvaluateConstant
+                if constDim = null then
+                    resultExpr |> ExpressionBuilder.Error (new LogEntry("Variable array length",
+                                                                        "The given array length could not be evaluated at compile-time.")), scope
+                else if constDim.GetInt32Value() <> Seq.length args then
+                    resultExpr |> ExpressionBuilder.Error (new LogEntry("Array initialization length mismatch",
+                                                                        "Expected an initializer list of length '" + string(constDim.GetInt32Value()) + "', got one of length '" + string(Seq.length args) + "'.")), scope
+                else
+                    resultExpr, scope
+
+        let matches (node : LNode) = 
+            // Matches anything that looks like:
+            //
+            // #new(#of(@`[...]`, T)(dims...), args...)
+
+            node.ArgCount > 1 && 
             let arrType = node.Args.[0].Target in 
                 arrType <> null && 
                 arrType.Target.Name = CodeSymbols.Of && 

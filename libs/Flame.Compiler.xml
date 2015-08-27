@@ -5211,6 +5211,13 @@
  Gets the property's indexer arguments.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Variables.ElementVariable">
+      <summary>
+ A type of variable that represents an expression indexed by a sequence
+ of arguments. Said expression's type can be either a container type, or
+ a type with a user-defined indexer.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Variables.ElementVariable.CreateAddressOfExpression">
       <summary>
  Creates an expression that returns the address in memory of this variable.
@@ -5233,6 +5240,39 @@
  flag this variable for re-use within the scope of the current method.
  The actual re-use of the variable is the variable and the code generator's
  prerogative.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.IndexArgumentTypes">
+      <summary>
+ Gets the types of the index arguments, as an array.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.IndexerProperty">
+      <summary>
+ Gets the user-defined indexer property this element variable relies on.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.CanResolve">
+      <summary>
+ Gets a boolean value that tells if this element variable could be
+ resolved, i.e., is well-formed.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.IsContainerElement">
+      <summary>
+ Gets a boolean flag that indicates whether this element variable's
+ target is a container element.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.Target">
+      <summary>
+ Gets the expression that is indexed.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Variables.ElementVariable.IndexArguments">
+      <summary>
+ Gets the sequence of arguments that is used to index the target
+ variable.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Variables.AtAddressVariable">
@@ -5369,6 +5409,12 @@
  If said expression itself refers to a variable, said underlying
  variable is returned. Otherwise, an expression variable containing
  the given expression is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Variables.ElementVariable.Static_Singleton.GetElementType(Flame.IType,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Gets the return type of an indexing operation on the given
+ target type with the given sequence of argument types.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Visitors.AggregatePass`1">

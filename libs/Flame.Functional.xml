@@ -1707,6 +1707,12 @@
  Analyzes the given expression as the target of a member access operation.
 </summary>
 </member>
+<member name="M:Flame.Functional.ExpressionBuilder.NewInitializedArray(Flame.IType,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
+<summary>
+ Creates a new array of the given element type, and initializes it with
+ the given sequence of expressions, which represent the array&apos;s items.
+</summary>
+</member>
 <member name="M:Flame.Functional.ExpressionBuilder.NewArray(Flame.IType,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
  Creates a new array of the given element types and dimensions.
