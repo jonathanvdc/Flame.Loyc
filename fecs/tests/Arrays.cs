@@ -12,7 +12,7 @@ namespace ArraysTest
                 Console.WriteLine(copy[i] = Args[i]);
             }
 
-            string[] items = new[] { "hello", "world" };
+            var items = new[] { "hello", "world" };
             for (int i = 0; i < items.Length; i++)
             {
                 Console.WriteLine(items[i]);

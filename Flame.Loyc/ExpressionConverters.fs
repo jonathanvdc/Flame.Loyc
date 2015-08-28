@@ -6,6 +6,7 @@ open Flame
 open Flame.Compiler
 open Flame.Compiler.Expressions
 open Flame.Functional
+open Pixie
 
 module ExpressionConverters =
     /// Creates a function that returns the given constant.
@@ -364,6 +365,7 @@ module ExpressionConverters =
             node.ArgCount = 1 && 
             let arrType = node.Args.[0].Target in 
                 arrType <> null && 
+                arrType.Target <> null &&
                 arrType.Target.Name = CodeSymbols.Of && 
                 arrType.ArgCount = 2 &&
                 CodeSymbols.IsArrayKeyword arrType.Args.[0].Name
@@ -421,13 +423,20 @@ module ExpressionConverters =
     let InitializedAutoArrayConverter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
             let args, scope  = parent.ConvertExpressions (node.Args.Slice(1)) scope
-            let lowerBounds  = SetExtensions.UpperBounds(args |> Seq.map (fun x -> x.Type), fun x y -> not(x.Is(y)))
+            let lowerBounds  = args |> Seq.map (fun x -> x.Type)
+                                    |> MemberHelpers.UpperBounds (fun x y -> x.Is(y))
             if lowerBounds |> Seq.skip 1 |> Seq.isEmpty then
                 ExpressionBuilder.NewInitializedArray (Seq.exactlyOne lowerBounds) args, scope
             else
+                let optionList = lowerBounds |> Seq.map scope.Global.TypeNamer
+                                             |> Seq.map (fun name -> new MarkupNode(NodeConstants.TextNodeType, name) :> IMarkupNode)
+                                             |> (fun options -> ListExtensions.Instance.CreateList("Irreconcilable item types:", options))
+                let message    = new MarkupNode(NodeConstants.TextNodeType, "Could not infer the automatically typed array's element type, because the array's item types could not be reconciled.") :> IMarkupNode
+                let contents   = new MarkupNode("entry", Seq.ofArray [| message; optionList |])
+
                 ExpressionBuilder.NewInitializedArray scope.Global.Environment.RootType args |> 
                     ExpressionBuilder.Error (new LogEntry("Ambiguous array type", 
-                                                          "Could not infer the automatically typed array's element type.")), scope
+                                                          contents)), scope
         
         let matches (node : LNode) = 
             // Matches anything that looks like:
