@@ -999,8 +999,12 @@
             last token in the file.
             </remarks>
         </member>
-        <member name="M:Loyc.Syntax.BaseParser`2.LaIndexToSourcePos(System.Int32)">
-            <summary>Converts a lookahead token index to a <see cref="T:Loyc.Syntax.SourcePos"/>
+        <member name="M:Loyc.Syntax.BaseParser`2.LaIndexToSourceRange(System.Int32)">
+            <summary>Converts a lookeahead token index to a <see cref="T:Loyc.Syntax.SourceRange"/>
+            object using <see cref="M:Loyc.Syntax.BaseParser`2.LaIndexToCharIndex(System.Int32)"/> and <see cref="P:Loyc.Syntax.BaseParser`2.SourceFile"/>.</summary>
+        </member>
+        <member name="M:Loyc.Syntax.BaseParser`2.LaIndexToContext(System.Int32)">
+            <summary>Converts a lookahead token index to a <see cref="T:Loyc.Syntax.SourceRange"/>
             object using <see cref="M:Loyc.Syntax.BaseParser`2.LaIndexToCharIndex(System.Int32)"/> and <see cref="P:Loyc.Syntax.BaseParser`2.SourceFile"/>.</summary>
             <remarks>If the derived class initialized <c>SourceFile</c> to null, 
             returns "At index {0}" where {0} is the character index.</remarks>
