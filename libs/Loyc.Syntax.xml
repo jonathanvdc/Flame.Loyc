@@ -3773,6 +3773,13 @@
             <summary>A <see cref="T:Loyc.Syntax.SourcePos"/> that also includes the original index 
             from which the Line and PosInLine were derived.</summary>
         </member>
+        <member name="T:Loyc.Syntax.SourcePosAndFile">
+            <summary>A <see cref="T:Loyc.Syntax.SourcePos"/> that also includes the source file 
+            object from which the source identifier was derived.</summary>
+        </member>
+        <member name="P:Loyc.Syntax.SourcePosAndFile.Source">
+            <summary>Gets the source file this source position is associated with.</summary>
+        </member>
         <member name="T:Loyc.Syntax.SourceRange">
             <summary>
             Holds a reference to a source file (ISourceFile&lt;char&gt;) and the

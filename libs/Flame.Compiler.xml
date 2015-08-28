@@ -3824,6 +3824,11 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Expressions.VoidExpression">
+      <summary>
+ The void expression singleton, which is a constant expression of type `void`.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.VoidExpression.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -3934,6 +3939,12 @@
  Accepts and interacts with a flow visitor.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.ReturnStatement">
+      <summary>
+ Defines a statement that sets the function's return value,
+ and then terminates the function's execution.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.ReturnStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -3952,6 +3963,11 @@
     <member name="M:Flame.Compiler.Statements.ReturnStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.ReturnStatement.Value">
+      <summary>
+ Gets the value that is returned by this statement.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Statements.IfElseStatement">
@@ -4135,6 +4151,12 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.EmptyStatement">
+      <summary>
+ The empty statement singleton, which compiles down to the same code block
+ as a void expression. It does not have any side-effects.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.EmptyStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -4209,6 +4231,12 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.BlockStatement">
+      <summary>
+ Defines block statements, i.e. statements which execute a number of child
+ statements in sequence.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.BlockStatement.AcceptPredicate(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts the predicate node visitor.
@@ -4238,6 +4266,17 @@
  </summary>
       <returns />
     </member>
+    <member name="P:Flame.Compiler.Statements.BlockStatement.Children">
+      <summary>
+ Gets this block statement's sequence of child statements.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Statements.ExpressionStatement">
+      <summary>
+ Defines a type of statement that evaluates its inner expression, and then
+ discards its value.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.ExpressionStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -4256,6 +4295,11 @@
     <member name="M:Flame.Compiler.Statements.ExpressionStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.ExpressionStatement.Expression">
+      <summary>
+ Gets the expression statement's inner expression.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Statements.LateBoundVariableSetStatement.Accept(Flame.Compiler.INodeVisitor)">
@@ -4336,6 +4380,12 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.CodeBlockStatement">
+      <summary>
+ Defines a type of statement that wraps a code block directly, which is
+ returned when calling `Emit`.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.CodeBlockStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -4354,6 +4404,11 @@
     <member name="M:Flame.Compiler.Statements.CodeBlockStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.CodeBlockStatement.Block">
+      <summary>
+ Gets the code block that is wrapped by this code block statement.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Statements.LocalFlowStatementBase">
@@ -4392,9 +4447,21 @@
  Gets the tag of the tagged block whose iteration is to be terminated.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.BreakStatement">
+      <summary>
+ A statement type that represents the notion of a "break" statement that
+ targets a specific tagged block.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.BreakStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Statements.ContinueStatement">
+      <summary>
+ A statement type that represents the notion of a "continue" statement that
+ targets a specific tagged block.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Statements.ContinueStatement.Emit(Flame.Compiler.ICodeGenerator)">
@@ -4498,6 +4565,16 @@
     <member name="M:Flame.Compiler.Statements.TaggedStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.TaggedStatement.Tag">
+      <summary>
+ Gets the tag that identifies this tagged statement.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.TaggedStatement.Body">
+      <summary>
+ Gets this tagged statement's body.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Statements.YieldReturnStatement.Accept(Flame.Compiler.INodeVisitor)">
@@ -4695,6 +4772,11 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Statements.ThrowStatement">
+      <summary>
+ Defines a type of statement that throws the given exception expression.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.ThrowStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -4715,6 +4797,18 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="P:Flame.Compiler.Statements.ThrowStatement.Exception">
+      <summary>
+ Gets the expression that creates the exception object this statement
+ throws.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Statements.AssertStatement">
+      <summary>
+ Defines a statement that checks if an expression evaluates to `true`.
+ If not, the user is notified in an implementation-defined manner.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Statements.AssertStatement.Accept(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts a node visitor.
@@ -4733,6 +4827,11 @@
     <member name="M:Flame.Compiler.Statements.AssertStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Statements.AssertStatement.Expression">
+      <summary>
+ Gets the expression that is tested for equality to `true`.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Statements.SourceStatement">

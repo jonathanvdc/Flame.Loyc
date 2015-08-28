@@ -14,11 +14,12 @@ type CompilerLogMessageSink(log : ICompilerLog) =
 
     static member GetContextMarkupNode (context : obj) =
         match context with        
-        | :? SourceRange as ran  -> (NodeHelpers.ToSourceLocation ran).CreateDiagnosticsNode()
-        | :? LNode as node       -> (NodeHelpers.ToSourceLocation node.Range).CreateDiagnosticsNode()
-        | :? IHasLocation as loc -> CompilerLogMessageSink.GetContextMarkupNode loc.Location
-        | null                   -> new MarkupNode(NodeConstants.TextNodeType, "") :> IMarkupNode
-        | _                      -> new MarkupNode(NodeConstants.RemarksNodeType, context.ToString()) :> IMarkupNode
+        | :? SourceRange as ran      -> (NodeHelpers.ToSourceLocation ran).CreateDiagnosticsNode()
+        | :? SourcePosAndFile as pos -> (new SourceRange(pos.Source, pos.Source.LineToIndex pos, 1) |> NodeHelpers.ToSourceLocation).CreateDiagnosticsNode()
+        | :? LNode as node           -> (NodeHelpers.ToSourceLocation node.Range).CreateDiagnosticsNode()
+        | :? IHasLocation as loc     -> CompilerLogMessageSink.GetContextMarkupNode loc.Location
+        | null                       -> new MarkupNode(NodeConstants.TextNodeType, "") :> IMarkupNode
+        | _                          -> new MarkupNode(NodeConstants.RemarksNodeType, context.ToString()) :> IMarkupNode
 
     static member ToLogEntry (titleSplitter : string -> string * string) (context : obj) (message : string) =
         let name, contents = titleSplitter message
