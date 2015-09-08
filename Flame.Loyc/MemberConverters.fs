@@ -26,8 +26,8 @@ module MemberConverters =
 
     let AliasGenericParameters (genMember : IGenericMember) (scope : GlobalScope) = 
         let foldParam (binder : FunctionalBinder) (tParam : IGenericParameter) = binder.AliasType (new TypeName(tParam.Name)) (lazy (tParam :> IType))
-        genMember.GetGenericParameters() |> Seq.fold foldParam scope.Binder
-                                         |> scope.WithBinder
+        genMember.GenericParameters |> Seq.fold foldParam scope.Binder
+                                    |> scope.WithBinder
 
     let rec ReadName (parent : INodeConverter) (node : LNode) (scope : GlobalScope) =
         if node.Name = CodeSymbols.Of then
@@ -259,7 +259,7 @@ module MemberConverters =
             let thisExpr   = if declMethod.IsStatic then 
                                  let declType = declMethod.DeclaringType
                                  let finalType = if declType.get_IsGeneric() && declType.get_IsGenericDeclaration() then
-                                                     declType.MakeGenericType(declType.GetGenericParameters() |> Seq.cast)
+                                                     declType.MakeGenericType(declType.GenericParameters |> Seq.cast)
                                                  else
                                                      declType
                                  Global finalType
@@ -351,7 +351,7 @@ module MemberConverters =
                                                 let fieldAttrs = [new AccessAttribute(AccessModifier.Private) :> IAttribute; 
                                                                   PrimitiveAttributes.Instance.HiddenAttribute]
                                                 let header = new FunctionalMemberHeader(AutoPropertyFieldName name, fieldAttrs, NodeHelpers.ToSourceLocation node.Range)
-                                                new FunctionalField(header, declType, fst attrs, lazy declType.GetProperties().GetProperty(name, fst attrs).PropertyType) :> IField
+                                                new FunctionalField(header, declType, fst attrs, lazy declType.Properties.GetProperty(name, fst attrs).PropertyType) :> IField
                                             declType.WithField createAutoPropField, ConvertAutoAccessorDeclaration
                                         else
                                             declType, ConvertAccessorDeclaration
@@ -436,7 +436,7 @@ module MemberConverters =
     let ScopeOperatorConverter =
         let getSubtype (ty : IType) (name : TypeName) =
             match ty with
-            | :? INamespace as ns -> ns.GetTypes() |> Array.tryFind (fun x -> x.Name = name.Name)
+            | :? INamespace as ns -> ns.Types |> Seq.tryFind (fun x -> x.Name = name.Name)
             | _                   -> None
                 
         let convTy (parent : INodeConverter) (node : LNode) (scope : LocalScope) =

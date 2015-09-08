@@ -284,6 +284,9 @@
  Gets this functional-style accessor&apos;s return type.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalAccessor.Parameters">
 <summary>
  Gets this functional-style accessor&apos;s parameters.
@@ -306,6 +309,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalAccessor.DeclaringProperty">
 <summary>
  Gets this functional-style accessor&apos;s property type.
@@ -315,6 +321,9 @@
 <summary>
  Gets this functional-style accessor&apos;s body statement.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalAccessor.BaseMethods">
 <summary>
@@ -348,24 +357,6 @@
 <summary>
  Sets this functional-style accessor&apos;s base methods.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -654,6 +645,9 @@
  Gets this functional-style method&apos;s return type.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalMethod.Parameters">
 <summary>
  Gets this functional-style method&apos;s parameters.
@@ -678,6 +672,9 @@
  Finds out if this functional-style method is a constructor or not.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalMethod.GenericParameters">
 <summary>
  Gets this functional-style method&apos;s generic parameters.
@@ -692,6 +689,9 @@
 <summary>
  Gets this functional-style method&apos;s body statement.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalMethod.BaseMethods">
 <summary>
@@ -745,24 +745,6 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalMethod">
 <summary>
  Defines a functional-style method.
@@ -789,10 +771,16 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalNamespace.Types">
 <summary>
  Gets all types this functional-style namespace contains directly.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalNamespace.Namespaces">
 <summary>
@@ -821,6 +809,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="M:Flame.Functional.FunctionalNamespace.WithType(Microsoft.FSharp.Core.FSharpFunc{Flame.INamespace,Flame.IType})">
 <summary>
  Sets this functional-style field&apos;s initial value.
@@ -833,15 +824,6 @@
 <summary>
  Sets this functional-style field&apos;s field type.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -891,10 +873,16 @@
  Gets this functional-style property&apos;s accessors, with lazy evaluation.
 </summary>
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalProperty.IndexerParameters">
 <summary>
  Gets this functional-style property&apos;s indexer parameters.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalProperty.Accessors">
 <summary>
@@ -922,16 +910,13 @@
 <member name="">
 
 </member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
 <member name="T:Flame.Functional.FunctionalProperty">
 <summary>
  Defines a functional-style property.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -1005,11 +990,17 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalType.Name">
 <summary>
  Gets the type&apos;s &quot;formal&quot; name, i.e., the header&apos;s name with a suffix that
  identifies the number of type parameters the type takes.
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalType.Methods">
 <summary>
@@ -1038,6 +1029,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="P:Flame.Functional.FunctionalType.Fields">
 <summary>
  Gets this functional type&apos;s fields.
@@ -1049,15 +1043,19 @@
 <member name="">
 
 </member>
-<member name="P:Flame.Functional.FunctionalType.Constructors">
-<summary>
- Gets this functional type&apos;s constructors.
-</summary>
+<member name="">
+
 </member>
 <member name="P:Flame.Functional.FunctionalType.BaseTypes">
 <summary>
  Gets this functional type&apos;s base types.
 </summary>
+</member>
+<member name="">
+
+</member>
+<member name="">
+
 </member>
 <member name="M:Flame.Functional.FunctionalType.Flame-Functional-IFunctionalNamespace-WithType(Microsoft.FSharp.Core.FSharpFunc{Flame.INamespace,Flame.IType})">
 <summary>
@@ -1111,57 +1109,6 @@
 <summary>
  Adds an attribute to this functional-style type.
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="">
 

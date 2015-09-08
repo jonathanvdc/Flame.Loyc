@@ -44,6 +44,12 @@
  A state for the `FinalFlowRemover` node visitor.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.SpeculativeFlowState.this(System.Collections.Generic.IEnumerable`1{Flame.Optimization.SpeculativeStatement},System.Boolean)">
+      <summary>
+ Creates a new speculative flow state from the given speculative final statements
+ and a boolean that signals flow termination.
+ </summary>
+    </member>
     <member name="M:Flame.Optimization.SpeculativeFlowState.WithStatement(Flame.Optimization.SpeculativeStatement)">
       <summary>
  Creates a new speculative flow state that represents the current state with
@@ -84,6 +90,12 @@
  at the end of an enclosing control flow statement such as a tagged block, a
  `while` loop, a `do...while` loop or a `for` loop.
  Said enclosing statement is then transformed.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.FinalFlowRemover.this(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
+      <summary>
+ Creates a new final flow remover from the given enclosing flow
+ and a function that matches final flow.
  </summary>
     </member>
     <member name="M:Flame.Optimization.FinalFlowRemover.CreateCollapsedFlow(Flame.Optimization.SpeculativeFlowState,Flame.Optimization.SpeculativeFlowState)">
@@ -151,6 +163,12 @@
  at the start of an enclosing control flow statement such as a tagged block, a
  `while` loop, a `do...while` loop or a `for` loop.
  Said enclosing statement is then transformed.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.InitialFlowRemover.this(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
+      <summary>
+ Creates a new final flow remover from the given enclosing flow
+ and a function that matches final flow.
  </summary>
     </member>
     <member name="M:Flame.Optimization.InitialFlowRemover.CreateCollapsedFlow(Flame.Optimization.InitialFlowState,Flame.Optimization.InitialFlowState)">
@@ -290,6 +308,18 @@
  "Alive" speculative statements are equivalent to the statement they contain.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.SpeculativeStatement.this(Flame.Compiler.IStatement)">
+      <summary>
+ Creates a speculative statement that corresponds to the given
+ inner statement, and is marked "alive".
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.SpeculativeStatement.this(Flame.Compiler.IStatement,System.Boolean)">
+      <summary>
+ Creates a speculative statement from the given inner statement and
+ a boolean that determines whether it is alive or dead.
+ </summary>
+    </member>
     <member name="P:Flame.Optimization.SpeculativeStatement.Contents">
       <summary>
  Gets the speculative statement's inner statement.
@@ -304,6 +334,11 @@
     <member name="T:Flame.Optimization.StatementRewriter">
       <summary>
  A visitor that matches and then rewrites statements.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.StatementRewriter.this(System.Boolean(Flame.Compiler.IStatement),Flame.Compiler.IStatement(Flame.Compiler.IStatement))">
+      <summary>
+ Creates a final flow visitor from the given delegates.
  </summary>
     </member>
     <member name="P:Flame.Optimization.StatementRewriter.MatchesStatement">
@@ -322,6 +357,11 @@
  with other statements.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.InsertStatement.this">
+      <summary>
+ Creates a new insert statement.
+ </summary>
+    </member>
     <member name="M:Flame.Optimization.InsertStatement.Insert(Flame.Compiler.IStatement)">
       <summary>
  Inserts the given statement.
@@ -335,6 +375,16 @@
     <member name="T:Flame.Optimization.Variables.AccessCount">
       <summary>
  Records how many times a variable or variable definition has been accessed.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.AccessCount.this">
+      <summary>
+ Creates a new access count that represents zero variable accesses.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.AccessCount.this(System.Int32)">
+      <summary>
+ Creates a new access count that represents the specified number of accesses.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.AccessCount.Add(Flame.Optimization.Variables.AccessCount)">
@@ -419,6 +469,11 @@
  A variable definition that propagates a constant expression.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.ConstantVariableDefinition.this(Flame.Compiler.IExpression)">
+      <summary>
+ Creates a new constant variable definition from the given expression.
+ </summary>
+    </member>
     <member name="M:Flame.Optimization.Variables.ConstantVariableDefinition.CreateGetExpression">
       <summary>
  Creates a get-expression for this constant variable definition.
@@ -444,6 +499,11 @@
     <member name="T:Flame.Optimization.Variables.CopyVariableDefinition">
       <summary>
  A variable definition that propagates a copy of another variable definition.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.CopyVariableDefinition.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.IExpression)">
+      <summary>
+ Creates a new copy variable definition from the given arguments.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.CopyVariableDefinition.CreateGetExpression">
@@ -483,6 +543,11 @@
  A variable definition that propagates an expression provided that none of
  its dependencies have changed, and that the definition is propagated exactly
  once.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.DependentVariableDefinition.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.PropagationDependencies,Flame.Compiler.IExpression,Flame.Optimization.InsertStatement)">
+      <summary>
+ Creates a new dependent variable definition from the given arguments.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.DependentVariableDefinition.CreateGetExpression">
@@ -544,6 +609,11 @@
  Represents unconditional variable access.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.UnconditionalAccess.this">
+      <summary>
+ Creates a new unique access identifier.
+ </summary>
+    </member>
     <member name="M:Flame.Optimization.Variables.UnconditionalAccess.GetLiveliness(System.Collections.Generic.HashSet`1{Flame.Optimization.Variables.VariableDefinitionReach})">
       <summary>
  Determines this definition access' liveliness, based on a set of
@@ -554,6 +624,11 @@
     <member name="T:Flame.Optimization.Variables.VolatileAccess">
       <summary>
  Represents unconditional volatile variable access.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.VolatileAccess.this">
+      <summary>
+ Creates a new unique access identifier.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.VolatileAccess.GetLiveliness(System.Collections.Generic.HashSet`1{Flame.Optimization.Variables.VariableDefinitionReach})">
@@ -567,6 +642,11 @@
       <summary>
  Defines variable access that is live only if an associated variable
  definition is, too.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.ReachDependentAccess.this(Flame.Optimization.Variables.VariableDefinitionReach)">
+      <summary>
+ Creates a variable access identifier based on the given reach.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.ReachDependentAccess.GetLiveliness(System.Collections.Generic.HashSet`1{Flame.Optimization.Variables.VariableDefinitionReach})">
@@ -695,6 +775,11 @@
  Defines a type for local variable definitions.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.LocalVariableDefinition.this(Flame.Compiler.IUnmanagedVariable)">
+      <summary>
+ Creates a new local variable definition from the given variable.
+ </summary>
+    </member>
     <member name="M:Flame.Optimization.Variables.LocalVariableDefinition.CreateGetExpression">
       <summary>
  Creates a get-expression for this local variable definition.
@@ -720,6 +805,11 @@
     <member name="T:Flame.Optimization.Variables.LocalVariableDescription">
       <summary>
  Defines a uniquely identified local variable.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.LocalVariableDescription.this(Flame.Compiler.IVariable)">
+      <summary>
+ Creates a new local variable description from the given variable and index.
  </summary>
     </member>
     <member name="P:Flame.Optimization.Variables.LocalVariableDescription.Type">
@@ -784,6 +874,12 @@
       <summary>
  Defines a set of dependencies that can be used to decide whether
  a value should be propagated or not.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.PropagationDependencies.this(Flame.Optimization.Variables.PropagationMode,System.Collections.Generic.IEnumerable`1{Flame.Optimization.Variables.LocalVariableDescription})">
+      <summary>
+ Creates propagation dependencies from the given propagation scheme
+ and a set of dependencies.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.PropagationDependencies.DependsOn(Flame.Optimization.Variables.LocalVariableDescription)">
@@ -867,6 +963,11 @@
  no action is taken.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.TransferDefinitionStatement.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.IDefinitionAccess,Flame.Optimization.Variables.VariableDefinitionReach)">
+      <summary>
+ Creates a new variable definition transfer statement.
+ </summary>
+    </member>
     <member name="P:Flame.Optimization.Variables.TransferDefinitionStatement.Chain">
       <summary>
  Gets the variable definition chain whose value is taken.
@@ -927,6 +1028,11 @@
     <member name="T:Flame.Optimization.Variables.VariableDefinitionReach">
       <summary>
  Represents the reach of a single variable definition.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionReach.this(Flame.Optimization.Variables.IVariableDefinition,Flame.Optimization.Variables.LocalVariableDescription)">
+      <summary>
+ Creates a new variable definition reach structure for the given definition.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.VariableDefinitionReach.GetLiveliness(System.Collections.Generic.IEnumerable`1{Flame.Optimization.Variables.VariableDefinitionReach})">
@@ -999,6 +1105,12 @@
  The assignment remains live as long as the definition is live.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionStatement.this(Flame.Optimization.Variables.VariableDefinitionReach,Flame.Compiler.IExpression)">
+      <summary>
+ Creates a new variable definition statement from the given parameters.
+ Note that the given definition must have an underlying variable.
+ </summary>
+    </member>
     <member name="P:Flame.Optimization.Variables.VariableDefinitionStatement.Definition">
       <summary>
  Gets the variable definition reach this statement depends on.
@@ -1017,9 +1129,20 @@
  do anything beyond that.
  </summary>
     </member>
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionMarker.this(Flame.Optimization.Variables.VariableDefinitionReach)">
+      <summary>
+ Creates a new variable definition marker statement.
+ </summary>
+    </member>
     <member name="P:Flame.Optimization.Variables.VariableDefinitionMarker.Definition">
       <summary>
  Gets the variable definition that is marked here.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.this">
+      <summary>
+ Creates a new final flow remover from the given enclosing flow
+ and a function that matches final flow.
  </summary>
     </member>
     <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.Id``1(T)">

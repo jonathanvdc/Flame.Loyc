@@ -56,7 +56,7 @@ namespace fecs
         {
             if (Type.PointerKind.Equals(PointerKind.ReferencePointer))
             {
-                return "ref " + Convert(Type.GetElementType());
+                return "ref " + Convert(Type.ElementType);
             }
             else
             {

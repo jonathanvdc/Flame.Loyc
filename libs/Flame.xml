@@ -63,11 +63,11 @@
  the global scope.
  </summary>
     </member>
-    <member name="M:Flame.IMember.GetAttributes">
+    <member name="T:Flame.IMember">
       <summary>
- Gets the member's attributes.
+ A root interface for members: objects that have a name, a full name,
+ and a set of attributes.
  </summary>
-      <returns />
     </member>
     <member name="P:Flame.IMember.Name">
       <summary>
@@ -77,6 +77,17 @@
     <member name="P:Flame.IMember.FullName">
       <summary>
  Gets the member's full name.
+ </summary>
+    </member>
+    <member name="P:Flame.IMember.Attributes">
+      <summary>
+ Gets the member's attributes.
+ </summary>
+    </member>
+    <member name="T:Flame.ITypeMember">
+      <summary>
+ Defines type membes: members that are declared within the scope
+ of a type.
  </summary>
     </member>
     <member name="P:Flame.ITypeMember.DeclaringType">
@@ -94,94 +105,39 @@
  Defines common functionality for types.
  </summary>
     </member>
-    <member name="M:Flame.IType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.IType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
     <member name="M:Flame.IType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.IType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.IType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.IType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
     </member>
     <member name="P:Flame.IType.DeclaringNamespace">
       <summary>
  Gets the namespace that defined the type.
  </summary>
     </member>
-    <member name="P:Flame.IType.IsContainerType">
+    <member name="P:Flame.IType.Methods">
       <summary>
- Gets a boolean value that indicates if the current type is a container type, like an array or a pointer.
+ Gets the type's methods, including constructors.
+ </summary>
+    </member>
+    <member name="P:Flame.IType.Properties">
+      <summary>
+ Gets the type's properties.
+ </summary>
+    </member>
+    <member name="P:Flame.IType.Fields">
+      <summary>
+ Gets the type's fields.
+ </summary>
+    </member>
+    <member name="P:Flame.IType.BaseTypes">
+      <summary>
+ Gets the type's base types.
+ </summary>
+    </member>
+    <member name="P:Flame.IType.AncestryRules">
+      <summary>
+ Gets this type's ancestry rules.
  </summary>
     </member>
     <member name="P:Flame.IAttribute.AttributeType">
@@ -205,54 +161,11 @@
  Gets the constructor that was used to create this attribute.
  </summary>
     </member>
-    <member name="T:Flame.ContainerTypeKind">
+    <member name="P:Flame.IContainerType.ElementType">
       <summary>
- Describes possible container types.
- </summary>
-    </member>
-    <member name="F:Flame.ContainerTypeKind.Array">
-      <summary>
- An array container type.
- </summary>
-    </member>
-    <member name="F:Flame.ContainerTypeKind.Pointer">
-      <summary>
- A pointer container type.
- </summary>
-    </member>
-    <member name="F:Flame.ContainerTypeKind.Vector">
-      <summary>
- A vector container type
- </summary>
-    </member>
-    <member name="M:Flame.IContainerType.GetElementType">
-      <summary>
- Gets the type of the object encompassed or referred to by the current container type.
+ Gets the type referred to by the current container type.
  </summary>
       <returns />
-    </member>
-    <member name="M:Flame.IContainerType.AsArrayType">
-      <summary>
- Returns this type as an array type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IContainerType.AsPointerType">
-      <summary>
- Returns this type as a pointer type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IContainerType.AsVectorType">
-      <summary>
- Returns this type as a vector type.
- </summary>
-      <returns />
-    </member>
-    <member name="P:Flame.IContainerType.ContainerKind">
-      <summary>
- Gets the kind of container this type represents.
- </summary>
     </member>
     <member name="P:Flame.IArrayType.ArrayRank">
       <summary>
@@ -261,7 +174,12 @@
     </member>
     <member name="T:Flame.IPointerType">
       <summary>
- Represents a pointer type: an integer that points to the location in memory of an object.
+ Represents a pointer type: a value that points to the location in memory of an object.
+ </summary>
+    </member>
+    <member name="P:Flame.IPointerType.PointerKind">
+      <summary>
+ Gets the pointer's "kind".
  </summary>
     </member>
     <member name="T:Flame.IVectorType">
@@ -269,22 +187,36 @@
  Represents a vector type: an array with fixed dimensions.
  </summary>
     </member>
-    <member name="M:Flame.IVectorType.GetDimensions">
+    <member name="P:Flame.IVectorType.Dimensions">
       <summary>
  Gets the vector's dimensions.
  </summary>
     </member>
-    <member name="M:Flame.IGenericMember.GetGenericParameters">
+    <member name="T:Flame.IGenericMember">
+      <summary>
+ An interface for generic members, which are members that have
+ a list of generic parameters.
+ </summary>
+    </member>
+    <member name="P:Flame.IGenericMember.GenericParameters">
       <summary>
  Gets this method's generic parameters.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.IGenericMember.GetGenericArguments">
+    <member name="T:Flame.IGenericMemberInstance">
       <summary>
- Gets the method's generic arguments.
+ A common interface for generic member instances.
  </summary>
-      <returns />
+    </member>
+    <member name="P:Flame.IGenericMemberInstance.GenericArguments">
+      <summary>
+ Gets this generic member instance's type arguments.
+ </summary>
+    </member>
+    <member name="T:Flame.IGenericParameter">
+      <summary>
+ Defines a generic parameter's interface.
+ </summary>
     </member>
     <member name="P:Flame.IGenericParameter.DeclaringMember">
       <summary>
@@ -296,26 +228,19 @@
  Gets the generic parameter's constraint.
  </summary>
     </member>
-    <member name="M:Flame.IParameter.IsAssignable(Flame.IType)">
+    <member name="T:Flame.IParameter">
       <summary>
- Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
+ Defines a common interface for parameters.
  </summary>
-      <param name="Type">The potential argument's type.</param>
-      <returns />
     </member>
     <member name="P:Flame.IParameter.ParameterType">
       <summary>
  Gets the parameter's (default) type.
  </summary>
     </member>
-    <member name="M:Flame.IMethod.GetParameters">
+    <member name="T:Flame.IMethod">
       <summary>
- Gets the method's parameters.
- </summary>
-    </member>
-    <member name="M:Flame.IMethod.GetBaseMethods">
-      <summary>
- Gets the method's base methods.
+ Defines a common interface for methods.
  </summary>
     </member>
     <member name="M:Flame.IMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
@@ -325,27 +250,24 @@
       <param name="Arguments" />
       <returns />
     </member>
-    <member name="M:Flame.IMethod.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
+    <member name="P:Flame.IMethod.IsConstructor">
       <summary>
- Gets a generic method of this type with the provided type arguments.
+ Gets a boolean value that indicates if this method is a constructor.
  </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.IMethod.GetGenericDeclaration">
-      <summary>
- Gets the method's generic declaration.
- </summary>
-      <returns />
     </member>
     <member name="P:Flame.IMethod.ReturnType">
       <summary>
  Gets the method's return type.
  </summary>
     </member>
-    <member name="P:Flame.IMethod.IsConstructor">
+    <member name="P:Flame.IMethod.Parameters">
       <summary>
- Gets a boolean value that indicates if this method is a constructor.
+ Gets the method's parameters.
+ </summary>
+    </member>
+    <member name="P:Flame.IMethod.BaseMethods">
+      <summary>
+ Gets the method's base methods.
  </summary>
     </member>
     <member name="P:Flame.IAccessor.AccessorType">
@@ -358,7 +280,12 @@
  Gets the property this accessor belongs to.
  </summary>
     </member>
-    <member name="M:Flame.INamespace.GetTypes">
+    <member name="T:Flame.INamespace">
+      <summary>
+ Defines an interface for namespaces.
+ </summary>
+    </member>
+    <member name="P:Flame.INamespace.Types">
       <summary>
  Gets the types that are declared in this namespace.
  </summary>
@@ -385,27 +312,9 @@
  Gets the assembly's version.
  </summary>
     </member>
-    <member name="T:Flame.ISearcheableMember">
+    <member name="T:Flame.IProperty">
       <summary>
- Defines common functionality for searcheable members.
- </summary>
-    </member>
-    <member name="M:Flame.ISearcheableMember.GetType(System.String)">
-      <summary>
- Gets the type with the specified name.
- </summary>
-      <param name="Name" />
-      <returns />
-    </member>
-    <member name="M:Flame.IProperty.GetAccessors">
-      <summary>
- Gets the property's accessors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IProperty.GetIndexerParameters">
-      <summary>
- Gets the indexer's parameters, if any.
+ Defines a common interface for properties.
  </summary>
     </member>
     <member name="P:Flame.IProperty.PropertyType">
@@ -413,9 +322,41 @@
  Gets the property's type.
  </summary>
     </member>
+    <member name="P:Flame.IProperty.Accessors">
+      <summary>
+ Gets the property's accessors.
+ </summary>
+    </member>
+    <member name="P:Flame.IProperty.IndexerParameters">
+      <summary>
+ Gets the indexer's parameters, if any.
+ </summary>
+    </member>
+    <member name="T:Flame.IField">
+      <summary>
+ Defines a common interface for fields.
+ </summary>
+    </member>
     <member name="P:Flame.IField.FieldType">
       <summary>
  Gets the field's type.
+ </summary>
+    </member>
+    <member name="T:Flame.ILiteralField">
+      <summary>
+ Defines common functionality for fields that contain an immutable literal
+ value.
+ </summary>
+    </member>
+    <member name="P:Flame.ILiteralField.Value">
+      <summary>
+ Gets this literal field's immutable literal value.
+ </summary>
+    </member>
+    <member name="M:Flame.MemberExtensions.GetLowestAncestryDegree(System.Collections.Generic.IEnumerable`1{Flame.IType},Flame.IType)">
+      <summary>
+ Gets the lowest non-zero ancestry degree between the given set
+ of type and right-hand type operand.
  </summary>
     </member>
     <member name="M:Flame.MemberExtensions.Is(Flame.IType,Flame.IType)">
@@ -425,6 +366,13 @@
       <param name="Other" />
       <returns />
     </member>
+    <member name="M:Flame.MemberExtensions.IsEquivalent(Flame.IType,Flame.IType)">
+      <summary>
+ Tests if the given type is equivalent with the given other type, i.e.
+ it has ancestry degree zero. This method also has an equality fast-path,
+ as equality implies equivalence.
+ </summary>
+    </member>
     <member name="M:Flame.MemberExtensions.GetParent(Flame.IType)">
       <summary>
  Gets the type's parent type.
@@ -432,18 +380,35 @@
       <param name="Other" />
       <returns />
     </member>
+    <member name="M:Flame.MemberExtensions.MakeArrayType(Flame.IType,System.Int32)">
+      <summary>
+ Creates an array type based on the given element type and
+ array rank.
+ </summary>
+    </member>
+    <member name="M:Flame.MemberExtensions.MakePointerType(Flame.IType,Flame.PointerKind)">
+      <summary>
+ Creates a pointer type that points to an object of the given type
+ and is of the given pointer kind.
+ </summary>
+    </member>
+    <member name="M:Flame.MemberExtensions.MakeVectorType(Flame.IType,System.Collections.Generic.IReadOnlyList`1{System.Int32})">
+      <summary>
+ Creates a vector type that contains objects of the given type
+ and has the given dimensions.
+ </summary>
+    </member>
+    <member name="M:Flame.MemberExtensions.MakeVectorType(Flame.IType,System.Int32[])">
+      <summary>
+ Creates a vector type that contains objects of the given type
+ and has the given dimensions.
+ </summary>
+    </member>
     <member name="P:Flame.MemberExtensions.IsPureInterface">
       <summary>
  Determines if this type is a "pure interface", i.e. an interface whose
  base types are all pure interfaces.
  </summary>
-    </member>
-    <member name="P:Flame.MemberExtensions.IsGenericParameter">
-      <summary>
- Gets a boolean value that indicates if the given type is a generic parameter.
- </summary>
-      <param name="Type" />
-      <returns />
     </member>
     <member name="M:Flame.MemberLookup.GetAllFields(Flame.IType)">
       <summary>
@@ -479,16 +444,67 @@
  Filters out all method in the given array of method that have an override or implementation which is also present in the given array.
  </summary>
     </member>
+    <member name="M:Flame.PropertyExtensions.GetDeclaringType(Flame.IProperty)">
+      <summary>
+ Gets the given property's declaring type.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetIndexerParameterTypes(Flame.IProperty)">
+      <summary>
+ Gets the given property's parameter types.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetExtensionIndexerParameterTypes(Flame.IProperty)">
+      <summary>
+ Gets the given method's parameter types. If it is an extension parameter,
+ the first parameter is omitted.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetExtensionThisType(Flame.IProperty)">
+      <summary>
+ Gets the "this" type of a property, which may be an extension property.
+ If so, the "this" type is assumed to be the type of the first parameter.
+ Otherwise, the declaring type is the "this" type.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.Shadows(Flame.IProperty,Flame.IProperty,Flame.IType(Flame.IProperty),System.Collections.Generic.IEnumerable`1{Flame.IType}(Flame.IProperty))">
+      <summary>
+ Tells if the first property "shadows" the second, i.e. it has the
+ same name, staticness and indexer parameter list, but its "this" type
+ is more derived than the second property's "this" type.
+ </summary>
+    </member>
     <member name="M:Flame.PropertyExtensions.Shadows(Flame.IProperty,Flame.IProperty)">
       <summary>
  Tells if the first property "shadows" the second, i.e. it has the
  same name, staticness and indexer parameter list, but its declaring type
- is more derived than the second method's derived type.
+ is more derived than the second property's declaring type.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.ShadowsExtension(Flame.IProperty,Flame.IProperty)">
+      <summary>
+ Tells if the first property "shadows" the second, i.e. it has the
+ same name, staticness and indexer parameter list, but its "this" type
+ is more derived than the second property's "this" type.
+ For extension methods, the "this" type is assumed to be the type
+ of the first parameter.
  </summary>
     </member>
     <member name="M:Flame.PropertyExtensions.HasSameSignature(Flame.IProperty,Flame.IProperty)">
       <summary>
  Tests if the given properties have the same signature.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.HasSameCallSignature(Flame.IProperty,Flame.IProperty)">
+      <summary>
+ Tests if the given properties have the same call signature, which is
+ defined as the property signature, without the property type.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.HasSameCallSignature(Flame.IProperty,Flame.IProperty,System.Collections.Generic.IEnumerable`1{Flame.IType}(Flame.IProperty))">
+      <summary>
+ Tests if the given properties have the same call signature, which is
+ defined as the property signature, without the property type.
  </summary>
     </member>
     <member name="M:Flame.PropertyExtensions.GetAccessor(Flame.IProperty,Flame.AccessorType)">
@@ -525,6 +541,35 @@
  </summary>
       <param name="Property" />
       <returns />
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetProperty(System.Collections.Generic.IEnumerable`1{Flame.IProperty},System.String,System.Boolean)">
+      <summary>
+ Gets the first property in the given sequence of properties
+ that has the given name and staticness.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetProperty(System.Collections.Generic.IEnumerable`1{Flame.IProperty},System.Boolean,Flame.IType,Flame.IType[])">
+      <summary>
+ Gets the first property in the given sequence of properties
+ that has the given staticness, property type and indexer parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetProperty(System.Collections.Generic.IEnumerable`1{Flame.IProperty},System.String,System.Boolean,Flame.IType,Flame.IType[])">
+      <summary>
+ Gets the first property in the given sequence of properties
+ that has the given name, staticness, property type and indexer parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetProperty(System.Collections.Generic.IEnumerable`1{Flame.IProperty},Flame.IProperty)">
+      <summary>
+ Gets the first property in the given sequence of properties that has
+ the same signature as the given property.
+ </summary>
+    </member>
+    <member name="M:Flame.PropertyExtensions.GetIndexerParameters(Flame.IProperty)">
+      <summary>
+ Gets a read-only array containing the given property's indexer parameter list.
+ </summary>
     </member>
     <member name="T:Flame.SetExtensions">
       <summary>
@@ -587,11 +632,114 @@
  This method still returns null in that case, however.
  </remarks>
     </member>
+    <member name="M:Flame.MethodExtensions.GetDeclaringType(Flame.IMethod)">
+      <summary>
+ Gets the given method's declaring type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetParameterTypes(Flame.IMethod)">
+      <summary>
+ Gets the given method's parameter types.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetExtensionParameterTypes(Flame.IMethod)">
+      <summary>
+ Gets the given method's parameter types. If it is an extension parameter,
+ the first parameter is omitted.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetExtensionThisType(Flame.IMethod)">
+      <summary>
+ Gets the "this" type of a method, which may be an extension method.
+ If so, the "this" type is assumed to be the type of the first parameter.
+ Otherwise, the declaring type is the "this" type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.Shadows(Flame.IMethod,Flame.IMethod,Flame.IType(Flame.IMethod),System.Collections.Generic.IEnumerable`1{Flame.IType}(Flame.IMethod))">
+      <summary>
+ Tells if the first method "shadows" the second, i.e. it has the
+ same name, staticness and parameter list, but its "this" type
+ is more derived than the second method's "this" type. A delegate
+ is given that figures out what the "this" type of a given type member is.
+ </summary>
+    </member>
     <member name="M:Flame.MethodExtensions.Shadows(Flame.IMethod,Flame.IMethod)">
       <summary>
  Tells if the first method "shadows" the second, i.e. it has the
  same name, staticness and parameter list, but its declaring type
  is more derived than the second method's derived type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.ShadowsExtension(Flame.IMethod,Flame.IMethod)">
+      <summary>
+ Tells if the first method "shadows" the second, i.e. it has the
+ same name, staticness and parameter list, but its "this" type
+ is more derived than the second method's "this" type.
+ For extension methods, the "this" type is assumed to be the type
+ of the first parameter.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.HasSameSignature(Flame.IMethod,Flame.IMethod)">
+      <summary>
+ Determines whether the given methods have the same signature or not.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.HasSameCallSignature(Flame.IMethod,Flame.IMethod)">
+      <summary>
+ Determines whether the given methods have the same call signature or not.
+ A call signature is defined as the method's signature, minus the
+ return type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.HasSameCallSignature(Flame.IMethod,Flame.IMethod,System.Collections.Generic.IEnumerable`1{Flame.IType}(Flame.IMethod))">
+      <summary>
+ Determines whether the given methods have the same call signature or not.
+ A call signature is defined as the method's signature, minus the
+ return type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetAllMethods(Flame.IType,System.String,System.Boolean,Flame.IType[])">
+      <summary>
+ Gets all methods - directly declared and inherited - in the given
+ declaring type with the given name, staticness and parameter types.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetMethod(System.Collections.Generic.IEnumerable`1{Flame.IMethod},System.Boolean,Flame.IType,Flame.IType[])">
+      <summary>
+ Gets the first method in the given sequence of candidate methods
+ with the given staticness, return type and parameter types.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetMethod(System.Collections.Generic.IEnumerable`1{Flame.IMethod},System.String,System.Boolean,Flame.IType,Flame.IType[])">
+      <summary>
+ Gets the first method in the given sequence of candidate methods
+ with the given name, staticness, return type and parameter types.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetMethod(System.Collections.Generic.IEnumerable`1{Flame.IMethod},Flame.IMethod)">
+      <summary>
+ Gets the first method in the given sequence of candidate methods that
+ has the same signature as the given method.
+ </summary>
+      <remarks>
+ This differs from the
+ <code>GetMethod(this [IMethod], string, bool, IType, IType[])</code>
+ overload in that generic parameters are also considered here.
+ </remarks>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetMethods(Flame.IType)">
+      <summary>
+ Gets all non-constructor methods declared by this type.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetConstructors(Flame.IType)">
+      <summary>
+ Gets this type's constructors.
+ </summary>
+    </member>
+    <member name="M:Flame.MethodExtensions.GetParameters(Flame.IMethod)">
+      <summary>
+ Gets a read-only array containing the given method's parameter list.
  </summary>
     </member>
     <member name="P:Flame.MethodExtensions.HasReturnValue">
@@ -628,6 +776,261 @@
  </summary>
       <param name="Member" />
       <returns />
+    </member>
+    <member name="M:Flame.GenericExtensions.GetGenericDeclaration(Flame.IMethod)">
+      <summary>
+ Gets this method's generic declaration if it is a generic instance.
+ Otherwise, the given method is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.GetGenericDeclaration(Flame.IType)">
+      <summary>
+ Gets this type's generic declaration if it is a generic instance.
+ Otherwise, the given type is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.MakeGenericType(Flame.IType,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Instantiates the given generic type with the given sequence of type
+ arguments.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.MakeGenericMethod(Flame.IMethod,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Instantiates the given generic method with the given sequence of type
+ arguments.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.GetGenericArguments(Flame.IGenericMember)">
+      <summary>
+ Gets the generic member's generic arguments if it is a generic instance.
+ Otherwise, the empty sequence is returned.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericExtensions.IsGenericParameter">
+      <summary>
+ Gets a boolean value that indicates if the given type is a generic parameter.
+ </summary>
+      <param name="Type" />
+      <returns />
+    </member>
+    <member name="P:Flame.GenericExtensions.IsGeneric">
+      <summary>
+ Tests if the given (potentially) generic member has any
+ generic parameters.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericExtensions.IsGenericDeclaration">
+      <summary>
+ Finds out if this generic member is a generic declaration, i.e.
+ not a generic instance.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericExtensions.IsGenericInstance">
+      <summary>
+ Determines whether the given member is a generic instance or not.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericExtensions.IsRecursiveGenericInstance">
+      <summary>
+ Tells if the given type is a recursive generic instance: a generic instance
+ or a nested type of a generic instance.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericInstanceAccessor">
+      <summary>
+ A property accessor belonging to a generic type instantiation.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericInstanceAccessor.this(Flame.IAccessor,Flame.IGenericResolver,Flame.IProperty)">
+      <summary>
+ Creates a new generic type instance accessor from the given accessor,
+ resolver and declaring property.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericInstanceAccessor.AccessorType">
+      <summary>
+ Gets the property's accessor type.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericInstanceAccessor.DeclaringProperty">
+      <summary>
+ Gets the generic type instance accessor's declaring property.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericInstanceField.Declaration">
+      <summary>
+ Gets the generic instance field's original definition.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericInstanceField.Resolver">
+      <summary>
+ Gets the generic instance field's generic resolver.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericInstanceField.DeclaringType">
+      <summary>
+ Gets the generic instance field's declaring type.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericInstanceMethod">
+      <summary>
+ Defines a method belonging to a generic type instantiation.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericInstanceMethod.this(Flame.IMethod,Flame.IGenericResolver,Flame.IType)">
+      <summary>
+ Creates a generic type method instantiation from the given method,
+ resolver and declaring type.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericInstanceMethod.this(Flame.IMethod,Flame.IGenericResolverType)">
+      <summary>
+ Creates a generic type method instantiation from the given method and
+ declaring type.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericInstanceType">
+      <summary>
+ Defines a type belonging to a generic type instantiation.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericInstanceType.this(Flame.IType,Flame.IGenericResolver,Flame.IType)">
+      <summary>
+ Creates a generic type instantiation from the given type,
+ resolver and declaring type.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericInstanceType.this(Flame.IType,Flame.IGenericResolverType)">
+      <summary>
+ Creates a generic type instantiation from the given type and
+ declaring type.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericMethod">
+      <summary>
+ Defines a generic method instantiation.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericMethod.this(Flame.IMethod,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Creates a generic instantiation of the given method with the given
+ type arguments.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericMethod.GenericArguments">
+      <summary>
+ Gets this generic method's type arguments.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericMethodBase">
+      <summary>
+ Defines a base class for generic method instances.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericMethodBase.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
+      <summary>
+ Invokes the method with the provided caller and arguments.
+ </summary>
+      <param name="Arguments" />
+      <returns />
+    </member>
+    <member name="P:Flame.GenericMethodBase.Resolver">
+      <summary>
+ Gets the generic resolver that belongs to this generic method.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericMethodBase.Name">
+      <summary>
+ Gets name of this generic method.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericMethodBase.DeclaringType">
+      <summary>
+ Gets this generic method's declaring type.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericMethodBase.Declaration">
+      <summary>
+ Gets the method definition this generic instance is based on.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericType">
+      <summary>
+ Defines a generic type instantiation.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericType.this(Flame.IType,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+      <summary>
+ Creates a generic instantiation of the given type with the given
+ type arguments.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericType.GenericArguments">
+      <summary>
+ Gets this generic instantiation's type arguments.
+ </summary>
+    </member>
+    <member name="T:Flame.GenericTypeBase">
+      <summary>
+ A base class for generic type instances.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericTypeBase.this(Flame.IType)">
+      <summary>
+ Creates a new generic type base from the given type.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericTypeBase.GetDefaultValue">
+      <summary>
+ Gets the default value for this type.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericTypeBase.Resolver">
+      <summary>
+ Gets this generic type's resolver.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericTypeBase.DeclaringNamespace">
+      <summary>
+ Gets this generic type's declaring namespace.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericTypeBase.Name">
+      <summary>
+ Gets this generic type's name.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericTypeBase.AncestryRules">
+      <summary>
+ Gets the generic type's ancestry rules.
+ </summary>
+    </member>
+    <member name="P:Flame.GenericTypeBase.Declaration">
+      <summary>
+ Gets the type definition this generic type is based on.
+ </summary>
+    </member>
+    <member name="T:Flame.IAncestryRules">
+      <summary>
+ A set of rules that determine whether one type is a subtype of another,
+ and how close it is to the parent type.
+ </summary>
+    </member>
+    <member name="M:Flame.IAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
+      <summary>
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
+ </summary>
+    </member>
+    <member name="P:Flame.INamespaceTree.Namespaces">
+      <summary>
+ Gets this namespace tree's nested namespaces.
+ </summary>
     </member>
     <member name="T:Flame.IGenericConstraint">
       <summary>
@@ -709,52 +1112,11 @@
  Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
  </summary>
     </member>
-    <member name="M:Flame.PrimitiveMethod.GetParameters">
-      <summary>
- Gets the method's parameters.
- </summary>
-    </member>
     <member name="M:Flame.PrimitiveMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
       <summary>
  Invokes the method with the provided caller and arguments.
  </summary>
       <param name="Arguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.PrimitiveMethod.GetBaseMethods">
-      <summary>
- Gets the method's base methods.
- </summary>
-    </member>
-    <member name="M:Flame.PrimitiveMethod.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.PrimitiveMethod.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic method of this type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.PrimitiveMethod.GetGenericDeclaration">
-      <summary>
- Gets the method's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.PrimitiveMethod.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.PrimitiveMethod.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
       <returns />
     </member>
     <member name="M:Flame.PrimitiveTypes.GetPrimitiveMagnitude(Flame.IType)">
@@ -772,6 +1134,29 @@
       <summary>
  Defines an attribute that captures a description or documentation,
  such as this comment.
+ </summary>
+    </member>
+    <member name="M:Flame.DescriptionAttribute.this(Pixie.IMarkupNode)">
+      <summary>
+ Creates a new description attribute from the given markup node.
+ </summary>
+    </member>
+    <member name="M:Flame.DescriptionAttribute.this(System.String,Pixie.IMarkupNode)">
+      <summary>
+ Creates a new description attribute from the given tag and
+ description body.
+ </summary>
+    </member>
+    <member name="M:Flame.DescriptionAttribute.this(System.String)">
+      <summary>
+ Creates a new 'summary' description attribute from the given
+ description body.
+ </summary>
+    </member>
+    <member name="M:Flame.DescriptionAttribute.this(System.String,System.String)">
+      <summary>
+ Creates a new description attribute from the given tag and
+ description body.
  </summary>
     </member>
     <member name="P:Flame.DescriptionAttribute.Tag">
@@ -820,365 +1205,71 @@
  </summary>
       <param name="TypeConstraint" />
     </member>
-    <member name="M:Flame.IntersectionType.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
     <member name="M:Flame.IntersectionType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.IntersectionType.GetFields">
+    <member name="T:Flame.IntersectionAncestryRules">
       <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetGenericTypeDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetMembers">
-      <summary>
- Gets the type's members.
+ Defines ancestry rules for intersection types.
  </summary>
     </member>
-    <member name="M:Flame.IntersectionType.GetMethods">
+    <member name="M:Flame.IntersectionAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.IntersectionType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetBaseMethods">
-      <summary>
- Gets the method's base methods.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
     </member>
-    <member name="M:Flame.MethodType.GetGenericMethodDeclaration">
+    <member name="T:Flame.MethodType">
       <summary>
- Gets the method's generic declaration.
+ The type of a delegate expression.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetParameters">
-      <summary>
- Gets the method's parameters.
- </summary>
-    </member>
-    <member name="M:Flame.MethodType.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
-      <summary>
- Invokes the method with the provided caller and arguments.
- </summary>
-      <param name="Arguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic method of this type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.MethodType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.MethodType.GetFields">
+    <member name="P:Flame.MethodType.Method">
       <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetGenericTypeDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetMembers">
-      <summary>
- Gets the type's members.
+ Gets the method this method type is based on.
  </summary>
     </member>
-    <member name="M:Flame.MethodType.GetMethods">
+    <member name="T:Flame.MethodTypeAncestryRules">
       <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.MethodType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetMembers">
-      <summary>
- Gets the type's members.
+ Ancestry rules for delegates.
  </summary>
     </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetMethods">
+    <member name="M:Flame.MethodTypeAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the type's methods, excluding any constructors.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.PrimitiveType`1.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.AsContainerType">
+    <member name="T:Flame.Primitives.HashableType">
       <summary>
- Gets this type as a container type.
+ An interface for hashable types.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveType`1.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitivesNamespace.GetTypes">
-      <summary>
- Gets the types that are declared in this namespace.
- </summary>
-    </member>
-    <member name="M:Flame.Primitives.PrimitivesNamespace.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.HashCodeProviderType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.GetHashCodeImplementation`1.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
       <summary>
  Invokes the method with the provided caller and arguments.
  </summary>
       <param name="Arguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveParameter.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveParameter.IsAssignable(Flame.IType)">
-      <summary>
- Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
- </summary>
-      <param name="Type">The potential argument's type.</param>
       <returns />
     </member>
     <member name="P:Flame.Primitives.PrimitiveParameter.FullName">
@@ -1191,114 +1282,26 @@
  Gets the member's name.
  </summary>
     </member>
-    <member name="P:Flame.Primitives.PrimitiveParameter.ParameterType">
-      <summary>
- Gets the parameter's (default) type.
- </summary>
-    </member>
-    <member name="M:Flame.Primitives.EquatableType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetAttributes">
+    <member name="P:Flame.Primitives.PrimitiveParameter.Attributes">
       <summary>
  Gets the member's attributes.
  </summary>
       <returns />
     </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetProperties">
+    <member name="P:Flame.Primitives.PrimitiveParameter.ParameterType">
       <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetMembers">
-      <summary>
- Gets the type's members.
+ Gets the parameter's type.
  </summary>
     </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetMethods">
+    <member name="T:Flame.Primitives.MethodRootPrimitiveType">
       <summary>
- Gets the type's methods, excluding any constructors.
+ A base type for primitive interfaces that are root types, and define nothing but methods.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.MethodRootPrimitiveType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.MethodRootPrimitiveType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.EqualsImplementation`1.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
       <summary>
@@ -1307,219 +1310,15 @@
       <param name="Arguments" />
       <returns />
     </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
     <member name="M:Flame.Primitives.StringPrimitiveType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.StringPrimitiveType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveNumberType`1.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.PrimitiveFloatType`1.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.CharPrimitiveType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Primitives.NullPrimitiveType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Primitives.NullPrimitiveType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Attributes.ConstructedAttribute.GetArguments">
       <summary>
@@ -1557,70 +1356,77 @@
  Gets the environment for this binder.
  </summary>
     </member>
-    <member name="M:Flame.Build.AbstractMethod.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
+    <member name="T:Flame.Build.ArrayAncestryRules">
       <summary>
- Gets a generic method of this type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.AbstractMethod.GetGenericDeclaration">
-      <summary>
- Gets the method's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetParameters">
-      <summary>
- Gets the method's parameters.
+ A set of ancestry rules for non-covariant arrays:
+ only arrays with the same rank and element type are interchangeable.
  </summary>
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetBaseMethods">
+    <member name="M:Flame.Build.ArrayAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the method's base methods.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetAttributes">
+    <member name="T:Flame.Build.CompositeConverter`3">
       <summary>
- Gets the member's attributes.
+ A generic converter that is the composition of two conversion functions.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
+    <member name="T:Flame.Build.ContainerTypeBase">
       <summary>
- Gets a generic method of this type with the provided type arguments.
+ Defines a base type for container types.
  </summary>
-      <param name="TypeArguments" />
-      <returns />
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetGenericDeclaration">
+    <member name="M:Flame.Build.ContainerTypeBase.this(Flame.IType)">
       <summary>
- Gets the method's generic declaration.
+ Creates a container type from the given element type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetGenericParameters">
+    <member name="M:Flame.Build.ContainerTypeBase.GetDefaultValue">
       <summary>
- Gets this method's generic parameters.
+ Gets the default value for this type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.TemplatedMethod.GetGenericArguments">
+    <member name="P:Flame.Build.ContainerTypeBase.ElementType">
       <summary>
- Gets the method's generic arguments.
+ Gets this container type's element type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.VirtualMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
+    <member name="T:Flame.Build.DefinitionAncestryRules">
       <summary>
- Invokes the method with the provided caller and arguments.
+ Ancestry rules for type definitions.
  </summary>
-      <param name="Arguments" />
-      <returns />
     </member>
-    <member name="M:Flame.Build.DescribedAssembly.GetTypes">
+    <member name="M:Flame.Build.DefinitionAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the types that are declared in this namespace.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
+ </summary>
+    </member>
+    <member name="T:Flame.Build.NullAncestryRules">
+      <summary>
+ Defines ancestry rules for the `null` type. These rules state that
+ null is equivalent to itself and that null is a direct subtype of
+ every reference and pointer type.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.NullAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
+      <summary>
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
     </member>
     <member name="M:Flame.Build.DescribedAssembly.CreateBinder">
@@ -1635,40 +1441,15 @@
  </summary>
       <returns />
     </member>
-    <member name="M:Flame.Build.DescribedMethod.GetParameters">
+    <member name="M:Flame.Build.DescribedGenericParameter.AddConstraint(Flame.IGenericConstraint)">
       <summary>
- Gets the method's parameters.
+ Adds a constraint to the generic parameter.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedMethod.GetBaseMethods">
+    <member name="M:Flame.Build.DescribedGenericParameter.GetDefaultValue">
       <summary>
- Gets the method's base methods.
+ Gets the default value for this type.
  </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedMethod.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic method of this type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedMethod.GetGenericDeclaration">
-      <summary>
- Gets the method's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedMethod.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedMethod.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
     </member>
     <member name="M:Flame.Build.DescribedMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
       <summary>
@@ -1677,11 +1458,10 @@
       <param name="Arguments" />
       <returns />
     </member>
-    <member name="M:Flame.Build.DescribedParameter.IsAssignable(Flame.IType)">
+    <member name="P:Flame.Build.DescribedMethod.GenericParameters">
       <summary>
- Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
+ Gets this method's generic parameters.
  </summary>
-      <param name="Type">The potential argument's type.</param>
       <returns />
     </member>
     <member name="P:Flame.Build.DescribedParameter.ParameterType">
@@ -1689,542 +1469,63 @@
  Gets the parameter's (default) type.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedMember.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetElementType">
-      <summary>
- Gets the type of the object encompassed or referred to by the current container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.AsArrayType">
-      <summary>
- Returns this type as an array type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetDefaultValue">
-      <summary>
- Gets the default value for this type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.AsPointerType">
-      <summary>
- Returns this type as a pointer type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.AsVectorType">
-      <summary>
- Returns this type as a vector type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedContainerType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedArrayType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedArrayType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedProperty.GetAccessors">
-      <summary>
- Gets the property's accessors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedProperty.GetIndexerParameters">
-      <summary>
- Gets the indexer's parameters, if any.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedVectorType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedVectorType.GetDimensions">
-      <summary>
- Gets the vector's dimensions.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.AddConstraint(Flame.IGenericConstraint)">
-      <summary>
- Adds a constraint to the generic parameter.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetDefaultValue">
-      <summary>
- Gets the default value for this type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericParameter.IsAssignable(Flame.IType)">
-      <summary>
- Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
- </summary>
-      <param name="Type">The potential argument's type.</param>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
     <member name="M:Flame.Build.DescribedType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.DescribedType.AsContainerType">
+    <member name="T:Flame.Build.GenericAncestryRules">
       <summary>
- Gets this type as a container type.
+ Defines ancestry rules for generic type instances.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.DescribedType.MakeArrayType(System.Int32)">
+    <member name="M:Flame.Build.GenericAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Creates an array type that contains objects of the current type.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
-      <param name="Rank" />
-      <returns />
     </member>
-    <member name="M:Flame.Build.DescribedType.MakePointerType(Flame.PointerKind)">
+    <member name="T:Flame.Build.GenericInstanceComparer">
       <summary>
- Creates a pointer type that points to a value of the current type.
+ Compares types and decides whether the second is a possible generic instantiation of the first.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.DescribedType.MakeVectorType(System.Int32[])">
+    <member name="M:Flame.Build.GenericInstanceComparer.CompareIncompatible(Flame.IType,Flame.IType)">
       <summary>
- Creates a vector type that contains objects of the current type.
+ Compares two structurally incompatible types.
  </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedType.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
     </member>
     <member name="T:Flame.Build.GenericResolvingConverter">
       <summary>
  A type converter that resolves type parameters based on a generic resolver.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetAttributes">
+    <member name="T:Flame.Build.PointerAncestryRules">
       <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetParameters">
-      <summary>
- Gets the method's parameters.
+ Represents the following set of ancestry rules for pointers:
+  * Null is a pointer type
+  * Two pointer type of the same pointer kind have the same ancestry degree
+    as their elements.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetBaseMethods">
+    <member name="M:Flame.Build.PointerAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the method's base methods.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetGenericDeclaration">
+    <member name="P:Flame.Build.RetypedParameter.ParameterType">
       <summary>
- Gets the method's generic declaration.
+ Gets the parameter's (default) type.
  </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.MakeGenericMethod(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic method of this type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericMethodInstance.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
-      <summary>
- Invokes the method with the provided caller and arguments.
- </summary>
-      <param name="Arguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericFieldInstance.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericPropertyInstance.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericPropertyInstance.GetAccessors">
-      <summary>
- Gets the property's accessors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericPropertyInstance.GetIndexerParameters">
-      <summary>
- Gets the indexer's parameters, if any.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.AsContainerType">
-      <summary>
- Gets this type as a container type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetBaseTypes">
-      <summary>
- Gets the type's base types.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetConstructors">
-      <summary>
- Gets the type's constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetDefaultValue">
-      <summary>
- Gets the default value for this type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetFields">
-      <summary>
- Gets the type's fields.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetGenericDeclaration">
-      <summary>
- Gets the type's generic declaration.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetMembers">
-      <summary>
- Gets the type's members.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetMethods">
-      <summary>
- Gets the type's methods, excluding any constructors.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetProperties">
-      <summary>
- Gets the type's properties.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetTypes">
-      <summary>
- Gets the types that are declared in this namespace.
- </summary>
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.MakeArrayType(System.Int32)">
-      <summary>
- Creates an array type that contains objects of the current type.
- </summary>
-      <param name="Rank" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.MakeGenericType(System.Collections.Generic.IEnumerable`1{Flame.IType})">
-      <summary>
- Gets a generic type with the provided type arguments.
- </summary>
-      <param name="TypeArguments" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.MakePointerType(Flame.PointerKind)">
-      <summary>
- Creates a pointer type that points to a value of the current type.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.MakeVectorType(System.Int32[])">
-      <summary>
- Creates a vector type that contains objects of the current type.
- </summary>
-      <param name="Dimensions" />
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetAttributes">
-      <summary>
- Gets the member's attributes.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetGenericArguments">
-      <summary>
- Gets the method's generic arguments.
- </summary>
-      <returns />
-    </member>
-    <member name="M:Flame.Build.DescribedGenericTypeInstance.GetGenericParameters">
-      <summary>
- Gets this method's generic parameters.
- </summary>
-      <returns />
     </member>
     <member name="T:Flame.Build.TypeComparerBase`1">
       <summary>
@@ -2256,14 +1557,20 @@
  A type equality comparer that assumes that type parameters with equal names are equal.
  </summary>
     </member>
-    <member name="T:Flame.Build.GenericInstanceComparer">
+    <member name="T:Flame.Build.TypeFieldConverter">
       <summary>
- Compares types and decides whether the second is a possible generic instantiation of the first.
+ A converter that converts the declaring types of the fields it's given,
+ and creates generic field instances based on these converted declaring types.
+ This relies on the assumption that a converted type's recursive generic
+ declaration does not change.
  </summary>
     </member>
-    <member name="M:Flame.Build.GenericInstanceComparer.CompareIncompatible(Flame.IType,Flame.IType)">
+    <member name="T:Flame.Build.TypeMethodConverter">
       <summary>
- Compares two structurally incompatible types.
+ A converter that converts the declaring types of the methods it's given,
+ and creates generic method instances based on these converted declaring types.
+ This relies on the assumption a the converted type's recursive generic
+ declaration does not change.
  </summary>
     </member>
     <member name="T:Flame.Build.TypeMappingConverter">
@@ -2276,27 +1583,85 @@
  A type converter that converts type parameters to a type parameter with the same name of a generic member.
  </summary>
     </member>
-    <member name="T:Flame.Build.CompositeConverter`3">
+    <member name="T:Flame.Build.VectorAncestryRules">
       <summary>
- A generic converter that is the composition of two conversion functions.
+ A set of ancestry rules for non-covariant vectors:
+ only vectors with the same dimensions and element types are interchangeable.
  </summary>
     </member>
-    <member name="M:Flame.Build.RetypedParameter.GetAttributes">
+    <member name="M:Flame.Build.VectorAncestryRules.GetAncestryDegree(Flame.IType,Flame.IType)">
       <summary>
- Gets the member's attributes.
+ Determines whether the second type is a subtype of the first.
+ An ancestry degree of zero means that the two types are equivalent,
+ an ancestry degree greater than zero means that the second type
+ is a subtype of the first, and any other value means that - according
+ to this set of rules - there is neither an equivalence, nor a subtype
+ relationship.
  </summary>
-      <returns />
     </member>
-    <member name="M:Flame.Build.RetypedParameter.IsAssignable(Flame.IType)">
+    <member name="P:Flame.Operator.Static_Singleton.IsInstance">
       <summary>
- Gets a boolean value that indicates if an argument of the specified type can be assigned to the current parameter.
+ An operator that tests if a given reference or pointer is of a specific type,
+ and returns a boolean.
+ This is equivalent to the C# `is` operator.
  </summary>
-      <param name="Type">The potential argument's type.</param>
-      <returns />
     </member>
-    <member name="P:Flame.Build.RetypedParameter.ParameterType">
+    <member name="P:Flame.Operator.Static_Singleton.AsInstance">
       <summary>
- Gets the parameter's (default) type.
+ An operator that returns the given given reference or pointer if it is
+ of the given type. Otherwise, null is returned.
+ This is equivalent to the C# `as` operator.
+ </summary>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.StaticCast">
+      <summary>
+ A conversion operator that converts a given value to an equivalent value
+ of a different type. User-defined conversions overload this operator.
+ </summary>
+      <example>
+        <code>
+ double x = 3.0;
+ double i = (int)x;
+            ^~~~~
+ </code>
+      </example>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.DynamicCast">
+      <summary>
+ Defines a dynamic cast operator, which performs a runtime check to
+ determine if a given reference or pointer is of a given type.
+ The given reference or pointer is returned if this is the case.
+ Otherwise, an exception is thrown at runtime.
+ </summary>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.ReinterpretCast">
+      <summary>
+ Defines a reinterpret cast operator, which converts a reference or
+ pointer type to another reference or pointer type. The operation is
+ assumed to always succeed, and does not require a runtime check.
+ </summary>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.GetDelegate">
+      <summary>
+ Creates a non-virtual delegate from a method and a closure value.
+ Said closure value's type must be a subtype of the given method's
+ declaring type.
+ </summary>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.GetVirtualDelegate">
+      <summary>
+ Creates a virtual delegate from a method and a closure value.
+ Said closure value's type must be a subtype of the given method's
+ declaring type.
+ </summary>
+    </member>
+    <member name="P:Flame.Operator.Static_Singleton.GetCurriedDelegate">
+      <summary>
+ Creates a non-virtual delegate from a static method and a closure value,
+ which is the method's first parameter. Said closure value's type need not
+ be a subtype of the given method's declaring type. The resulting delegate
+ will have one parameter fewer than the number of parameters the
+ method it is based on.
  </summary>
     </member>
   </members>

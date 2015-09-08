@@ -148,6 +148,12 @@
  A markdown tokenizer.
 </summary>
     </member>
+    <member name="M:Flame.Markdown.Tokenizer.this(System.String)">
+      <summary> #summary
+ Creates a new tokenizer that tokenizes the given
+ string.
+</summary>
+    </member>
     <member name="M:Flame.Markdown.Tokenizer.IsNewline(System.Char)">
       <summary> #summary
  Tests whether the given character is a newline character or not.

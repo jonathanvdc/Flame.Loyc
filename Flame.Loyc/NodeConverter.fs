@@ -237,7 +237,7 @@ type NodeConverter(callConverters       : IReadOnlyDictionary<Symbol, seq<CallCo
                                              makePair CodeSymbols.NullCoalesceSet (ExpressionBuilder.CoalesceNull |> ExpressionConverters.Constant |> ExpressionConverters.DefineBinaryAssignmentOperator);
 
                                              makePair CodeSymbols._Dereference (ExpressionConverters.DefineScopedUnaryOperator ExpressionBuilder.Dereference |> ExpressionConverters.MakeUnsafeConverter)
-                                             makePair CodeSymbols._AddressOf (ExpressionConverters.DefineScopedUnaryOperator (fun scope expr -> let refPtrExpr = ExpressionBuilder.AddressOf expr in ExpressionBuilder.Cast scope refPtrExpr (refPtrExpr.Type.AsContainerType().GetElementType().MakePointerType(PointerKind.TransientPointer))) |> ExpressionConverters.MakeUnsafeConverter)
+                                             makePair CodeSymbols._AddressOf (ExpressionConverters.DefineScopedUnaryOperator (fun scope expr -> let refPtrExpr = ExpressionBuilder.AddressOf expr in ExpressionBuilder.Cast scope refPtrExpr (refPtrExpr.Type.AsContainerType().ElementType.MakePointerType(PointerKind.TransientPointer))) |> ExpressionConverters.MakeUnsafeConverter)
 
                                              makePair CodeSymbols._UnaryPlus (ExpressionConverters.DefineUnaryOperator id);
                                              makePair CodeSymbols.Not (ExpressionConverters.DefineUnaryOperator ExpressionBuilder.Not);

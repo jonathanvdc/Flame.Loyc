@@ -18,19 +18,14 @@ namespace fecs
         public IAssembly DeclaringAssembly { get; private set; }
         public IEnumerable<INamespaceBranch> Namespaces { get; private set; }
 
-        public IEnumerable<INamespaceBranch> GetNamespaces()
-        {
-            return Namespaces;
-        }
-
         public string FullName
         {
             get { return Name; }
         }
 
-        public IEnumerable<IAttribute> GetAttributes()
+        public IEnumerable<IAttribute> Attributes
         {
-            return Enumerable.Empty<IAttribute>();
+            get { return Enumerable.Empty<IAttribute>(); }
         }
 
         public string Name
@@ -38,9 +33,9 @@ namespace fecs
             get { return ""; }
         }
 
-        public IType[] GetTypes()
+        public IEnumerable<IType> Types
         {
-            return new IType[] { };
+            get { return Enumerable.Empty<IType>(); }
         }
     }
 }

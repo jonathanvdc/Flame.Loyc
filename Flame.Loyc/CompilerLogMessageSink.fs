@@ -15,7 +15,6 @@ type CompilerLogMessageSink(log : ICompilerLog) =
     static member GetContextMarkupNode (context : obj) =
         match context with        
         | :? SourceRange as ran      -> (NodeHelpers.ToSourceLocation ran).CreateDiagnosticsNode()
-        | :? SourcePosAndFile as pos -> (new SourceRange(pos.Source, pos.Source.LineToIndex pos, 1) |> NodeHelpers.ToSourceLocation).CreateDiagnosticsNode()
         | :? LNode as node           -> (NodeHelpers.ToSourceLocation node.Range).CreateDiagnosticsNode()
         | :? IHasLocation as loc     -> CompilerLogMessageSink.GetContextMarkupNode loc.Location
         | null                       -> new MarkupNode(NodeConstants.TextNodeType, "") :> IMarkupNode

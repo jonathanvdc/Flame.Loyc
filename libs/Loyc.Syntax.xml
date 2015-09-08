@@ -1079,7 +1079,8 @@
             <typeparam name="MatchType">A data type, usually int, that represents a 
             token type (identifier, operator, etc.) and implements <see cref="T:System.IEquatable`1"/>
             so it can be compared for equality with other token types; this is also the 
-            type of the <see cref="P:Loyc.Syntax.Lexing.ISimpleToken`1.Type"/> property.</typeparam>
+            type of the <see cref="P:Loyc.Syntax.Lexing.ISimpleToken`1.Type"/> property. <c>MatchType</c>
+            cannot be an enum because an enum does not implement <see cref="T:System.IEquatable`1"/>.</typeparam>
             <typeparam name="List">Data type of the list that contains the tokens (one 
             often uses IList{Token}, but one could use <see cref="T:Loyc.Collections.Impl.InternalList`1"/> 
             for potentially higher performance.)</typeparam>
@@ -3776,13 +3777,6 @@
         <member name="T:Loyc.Syntax.SourcePosAndIndex">
             <summary>A <see cref="T:Loyc.Syntax.SourcePos"/> that also includes the original index 
             from which the Line and PosInLine were derived.</summary>
-        </member>
-        <member name="T:Loyc.Syntax.SourcePosAndFile">
-            <summary>A <see cref="T:Loyc.Syntax.SourcePos"/> that also includes the source file 
-            object from which the source identifier was derived.</summary>
-        </member>
-        <member name="P:Loyc.Syntax.SourcePosAndFile.Source">
-            <summary>Gets the source file this source position is associated with.</summary>
         </member>
         <member name="T:Loyc.Syntax.SourceRange">
             <summary>

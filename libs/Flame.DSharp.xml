@@ -9,6 +9,16 @@
  Wraps a read-write reference to a value.
  </summary>
     </member>
+    <member name="M:Flame.DSharp.Box`1.this">
+      <summary>
+ Creates a new box containing the default value of `T`.
+ </summary>
+    </member>
+    <member name="M:Flame.DSharp.Box`1.this(T)">
+      <summary>
+ Creates a new box from the given value of `T`.
+ </summary>
+    </member>
     <member name="T:Flame.DSharp.Lexer.TokenType">
       <summary>
  Tokens is an enumeration of all possible token values.
@@ -231,6 +241,11 @@
       <remarks>
  Syntax: 'base(arg1, arg2, ...)'.
  </remarks>
+    </member>
+    <member name="M:Flame.Syntax.DSharp.BaseConstructorCallSyntax.this(Flame.DSharp.Lexer.Token,Flame.Syntax.DSharp.DelimitedList`1{Flame.Syntax.IExpressionSyntax})">
+      <summary>
+ Creates a new base constructor call syntax node.
+ </summary>
     </member>
     <member name="P:Flame.Syntax.DSharp.BaseConstructorCallSyntax.BaseKeyword">
       <summary>
