@@ -245,7 +245,11 @@ namespace fecs
 
                     new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new AutoInitializationPass(Log),
                         AutoInitializationPass.AutoInitializationPassName,
-                        true)
+                        true),
+
+                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new InfiniteRecursionPass(Log),
+                        InfiniteRecursionPass.InfiniteRecursionWarningName,
+                        (optInfo, isPref) => InfiniteRecursionPass.IsUseful(Log))
                 });
         }
     }
