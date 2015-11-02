@@ -120,10 +120,25 @@ module ExpressionConverters =
                              | Some declFunc -> not(UnsafeHelpers.IsUnsafe declFunc) && UnsafeHelpers.MissingUnsafeWarning.UseWarning scope.Global.Log.Options
                              | None          -> false
             if logWarning then
-                inner |> ExpressionBuilder.Warning (new LogEntry("Missing 'unsafe' attribute", 
-                                                                 UnsafeHelpers.MissingUnsafeWarning.CreateMessage(
-                                                                    "Unsafe code should not appear outside of an unsafe context. " +
-                                                                    "Add 'unsafe' to the enclosing member to make this warning go away. "))), scope
+                let descNode = 
+                    UnsafeHelpers.MissingUnsafeWarning.CreateMessage(
+                        "Unsafe code should not appear outside of an unsafe context. " +
+                        "Add 'unsafe' to the enclosing member to make this warning go away. ")
+
+                let srcLoc = 
+                    match scope.Function.Function with
+                    | Some x -> x.GetSourceLocation()
+                    | None   ->
+                        match scope.Function.Type with
+                        | Some x -> x.GetSourceLocation()
+                        | None   -> null
+
+                let entry = 
+                    new LogEntry(
+                        "Unsafe code in safe context", 
+                        [descNode; srcLoc.CreateRemarkDiagnosticsNode("Expected 'unsafe' here: ")])
+
+                inner |> ExpressionBuilder.Warning entry, scope
             else
                 inner, scope
 
