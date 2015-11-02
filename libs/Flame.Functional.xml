@@ -1687,8 +1687,13 @@
 <member name="">
 
 </member>
-<member name="">
-
+<member name="M:Flame.Functional.ExpressionBuilder.This(System.String,Flame.Functional.LocalScope)">
+<summary>
+ Gets the &apos;this&apos; parameter in the given scope.
+ Note that the &apos;this&apos; parameter is defined as
+ a local variable. Its name is given by the given
+ variable identifier string.
+</summary>
 </member>
 <member name="">
 
@@ -1754,6 +1759,12 @@
 <member name="M:Flame.Functional.ExpressionBuilder.Assign(Flame.Functional.LocalScope,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Assigns the given right hand side to the left hand side.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.AccessLocal(System.String,Flame.Functional.LocalScope)">
+<summary>
+ Loads the local variable with the given name, if any such
+ local exists in the given local scope.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.GetVariableOrExpressionVariable(Flame.Compiler.IExpression)">

@@ -11,8 +11,8 @@ open ExpressionConverters
 open LazyHelpers
 
 module AttributeConverters =
-    /// A warning name for attributes that do not change a program's meaning.
-    let MeaninglessAttributeWarningName = "meaningless-attribute"
+    /// A warning for attributes that do not change a program's meaning.
+    let MeaninglessAttributeWarning = new WarningDescription("meaningless-attribute", Warnings.Instance.Extra)
 
     let GetAttributeType (value : IAttribute) = value.AttributeType
 
@@ -22,10 +22,10 @@ module AttributeConverters =
         let predicate (node : LNode) = node.ArgCount = 0
         let convert _ (node : LNode) (attrs, scope : GlobalScope) = 
             let attrType = value.AttributeType
-            if attrs |> Seq.exists (GetAttributeType >> ((=) attrType)) then
+            if MeaninglessAttributeWarning.UseWarning(scope.Log.Options) && attrs |> Seq.exists (GetAttributeType >> ((=) attrType)) then
                 scope.Log.LogWarning(new LogEntry("Meaningless attribute", 
-                                                  "This attribute is redundant: the attribute's target was already '" + attrName + "'. " + 
-                                                  Warnings.Instance.GetWarningNameMessage MeaninglessAttributeWarningName,
+                                                  MeaninglessAttributeWarning.CreateMessage(
+                                                      "This attribute is redundant: the attribute's target was already '" + attrName + "'. "),
                                                   NodeHelpers.ToSourceLocation node.Range))
             Seq.singleton value |> Seq.append attrs
         new AttributeConverter(predicate, convert)
@@ -51,10 +51,12 @@ module AttributeConverters =
             | Some (preAttr : IAttribute) -> 
                 let acc = (preAttr :?> AccessAttribute).Access
                 if acc = modifier then
-                    scope.Log.LogWarning(new LogEntry("Meaningless attribute", 
-                                                      "This attribute is redundant: the attribute's target was already '" + (NameAccessModifier acc) + "'. " + 
-                                                      Warnings.Instance.GetWarningNameMessage MeaninglessAttributeWarningName,
-                                                      NodeHelpers.ToSourceLocation node.Range))
+                    if MeaninglessAttributeWarning.UseWarning(scope.Log.Options) then
+                        scope.Log.LogWarning(new LogEntry("Meaningless attribute", 
+                                                          MeaninglessAttributeWarning.CreateMessage(
+                                                              "This attribute is redundant: the attribute's target was already '" + 
+                                                              (NameAccessModifier acc) + "'. "),
+                                                          NodeHelpers.ToSourceLocation node.Range))
                     attrs
                 else
                     attrs |> Seq.filter (GetAttributeType >> ((<>) AccessAttribute.AccessAttributeType))
@@ -73,10 +75,12 @@ module AttributeConverters =
         let predicate (node : LNode) = node.ArgCount = 0
         let convert _ (node : LNode) (attrs : IAttribute seq, scope : GlobalScope) =
             let rem, tgt = Seq.toList attrs |> List.partition (fun x -> x.AttributeType <> targetType)
-            if Seq.isEmpty tgt && scope.Log.UseDefaultWarnings(MeaninglessAttributeWarningName) then
+            if Seq.isEmpty tgt && MeaninglessAttributeWarning.UseWarning(scope.Log.Options) then
                 scope.Log.LogWarning(new LogEntry("Meaningless attribute", 
-                                                  "Attribute '" + attrName + "' was meaningless here, because its target was not '" + targetName + "'. " + 
-                                                  Warnings.Instance.GetWarningNameMessage MeaninglessAttributeWarningName,
+                                                  MeaninglessAttributeWarning.CreateMessage(
+                                                      "Attribute '" + attrName + 
+                                                      "' was meaningless here, because its target was not '" + 
+                                                      targetName + "'. "),
                                                   NodeHelpers.ToSourceLocation node.Range))
             rem |> Seq.ofList
 

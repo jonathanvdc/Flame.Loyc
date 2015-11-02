@@ -4,6 +4,28 @@
     <name>Flame.Compiler</name>
   </assembly>
   <members>
+    <member name="T:Flame.Compiler.AbortCompilationException">
+      <summary>
+ Defines a type of error that indicates that
+ a fatal error has occured, and the compiler
+ should abort compilation as soon as possible.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.AbortCompilationException.Entry">
+      <summary>
+ Gets this fatal error's error message.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.AbortCompilationException.FatalErrorEntryTitle">
+      <summary>
+ Gets the default entry title for fatal errors.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.AbortCompilationException.FatalErrorEntryMessage">
+      <summary>
+ Gets the default entry message for fatal errors.
+ </summary>
+    </member>
     <member name="T:Flame.Compiler.BlockTag">
       <summary>
  Defines a unique tag that is associated with some control-flow block.
@@ -479,33 +501,89 @@
  Writes an event message to the compiler log.
  </summary>
     </member>
-    <member name="T:Flame.Compiler.IEnumerableEnvironment">
+    <member name="T:Flame.Compiler.Flags">
       <summary>
- Describes an environment that allows for the implementation the enumerable and enumerator patterns.
- </summary>
-      <remarks>
- Implementations of this interface can only be expected to be able to modify types created by the same assembly that provided the implementation.
- All methods and properties provided as arguments will be used as immutable data: they will be used to construct other methods which will be added to the target type.
- </remarks>
-    </member>
-    <member name="M:Flame.Compiler.IEnumerableEnvironment.ImplementEnumerable(Flame.Compiler.ITypeBuilder,Flame.IType,Flame.Compiler.IBodyMethod)">
-      <summary>
- Implements the enumerable pattern for the given type based on the provided implementation for the get enumerator method.
+ Defines a number of compiler option related constants and functions.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.IEnumerableEnvironment.ImplementEnumerator(Flame.Compiler.ITypeBuilder,Flame.IType,Flame.Compiler.IBodyMethod,Flame.IProperty)">
+    <member name="M:Flame.Compiler.Flags.GetFlagOptionName(System.String)">
       <summary>
- Implements the enumerator pattern for the given type based on the provided implementations for the move next method and current item property.
+ Gets the given flag's (positive) option name.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.EnumerableEnvironmentExtensions.ImplementEnumerable(Flame.Compiler.IEnumerableEnvironment,Flame.Compiler.ITypeBuilder,Flame.IType,Flame.Compiler.IStatement)">
+    <member name="M:Flame.Compiler.Flags.GetNegatedFlagOptionName(System.String)">
       <summary>
- Implements the enumerable pattern for the given type based on the provided implementation for the get enumerator method.
+ Gets the given flag's negated option name.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.EnumerableEnvironmentExtensions.ImplementEnumerator(Flame.Compiler.IEnumerableEnvironment,Flame.Compiler.ITypeBuilder,Flame.IType,Flame.Compiler.IStatement,Flame.Compiler.IStatement)">
+    <member name="M:Flame.Compiler.Flags.GetRemarkOptionName(System.String)">
       <summary>
- Implements the enumerator pattern for the given type based on the provided implementations for the move next method and current item property.
+ Gets the given remark type's option name.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Flags.CreateCauseNode(System.String)">
+      <summary>
+ Creates a markup node that represents the cause of some message,
+ which happens to be the given option.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Flags.CreateCauseNode(System.String,System.String)">
+      <summary>
+ Creates a markup node that represents the cause of some message,
+ which happens to be the given value assigned to the given option.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.Flags.EmitAssemblyOptionName">
+      <summary>
+ An option that instructs the compiler to emit assembly
+ code instead of one or more binary files.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.Flags.CompileOnlyOptionName">
+      <summary>
+ An option that requests the compiler to compile its input into binaries,
+ but stop before linking said binaries into an executable. This
+ may not make much sense on platforms that do not typically use or
+ require static linking, such as high-level languages or
+ virtual machines.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.Flags.VerifyOnlyFlagName">
+      <summary>
+ A flag that requests the compiler to verify that an assembly
+ is correct, but not do anything more than that.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.Flags.WholeProgramFlagName">
+      <summary>
+ A flag that assures the compiler that the input it has been given
+ is indeed the entirety of the program: it can legally optimize
+ aggresively. For example, unused public members can be discarded.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.FlagExtensions.GetFlag(Flame.Compiler.ICompilerOptions,System.String,System.Boolean)">
+      <summary>
+ Gets the given flag from this compiler options dictionary.
+ This differs from 'Options.GetValue&lt;bool&gt;' in that
+ it appends an 'f' prefix to the flag's name before calling
+ the aforementioned option. If said option does not exist,
+ this function also checks if no 'fno-' prefixed
+ option has been defined for this flag, in which case its value is
+ negated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.FlagExtensions.ShouldRemark(Flame.Compiler.ICompilerOptions,System.String,System.Boolean)">
+      <summary>
+ Finds out if remarks of the given remark type should be made, according
+ to the given compiler options and default value.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.FlagExtensions.ShouldRemark(Flame.Compiler.ICompilerOptions,System.String)">
+      <summary>
+ Finds out if remarks of the given remark type should be made, according
+ to the given compiler options. Unless the given remark type was
+ requested by the options, false will be returned. That is, this function's
+ result defaults to false.
  </summary>
     </member>
     <member name="T:Flame.Compiler.IFlowExpression">
@@ -756,6 +834,12 @@
  document.
  </summary>
     </member>
+    <member name="M:Flame.Compiler.CompilerLogExtensions.CreateRemarkDiagnosticsNode(Flame.Compiler.SourceLocation,System.String)">
+      <summary>
+ Creates a remark node with the given title that contains
+ source code diagnostics for this source location.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.CompilerLogExtensions.CreateDiagnosticsNode(Flame.Compiler.SourceLocation)">
       <summary>
  Creates a source code diagnostics node.
@@ -862,31 +946,171 @@
  types best.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Warnings.GetWarningName(System.String)">
+    <member name="T:Flame.Compiler.WarningDescription">
       <summary>
- Gets a warning's "official name", which the log maps to an on/off boolean.
+ Describes a type of warning or warning group.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Warnings.GetRelaxWarningName(System.String)">
+    <member name="M:Flame.Compiler.WarningDescription.this(System.String)">
       <summary>
- Gets a warning's "relaxed name", which the log maps to an on/off boolean.
- A warning that is relaxed will not be shown unless the warning is explicitly
- turned on.
+ Creates a warning description with the given name.
+ This warning is turned off by default.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Warnings.GetWarningNameMessage(System.String)">
+    <member name="M:Flame.Compiler.WarningDescription.this(System.String,System.Boolean)">
       <summary>
- Gets a "[-W...]" style warning name.
+ Creates a warning description with the given name.
+ A boolean flag determines whether the warning is turned
+ on or off by default.
  </summary>
     </member>
-    <member name="F:Flame.Compiler.Warnings.Pedantic">
+    <member name="M:Flame.Compiler.WarningDescription.this(System.String,Flame.Compiler.WarningDescription)">
       <summary>
- The -pedantic option, which turns on most non-essential warnings.
+ Creates a warning description with the given name and parent
+ warning description. Its default behavior is inherited from
+ the parent warning description.
  </summary>
     </member>
-    <member name="F:Flame.Compiler.Warnings.Shadow">
+    <member name="M:Flame.Compiler.WarningDescription.this(System.String,Flame.Compiler.WarningDescription,System.Boolean)">
       <summary>
- The warning name for shadowed locals.
+ Creates a warning description with the given name and parent
+ warning description. A boolean flag determines whether
+ the warning is turned on or off by default.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.WarningDescription.this(System.String,System.String,Flame.Compiler.WarningDescription,System.Boolean)">
+      <summary>
+ Creates a warning description with the positive and negative options,
+ as well as a parent warning description. A boolean flag determines
+ whether the warning is turned on or off by default.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.WarningDescription.CreateMessage(Pixie.IMarkupNode)">
+      <summary>
+ Creates a warning message node for this warning, which consists
+ of the given message node, and a cause node for this warning.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.WarningDescription.CreateMessage(System.String)">
+      <summary>
+ Creates a warning message node this warning, which consists
+ of the given message node, and a cause node for this warning.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.WarningDescription.TryUseWarning(Flame.Compiler.ICompilerOptions,System.Boolean@)">
+      <summary>
+ Tries to find a boolean value that determines whether this
+ warning should be used. Returns true if this can be done,
+ otherwise false. The result, if any, is stored in a boolean reference.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.WarningDescription.UseWarning(Flame.Compiler.ICompilerOptions)">
+      <summary>
+ Determines if this warning should be used according to the
+ given set of compiler options.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.IsRoot">
+      <summary>
+ Checks if this warning is a "root" warning: i.e. it is not
+ dependent on any other warnings or warning groups.
+ This implies that its "parent" is null.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.HasWarningOption">
+      <summary>
+ Gets a boolean flag that tells if this warning has a non-null,
+ non-empty (positive) warning option.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.HasNegatedWarningOption">
+      <summary>
+ Gets a boolean flag that tells if this warning has a non-null,
+ non-empty negated warning option.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.CauseNode">
+      <summary>
+ Gets a cause node for this warning.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.WarningOption">
+      <summary>
+ Gets this warning's (positive) warning option, which enables
+ the warning if it is set to true.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.NegatedWarningOption">
+      <summary>
+ Gets this warning's negated warning option, which disables
+ the warning if it is set to true. The positive warning option
+ takes precedence over this option.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.Parent">
+      <summary>
+ Gets this warning or warning group's "parent": if this warning has
+ not been explicitly turned on or off, then the parent's value is
+ used by this instance.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.WarningDescription.IsDefault">
+      <summary>
+ Gets a boolean value that tells if this warning is turned on by
+ default. This behavior can be overriden by the parent warning group.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.WarningDescription.WarningOptionPrefix">
+      <summary>
+ Gets the prefix string for warning options.
+ </summary>
+    </member>
+    <member name="F:Flame.Compiler.WarningDescription.NegatedWarningOptionPrefix">
+      <summary>
+ Gets the prefix string for negated warning options.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Everything">
+      <summary>
+ The root warning group, which covers all warnings.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.All">
+      <summary>
+ The "conventional" warning group, which is turned on by default.
+ It corresponds to -Wall and -Wno-all.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Build">
+      <summary>
+ The "build" warning group, which is turned on by default.
+ This warning group contains warnings that relate to the build
+ process, such as missing dependencies or unused options.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Extra">
+      <summary>
+ The "extra" warning group, which contains a number of possibly
+ useful warnings that are not turned on by default.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.PedanticRoot">
+      <summary>
+ The -pedantic option, which turns on non-essential warnings that typically
+ relate to language-level constructs, especially non-standard extensions.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Pedantic">
+      <summary>
+ The -Wpedantic and -Wno-pedantic options. These two are a sub-warning
+ group of -pedantic. If you want to create a warning that fires
+ only in pedantic mode, use these as a parent warning description,
+ rather than -pedantic.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Shadow">
+      <summary>
+ The warning description for shadowed locals.
  </summary>
       <example>
  for (int i = 0; i &lt; 5; i++)
@@ -899,7 +1123,7 @@
  }
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.GenericOperators">
+    <member name="P:Flame.Compiler.Warnings.GenericOperators">
       <summary>
  The warning name for undefined operators on generic parameters.
  </summary>
@@ -908,7 +1132,7 @@
        ^~~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.Operators">
+    <member name="P:Flame.Compiler.Warnings.Operators">
       <summary>
  The warning name for undefined operators.
  </summary>
@@ -918,9 +1142,9 @@
           ^~~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.Bitcast">
+    <member name="P:Flame.Compiler.Warnings.Bitcast">
       <summary>
- The warning name for bitcasts.
+ The warning description for bitcasts.
  </summary>
       <example>
  int x = -5;
@@ -930,9 +1154,9 @@
  x = (int)(bit32)z;
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.MeaninglessCast">
+    <member name="P:Flame.Compiler.Warnings.MeaninglessCast">
       <summary>
- The warning name for meaningless casts.
+ The warning description for meaningless casts.
  </summary>
       <example>
  int x = 5;
@@ -940,7 +1164,7 @@
           ^~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.ConstantDiscarded">
+    <member name="P:Flame.Compiler.Warnings.ConstantDiscarded">
       <summary>
  The warning name for discarded constants.
  </summary>
@@ -949,7 +1173,7 @@
   ^
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.ConstantAssert">
+    <member name="P:Flame.Compiler.Warnings.ConstantAssert">
       <summary>
  The warning name for constant assertions.
  </summary>
@@ -958,25 +1182,26 @@
  ^~~~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.BadAlias">
+    <member name="P:Flame.Compiler.Warnings.CSharpUsingAlias">
       <summary>
- The warning name for C# style alias directives.
+ The warning name for C# style alias directives, which are technically
+ not legal D#.
  </summary>
       <example>
  using x = y;
  ^~~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.CppUsingNamespace">
+    <member name="P:Flame.Compiler.Warnings.CppUsingNamespace">
       <summary>
- The warning name for (illegal) C++ style directives.
+ The warning name for C++ style directives, which are not legal D#.
  </summary>
       <example>
  using namespace x;
        ^~~~~~~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.EmptyBody">
+    <member name="P:Flame.Compiler.Warnings.EmptyBody">
       <summary>
  The warning name for control flow statements with empty bodies.
  </summary>
@@ -985,7 +1210,7 @@
              ^
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.DanglingElse">
+    <member name="P:Flame.Compiler.Warnings.DanglingElse">
       <summary>
  The warning name for dangling else statements.
  </summary>
@@ -996,7 +1221,7 @@
  ^~~~
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.LonelyTry">
+    <member name="P:Flame.Compiler.Warnings.LonelyTry">
       <summary>
  The warning name for try statements without associated catch or finally blocks.
  </summary>
@@ -1006,7 +1231,7 @@
  return 0;
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.HiddenNullCheck">
+    <member name="P:Flame.Compiler.Warnings.HiddenNullCheck">
       <summary>
  The warning name for hidden or convoluted null checks.
  </summary>
@@ -1019,7 +1244,7 @@
  }
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.IncompleteInitialization">
+    <member name="P:Flame.Compiler.Warnings.IncompleteInitialization">
       <summary>
  The warning name for incomplete initialization of container types.
  </summary>
@@ -1031,7 +1256,7 @@
  }
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.VariableLengthInitialization">
+    <member name="P:Flame.Compiler.Warnings.VariableLengthInitialization">
       <summary>
  The warning name for constant initialization of variable-length container types.
  </summary>
@@ -1043,18 +1268,27 @@
  }
  </example>
     </member>
-    <member name="F:Flame.Compiler.Warnings.UnusedOption">
+    <member name="P:Flame.Compiler.Warnings.UnusedOption">
       <summary>
- A warning name for unused Compiler options.
+ A warning name for unused compiler options. Note, however, that
+ this warning does not belong to the more general unused member
+ warning group for source-level constructs (-Wunused). Instead,
+ it belongs to -Wbuild, as this warning concerns the build process,
+ rather than the source code.
  </summary>
       <example>
  compiler File.src -unknown-option
                    ^~~~~~~~~~~~~~~
  </example>
     </member>
-    <member name="P:Flame.Compiler.WarningExtensions.IsPedantic">
+    <member name="P:Flame.Compiler.Warnings.MissingDependency">
       <summary>
- Finds out whether the given log instance is in pedantic mode.
+ A warning name for missing library dependencies.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Warnings.Unused">
+      <summary>
+ A warning group for declarations that are never used.
  </summary>
     </member>
     <member name="T:Flame.Compiler.ICodeGenerator">
@@ -1461,103 +1695,15 @@
  Gets or sets this code line's indentation.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.IFieldBuilder.SetValue(Flame.Compiler.IExpression)">
-      <summary>
- Sets the field's initial value.
- </summary>
-      <param name="Value" />
-    </member>
-    <member name="M:Flame.Compiler.ITypeBuilder.DeclareMethod(Flame.IMethod)">
-      <summary>
- Declares a method that is based on the information provided by the specified method.
- </summary>
-      <param name="Template">
- An external method that will be used to declare a method.
- This method does not have to support dynamic invocation because only its reflection information will be used.
- </param>
-      <returns />
-    </member>
-    <member name="M:Flame.Compiler.ITypeBuilder.DeclareField(Flame.IField)">
-      <summary>
- Declares a field that is based on the information provided by the specified field.
- </summary>
-      <param name="Template">
- An external field that will be used to declare a field.
- This field does not have to support dynamic invocation because only its reflection information will be used.
- </param>
-      <returns />
-    </member>
-    <member name="M:Flame.Compiler.ITypeBuilder.DeclareProperty(Flame.IProperty)">
-      <summary>
- Declares a property that is based on the information provided by the specified property.
- </summary>
-      <param name="Template">
- An external property that will be used to declare a property.
- This property does not have to support dynamic invocation because only its reflection information will be used.
- </param>
-      <returns />
-    </member>
-    <member name="M:Flame.Compiler.INamespaceBuilder.DeclareType(Flame.IType)">
-      <summary>
- Declares a type based on another type. The template's members will be ignored when creating the type.
- </summary>
-      <param name="Template" />
-      <returns />
-    </member>
-    <member name="M:Flame.Compiler.IAssemblyBuilder.Save(Flame.Compiler.IOutputProvider)">
-      <summary>
- Saves the assembly to the output provider.
- </summary>
-    </member>
-    <member name="T:Flame.Compiler.IOutputProvider">
-      <summary>
- Describes a provider of output streams.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.IOutputProvider.Create(System.String,System.String)">
-      <summary>
- Creates an output file for the specified name.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.IOutputProvider.Create">
-      <summary>
- Creates the default output file.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.IOutputProvider.Exists(System.String,System.String)">
-      <summary>
- Gets a boolean value that indicates whether an output stream with the specified name and extension exists.
- </summary>
-    </member>
-    <member name="P:Flame.Compiler.IOutputProvider.PreferSingleOutput">
-      <summary>
- Gets a boolean value that indicates if the client prefers a single output over many.
- </summary>
-    </member>
-    <member name="T:Flame.Compiler.IOutputFile">
-      <summary>
- Represents a file that can be opened for writing.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.IOutputFile.OpenOutput">
-      <summary>
- Opens an output stream to this file.
- </summary>
-    </member>
     <member name="M:Flame.Compiler.DescribedBodyMethod.GetMethodBody">
       <summary>
  Gets the method's body statement.
  </summary>
       <returns />
     </member>
-    <member name="T:Flame.Compiler.IInvariantTypeBuilder">
+    <member name="T:Flame.Compiler.DescribedInvariant">
       <summary>
- Specifies functionality for type builders that support the creation of invariants.
- </summary>
-    </member>
-    <member name="P:Flame.Compiler.IInvariantTypeBuilder.InvariantGenerator">
-      <summary>
- Gets the type builder's invariant generator.
+ Defines an artifical invariant member.
  </summary>
     </member>
     <member name="T:Flame.Compiler.IInvariantType">
@@ -1575,9 +1721,19 @@
  Gets the invariant member's invariant as an expression.
  </summary>
     </member>
-    <member name="T:Flame.Compiler.DescribedInvariant">
+    <member name="T:Flame.Compiler.ISourceMember">
       <summary>
- Defines an artifical invariant member.
+ Defines common functionality for members that expose their source locations.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.ISourceMember.Location">
+      <summary>
+ Gets the member's source location.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.SourceMemberExtensions.GetSourceLocation(Flame.IMember)">
+      <summary>
+ Tries to get the given member's source location.
  </summary>
     </member>
     <member name="M:Flame.Compiler.InvariantExtensions.GetAllInvariants(System.Collections.Generic.IEnumerable`1{Flame.IType})">
@@ -2551,6 +2707,26 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Expressions.InvocationExpression">
+      <summary>
+ A type of expression that invokes a delegate expression by passing
+ it a list of arguments.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.InvocationExpression.this(Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable`1{Flame.Compiler.IExpression})">
+      <summary>
+ Creates an invocation expression that invokes the given delegate
+ expression with the given argument list.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.InvocationExpression.this(Flame.IMethod,Flame.Compiler.IExpression,System.Collections.Generic.IEnumerable`1{Flame.Compiler.IExpression})">
+      <summary>
+ Creates an invocation expression that calls the given method
+ with the given argument list. Virtual methods will be called
+ through dynamic invocation, nonvirtual methods will result in a
+ direct call.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.InvocationExpression.AcceptPredicate(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts the predicate node visitor.
@@ -2585,6 +2761,22 @@
     <member name="M:Flame.Compiler.Expressions.InvocationExpression.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
  Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.InvocationExpression.Method">
+      <summary>
+ Gets the method signature of the delegate expression to invoke.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.InvocationExpression.Target">
+      <summary>
+ Gets the delegate expression that is invoked by passing it
+ an argument list.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.InvocationExpression.Arguments">
+      <summary>
+ Gets the argument list to invoke the delegate with.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Expressions.ContainerElementGetExpression.AcceptPredicate(Flame.Compiler.INodeVisitor)">
@@ -2911,10 +3103,16 @@
  Accepts and interacts with a flow visitor.
  </summary>
     </member>
+    <member name="M:Flame.Compiler.Expressions.LambdaExpression.IsCapturedValueExpression(Flame.Compiler.IExpression)">
+      <summary>
+ Tests if the given argument is a captured value expression
+ that gets one of this lambda expression's captured values.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.LambdaExpression.Copy">
       <summary>
- Copies this node. A new node is returned that does not depend
- on this node.
+ Creates a copy of this lambda expression that is not dependent on
+ any of this expression instance's data.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Expressions.LambdaExpression.ConvertMembers(Flame.Compiler.MemberConverter)">
@@ -3002,6 +3200,19 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Expressions.UnaryExpression">
+      <summary>
+ Defines a base class for expressions that take a single operand.
+ </summary>
+      <remarks>
+ Not all unary expressions are associated with a specific unary operator.
+ </remarks>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.UnaryExpression.this(Flame.Compiler.IExpression)">
+      <summary>
+ Initializes this unary expression with the given operand.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.UnaryExpression.AcceptPredicate(Flame.Compiler.INodeVisitor)">
       <summary>
  Accepts the predicate node visitor.
@@ -3043,6 +3254,17 @@
  The value the unary expression will be performed on.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Expressions.UnaryOperatorExpression">
+      <summary>
+ Defines a base class for expressions that apply an operator to a single
+ operand.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.UnaryOperatorExpression.this(Flame.Compiler.IExpression)">
+      <summary>
+ Initializes this unary operator expression with the given expression.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.UnaryOperatorExpression.GetOpOverload">
       <summary>
  Gets the operator overload for this unary expression if an overload exists. Otherwise, null.
@@ -3053,9 +3275,62 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="P:Flame.Compiler.Expressions.UnaryOperatorExpression.Op">
+      <summary>
+ Gets the unary operator that this expression applies to its operand.
+ </summary>
+    </member>
     <member name="P:Flame.Compiler.Expressions.UnaryOperatorExpression.OperatorOverload">
       <summary>
  Gets the operator overload for this unary expression if an overload exists. Otherwise, null.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Expressions.DirectUnaryExpression">
+      <summary>
+ A type of unary expressions whose default behavior is to reduce themselves
+ to specialized implementations if at all possible. Otherwise,
+ a default unary operator code sequence is generated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DirectUnaryExpression.this(Flame.Operator,Flame.Compiler.IExpression)">
+      <summary>
+ Creates a unary expression that applies the given
+ unary operator to the given operand.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DirectUnaryExpression.Evaluate">
+      <summary>
+ Performs a compile-time evaluation of the expression.
+ If it cannot be evaluated, null is returned.
+ </summary>
+      <returns />
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DirectUnaryExpression.Optimize">
+      <summary>
+ Returns an optimized version of the expression.
+ </summary>
+      <returns />
+    </member>
+    <member name="M:Flame.Compiler.Expressions.DirectUnaryExpression.Emit(Flame.Compiler.ICodeGenerator)">
+      <summary>
+ Creates a code block that captures this code node.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DirectUnaryExpression.Op">
+      <summary>
+ Gets the unary operator that this expression applies to its operand.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DirectUnaryExpression.LoweredExpression">
+      <summary>
+ Gets the potentially more specialized expression this unary
+ expression is "lowered" to.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Expressions.DirectUnaryExpression.CanLower">
+      <summary>
+ Gets a boolean value that indicates whether this unary expression
+ can be lowered to a specialized unary expression.
  </summary>
     </member>
     <member name="T:Flame.Compiler.Expressions.UnknownExpression">
@@ -3487,6 +3762,21 @@
  If it cannot be evaluated, null is returned.
  </summary>
       <returns />
+    </member>
+    <member name="M:Flame.Compiler.Expressions.LazyAndExpression.GetFlattenedOperands">
+      <summary>
+ Gets a "flattened" sequence of operands of this logical and expression and
+ its children, if any.
+ For example, `a &amp;&amp; b &amp;&amp; c` would return the following
+ sequence of operands: [a, b, c].
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Expressions.LazyAndExpression.Simplify">
+      <summary>
+ "Simplifies" this lazy-and expression by applying
+ a number of simplification rules. Child nodes are not simplified.
+ This is a lot like a non-recursive version of Optimize.
+ </summary>
     </member>
     <member name="M:Flame.Compiler.Expressions.LazyAndExpression.Optimize">
       <summary>
@@ -4258,6 +4548,11 @@
  Creates a code block that captures this code node.
  </summary>
     </member>
+    <member name="M:Flame.Compiler.Expressions.DirectUnaryExpression.Static_Singleton.CreateUnaryExpression(Flame.Operator,Flame.Compiler.IExpression)">
+      <summary>
+ Creates a unary expression from the given operation and operand.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Expressions.SourceExpression.Static_Singleton.Create(Flame.Compiler.IExpression,Flame.Compiler.SourceLocation)">
       <summary>
  Creates a source expression based on the given expression and location.
@@ -4428,6 +4723,11 @@
  Returns an optimized version of the statement.
  </summary>
       <returns />
+    </member>
+    <member name="M:Flame.Compiler.Statements.WhileStatement.Lower">
+      <summary>
+ Lowers this while block to an equivalent tagged block IR tree.
+ </summary>
     </member>
     <member name="M:Flame.Compiler.Statements.WhileStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
@@ -4916,6 +5216,11 @@
  Returns an optimized version of the statement.
  </summary>
       <returns />
+    </member>
+    <member name="M:Flame.Compiler.Statements.DoWhileStatement.Lower">
+      <summary>
+ Lowers this do...while block to an equivalent tagged block IR tree.
+ </summary>
     </member>
     <member name="M:Flame.Compiler.Statements.DoWhileStatement.Emit(Flame.Compiler.ICodeGenerator)">
       <summary>
@@ -5957,6 +6262,12 @@
  prerogative.
  </summary>
     </member>
+    <member name="M:Flame.Compiler.Variables.ThisVariable.Static_Singleton.GetThisType(Flame.IType)">
+      <summary>
+ Gets the type of the 'this' variable, if the given type is the
+ declaring type.
+ </summary>
+    </member>
     <member name="M:Flame.Compiler.Variables.ThisVariable.Static_Singleton.IsThisVariable(Flame.Compiler.IVariable)">
       <summary>
  Gets a boolean value that indicates whether the given variable refers directly or indirectly to a ThisVariable reference.
@@ -6113,7 +6424,7 @@
  Contains a body pass' arguments.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Visitors.BodyPassArgument.this(Flame.Compiler.Visitors.IBodyPassEnvironment,Flame.Compiler.Visitors.PassMetadata,Flame.Compiler.ITypeBuilder,Flame.Compiler.IMethodBuilder,Flame.Compiler.IStatement)">
+    <member name="M:Flame.Compiler.Visitors.BodyPassArgument.this(Flame.Compiler.Visitors.IBodyPassEnvironment,Flame.Compiler.Visitors.PassMetadata,Flame.IMethod,Flame.Compiler.IStatement)">
       <summary>
  Creates a new body pass argument from the given values.
  </summary>
@@ -6129,6 +6440,11 @@
  Gets the target method's environment.
  </summary>
     </member>
+    <member name="P:Flame.Compiler.Visitors.BodyPassArgument.DeclaringType">
+      <summary>
+ Gets the declaring method's declaring type.
+ </summary>
+    </member>
     <member name="P:Flame.Compiler.Visitors.BodyPassArgument.PassEnvironment">
       <summary>
  Gets the body pass' environment.
@@ -6139,14 +6455,9 @@
  Gets the pass' metadata.
  </summary>
     </member>
-    <member name="P:Flame.Compiler.Visitors.BodyPassArgument.Type">
+    <member name="P:Flame.Compiler.Visitors.BodyPassArgument.DeclaringMethod">
       <summary>
- Gets the target method's declaring type.
- </summary>
-    </member>
-    <member name="P:Flame.Compiler.Visitors.BodyPassArgument.Method">
-      <summary>
- Gets the target method.
+ Gets the declaring method.
  </summary>
     </member>
     <member name="P:Flame.Compiler.Visitors.BodyPassArgument.Body">
@@ -6167,7 +6478,7 @@
  Creates a new body pass.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Visitors.BodyPassBase.Apply(Flame.IEnvironment,Flame.Compiler.ITypeBuilder,Flame.Compiler.IMethodBuilder,Flame.Compiler.IStatement)">
+    <member name="M:Flame.Compiler.Visitors.BodyPassBase.Apply(Flame.IEnvironment,Flame.IMethod,Flame.Compiler.IStatement)">
       <summary>
  Applies this pass to the given method, method body, type builder and environment.
  </summary>
@@ -6185,7 +6496,7 @@
     </member>
     <member name="M:Flame.Compiler.Visitors.FatBodyPass.this(Flame.Compiler.Visitors.IPass`2{Flame.Compiler.Visitors.BodyPassArgument,Flame.Compiler.IStatement})">
       <summary>
- Creates a new fat bpdy pass based on the given body pass.
+ Creates a new fat body pass based on the given body pass.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Visitors.FatBodyPass.Apply(Flame.Compiler.Visitors.BodyPassArgument)">
@@ -6401,6 +6712,29 @@
  Creates the aggregate of the given sequence of passes.
  </summary>
     </member>
+    <member name="T:Flame.Compiler.Visitors.LocationVisitorBase">
+      <summary>
+ A node visitor that takes source location nodes into account when
+ visiting a node tree.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Visitors.LocationVisitorBase.this">
+      <summary>
+ Creates a new location visitor base.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Visitors.LocationVisitorBase.MatchedLocations">
+      <summary>
+ Gets a sequence containing all source locations of nodes that were
+ "matched" by the MatchedCore methods.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Visitors.LocationVisitorBase.CurrentLocation">
+      <summary>
+ Gets the location visitor's current location, obtained from source statements
+ and expressions.
+ </summary>
+    </member>
     <member name="T:Flame.Compiler.Visitors.LoggingVisitor">
       <summary>
  A node visitor that visits all error and warning nodes, and logs their
@@ -6439,18 +6773,29 @@
  and expressions.
  </summary>
     </member>
-    <member name="T:Flame.Compiler.Visitors.LowerYieldPass">
+    <member name="T:Flame.Compiler.Visitors.LowerYieldPassBase">
       <summary>
  A pass that reduces methods with yield return/yield break statements to
  enumerable/enumerator implementations.
 
  Requirements for this pass to run:
-  * The enclosing type of the method must be a namespace builder (implements INamespaceBuilder).
-  * The environment must be an IEnumerableEnvironment.
+  * The enclosing type of the method must be a namespace (implements INamespace).
   * The output assembly's code generators must support labels.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Visitors.LowerYieldPass.Apply(Flame.IEnvironment,Flame.Compiler.ITypeBuilder,Flame.Compiler.IMethodBuilder,Flame.Compiler.IStatement)">
+    <member name="M:Flame.Compiler.Visitors.LowerYieldPassBase.ImplementEnumerable(Flame.IEnvironment,Flame.Build.DescribedType,Flame.IType,Flame.Compiler.IStatement)">
+      <summary>
+ Implements the enumerable pattern for the given type based on the
+ given implementation for the get enumerator method.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Visitors.LowerYieldPassBase.ImplementEnumerator(Flame.IEnvironment,Flame.Build.DescribedType,Flame.IType,Flame.Compiler.IStatement,Flame.Compiler.IStatement)">
+      <summary>
+ Implements the enumerator pattern for the given type based on the
+ provided implementations for the move next method and current item property.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Visitors.LowerYieldPassBase.Apply(Flame.IEnvironment,Flame.IMethod,Flame.Compiler.IStatement)">
       <summary>
  Applies this pass to the given method, method body, type builder and environment.
  </summary>
@@ -6468,18 +6813,6 @@
     <member name="M:Flame.Compiler.Visitors.LowerLambdaPass.Apply(Flame.Compiler.Visitors.BodyPassArgument)">
       <summary>
  Applies this pass to the given value.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.Visitors.EmptyCaptureLambdaHeaderBlock.GetCapturedValue(System.Int32)">
-      <summary>
- Creates a code block that gets the lambda's captured value with
- the given index.
- </summary>
-    </member>
-    <member name="M:Flame.Compiler.Visitors.ExpressionCaptureLambdaHeaderBlock.GetCapturedValue(System.Int32)">
-      <summary>
- Creates a code block that gets the lambda's captured value with
- the given index.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Visitors.MemberNodeVisitor.VisitBody(Flame.Compiler.IExpression,Flame.IMethod)">
@@ -6665,19 +6998,571 @@
  Finds out whether the given statement uses yield break or yield return.
  </summary>
     </member>
-    <member name="T:Flame.Compiler.Build.ISourceMember">
+    <member name="T:Flame.Compiler.Build.FieldPrototypeTemplate">
       <summary>
- Defines common functionality for members that expose their source locations.
+ Defines a field signature template that is based on a prototype field.
  </summary>
     </member>
-    <member name="P:Flame.Compiler.Build.ISourceMember.Location">
+    <member name="M:Flame.Compiler.Build.FieldPrototypeTemplate.this(Flame.IField)">
       <summary>
- Gets the member's source location.
+ Creates a field prototype template from the given prototype.
  </summary>
     </member>
-    <member name="M:Flame.Compiler.Build.SourceMemberExtensions.GetSourceLocation(Flame.IMember)">
+    <member name="M:Flame.Compiler.Build.FieldPrototypeTemplate.CreateFieldType(Flame.IField)">
       <summary>
- Tries to get the given member's source location.
+ Creates the field signature's field type.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.FieldSignatureInstance">
+      <summary>
+ An instantiation of a field signature template.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.FieldSignatureInstance.this(Flame.Compiler.Build.IFieldSignatureTemplate,Flame.IField)">
+      <summary>
+ Instantiates the given field signature template with the given field.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.Name">
+      <summary>
+ Gets the field signature instance's name.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.IsStatic">
+      <summary>
+ Gets a boolean value that tells if this type member template is static.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.Template">
+      <summary>
+ Gets the field signature template this instance is based on.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.Field">
+      <summary>
+ Gets the field the signature template is instantiated with.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.Attributes">
+      <summary>
+ Gets the field signature instance's attributes.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.FieldSignatureInstance.FieldType">
+      <summary>
+ Gets the field signature instance's field type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IAssemblyBuilder.Save(Flame.Compiler.Build.IOutputProvider)">
+      <summary>
+ Saves the assembly to the output provider.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IMethodBuilder">
+      <summary>
+ Defines common functionality for methods whose body can be set.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodBuilder.GetBodyGenerator">
+      <summary>
+ Gets the method body's code generator.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodBuilder.SetMethodBody(Flame.Compiler.ICodeBlock)">
+      <summary>
+ Sets this method builder's body to the given code block.
+ Note that this code block must be generated by this method builder's
+ code generator.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IMethodSignatureTemplate">
+      <summary>
+ Defines a template for method signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodSignatureTemplate.CreateGenericParameters(Flame.IMethod)">
+      <summary>
+ Creates the method signature's generic parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodSignatureTemplate.CreateBaseMethods(Flame.IMethod)">
+      <summary>
+ Creates the method signature's base methods.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodSignatureTemplate.CreateReturnType(Flame.IMethod)">
+      <summary>
+ Creates the method signature's return type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMethodSignatureTemplate.CreateParameters(Flame.IMethod)">
+      <summary>
+ Creates the method signature's parameters.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.IMethodSignatureTemplate.IsConstructor">
+      <summary>
+ Gets a boolean value that tells if this method template is a constructor.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IFieldBuilder.SetValue(Flame.Compiler.IExpression)">
+      <summary>
+ Sets the field's initial value.
+ </summary>
+      <param name="Value" />
+    </member>
+    <member name="T:Flame.Compiler.Build.IFieldSignatureTemplate">
+      <summary>
+ Defines a template for field signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IFieldSignatureTemplate.CreateFieldType(Flame.IField)">
+      <summary>
+ Creates the field signature's field type.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IPropertyBuilder">
+      <summary>
+ Defines a common interface for properties that can declare new accessors.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IPropertyBuilder.DeclareAccessor(Flame.AccessorType,Flame.Compiler.Build.IMethodSignatureTemplate)">
+      <summary>
+ Declares an accessor based on the given accessor kind and method signature template.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IPropertySignatureTemplate">
+      <summary>
+ Defines a template for property signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IPropertySignatureTemplate.CreatePropertyType(Flame.IProperty)">
+      <summary>
+ Creates the property signature's property type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IPropertySignatureTemplate.CreateIndexerParameters(Flame.IProperty)">
+      <summary>
+ Creates the property signature's indexer parameters.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.INamespaceBuilder">
+      <summary>
+ A common interface for namespaces that can declare child namespaces
+ and types.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.INamespaceBuilder.DeclareNamespace(System.String)">
+      <summary>
+ Declares a child namespace with the given name.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.INamespaceBuilder.DeclareType(Flame.Compiler.Build.ITypeSignatureTemplate)">
+      <summary>
+ Declares a type based on the given type signature template.
+ </summary>
+      <param name="Template" />
+      <returns />
+    </member>
+    <member name="T:Flame.Compiler.Build.IMemberBuilder`1">
+      <summary>
+ Defines a base interface for member builders.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMemberBuilder`1.Initialize">
+      <summary>
+ "Initializes" this instance. This is method is typically
+ added after declaring and registering the member builder,
+ and gives it the opportunity to perform eager evaluation of
+ its signature template.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMemberBuilder`1.Build">
+      <summary>
+ "Builds" this member builder. This signifies the end of interaction
+ with the member builder interaction, and allows the member builder
+ to store all the data it has acquired.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IMemberSignatureTemplate`1">
+      <summary>
+ Defines a template for member signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IMemberSignatureTemplate`1.CreateAttributes(T)">
+      <summary>
+ Creates the member signature's attributes.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.IMemberSignatureTemplate`1.Name">
+      <summary>
+ Gets the member signature's name.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.ITypeMemberSignatureTemplate`1">
+      <summary>
+ Defines a template for type member signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.ITypeMemberSignatureTemplate`1.IsStatic">
+      <summary>
+ Gets a boolean flag that determines whether this type member is static.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IOutputProvider">
+      <summary>
+ Describes a provider of output streams.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IOutputProvider.Create(System.String,System.String)">
+      <summary>
+ Creates an output file for the specified name.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IOutputProvider.Create">
+      <summary>
+ Creates the default output file.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IOutputProvider.Exists(System.String,System.String)">
+      <summary>
+ Gets a boolean value that indicates whether an output stream with the specified name and extension exists.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.IOutputProvider.PreferSingleOutput">
+      <summary>
+ Gets a boolean value that indicates if the client prefers a single output over many.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IOutputFile">
+      <summary>
+ Represents a file that can be opened for writing.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.IOutputFile.OpenOutput">
+      <summary>
+ Opens an output stream to this file.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.IInvariantTypeBuilder">
+      <summary>
+ Specifies functionality for type builders that support the creation of invariants.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.IInvariantTypeBuilder.InvariantGenerator">
+      <summary>
+ Gets the type builder's invariant generator.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.ITypeBuilder.DeclareMethod(Flame.Compiler.Build.IMethodSignatureTemplate)">
+      <summary>
+ Declares a method that is based on the information provided by the specified method template.
+ </summary>
+      <param name="Template">
+ A method template that will be used to construct a method builder.
+ </param>
+      <returns />
+    </member>
+    <member name="M:Flame.Compiler.Build.ITypeBuilder.DeclareField(Flame.Compiler.Build.IFieldSignatureTemplate)">
+      <summary>
+ Declares a field that is based on the information provided by the specified field template.
+ </summary>
+      <param name="Template">
+ A field template that will be used to construct a field builder.
+ </param>
+      <returns />
+    </member>
+    <member name="M:Flame.Compiler.Build.ITypeBuilder.DeclareProperty(Flame.Compiler.Build.IPropertySignatureTemplate)">
+      <summary>
+ Declares a property that is based on the information provided by the specified property template.
+ </summary>
+      <param name="Template">
+ A property template that will be used to construct a property builder.
+ </param>
+      <returns />
+    </member>
+    <member name="T:Flame.Compiler.Build.ITypeSignatureTemplate">
+      <summary>
+ Defines a template for type signatures, which can be instantiated.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.ITypeSignatureTemplate.CreateGenericParameters(Flame.IType)">
+      <summary>
+ Creates the type signature's generic parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.ITypeSignatureTemplate.CreateBaseTypes(Flame.IType)">
+      <summary>
+ Creates the type signature's base types.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.MemberPrototypeTemplate`1">
+      <summary>
+ A base class for member signature templates that use a prototype member.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MemberPrototypeTemplate`1.this(T)">
+      <summary>
+ Creates a member prototype template from the given prototype member.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MemberPrototypeTemplate`1.CreateAttributes(T)">
+      <summary>
+ Creates this member prototype's attributes.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MemberPrototypeTemplate`1.Name">
+      <summary>
+ Gets this member prototype's name.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MemberPrototypeTemplate`1.Prototype">
+      <summary>
+ Gets this member prototype template's prototype member.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.TypeMemberPrototypeTemplate`1">
+      <summary>
+ A base class for type member signature templates that use a prototype member.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.TypeMemberPrototypeTemplate`1.this(T)">
+      <summary>
+ Creates a type member prototype from the given prototype member.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeMemberPrototypeTemplate`1.IsStatic">
+      <summary>
+ Tells if this type member prototype is static.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.MethodPrototypeTemplate">
+      <summary>
+ Defines a method signature template that is based on a prototype method.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodPrototypeTemplate.this(Flame.IMethod)">
+      <summary>
+ Creates a method prototype template from the given prototype.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodPrototypeTemplate.CreateGenericParameters(Flame.IMethod)">
+      <summary>
+ Creates the method signature's generic parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodPrototypeTemplate.CreateBaseMethods(Flame.IMethod)">
+      <summary>
+ Creates the method signature's base methods.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodPrototypeTemplate.CreateReturnType(Flame.IMethod)">
+      <summary>
+ Creates the method signature's return type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodPrototypeTemplate.CreateParameters(Flame.IMethod)">
+      <summary>
+ Creates the method signature's parameters.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.MethodSignatureInstance">
+      <summary>
+ An instantiation of a method signature template.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.MethodSignatureInstance.this(Flame.Compiler.Build.IMethodSignatureTemplate,Flame.IMethod)">
+      <summary>
+ Instantiates the given method signature template with the given method.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.Name">
+      <summary>
+ Gets the method signature instance's name.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.IsConstructor">
+      <summary>
+ Gets a boolean value that tells if this method signature instance is a constructor.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.Template">
+      <summary>
+ Gets the method signature template this instance is based on.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.Method">
+      <summary>
+ Gets the method the signature template is instantiated with.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.Attributes">
+      <summary>
+ Gets the method signature instance's attributes.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new method builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.GenericParameters">
+      <summary>
+ Gets the method signature instance's generic parameters.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new method builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.BaseMethods">
+      <summary>
+ Gets the method signature instance's base methods.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new method builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.ReturnType">
+      <summary>
+ Gets the method signature instance's return type.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new method builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.MethodSignatureInstance.Parameters">
+      <summary>
+ Gets the method signature instance's parameters.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new method builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.PropertyPrototypeTemplate">
+      <summary>
+ Defines a property signature template that is based on a prototype property.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.PropertyPrototypeTemplate.this(Flame.IProperty)">
+      <summary>
+ Creates a property signature template from the given prototype property.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.PropertyPrototypeTemplate.CreatePropertyType(Flame.IProperty)">
+      <summary>
+ Creates the property signature's property type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.PropertyPrototypeTemplate.CreateIndexerParameters(Flame.IProperty)">
+      <summary>
+ Creates the property signature's indexer parameters.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.PropertySignatureInstance">
+      <summary>
+ An instantiation of a property signature template.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.PropertySignatureInstance.this(Flame.Compiler.Build.IPropertySignatureTemplate,Flame.IProperty)">
+      <summary>
+ Instantiates the given property signature template with the given property.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.Name">
+      <summary>
+ Gets the property signature instance's name.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.Template">
+      <summary>
+ Gets the property signature template this instance is based on.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.Property">
+      <summary>
+ Gets the property the signature template is instantiated with.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.Attributes">
+      <summary>
+ Gets the property signature instance's attributes.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.PropertyType">
+      <summary>
+ Gets the property signature instance's property type.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.PropertySignatureInstance.IndexerParameters">
+      <summary>
+ Gets the property signature instance's indexer parameters.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.TypePrototypeTemplate">
+      <summary>
+ Defines a type signature template that is based on a prototype type.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.TypePrototypeTemplate.this(Flame.IType)">
+      <summary>
+ Creates a type prototype template from the given prototype.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.TypePrototypeTemplate.CreateGenericParameters(Flame.IType)">
+      <summary>
+ Creates the type signature's generic parameters.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.TypePrototypeTemplate.CreateBaseTypes(Flame.IType)">
+      <summary>
+ Creates the type signature's base types.
+ </summary>
+    </member>
+    <member name="T:Flame.Compiler.Build.TypeSignatureInstance">
+      <summary>
+ An instantiation of a type signature template.
+ </summary>
+    </member>
+    <member name="M:Flame.Compiler.Build.TypeSignatureInstance.this(Flame.Compiler.Build.ITypeSignatureTemplate,Flame.IType)">
+      <summary>
+ Instantiates the given type signature template with the given type.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.Name">
+      <summary>
+ Gets the type signature instance's name.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.Template">
+      <summary>
+ Gets the type signature template this instance is based on.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.Type">
+      <summary>
+ Gets the type the signature template is instantiated with.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.Attributes">
+      <summary>
+ Gets the type signature instance's attributes.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new type builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.GenericParameters">
+      <summary>
+ Gets the type signature instance's generic parameters.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new type builder based on this
+ template. Doing so anyway will result in undefined behavior.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.Build.TypeSignatureInstance.BaseTypes">
+      <summary>
+ Gets the type signature instance's base types.
+ These should be evaluated lazily. Specifically, they cannot be
+ evaluated during the creation of a new type builder based on this
+ template. Doing so anyway will result in undefined behavior.
  </summary>
     </member>
     <member name="M:Flame.Compiler.Projects.IProjectSourceItem.GetSource(System.String)">
@@ -6743,6 +7628,11 @@
     <member name="P:Flame.Compiler.Projects.IProjectOptionItem.Value">
       <summary>
  Gets the value associated with the option.
+ </summary>
+    </member>
+    <member name="P:Flame.Compiler.AbortCompilationException.Static_Singleton.DefaultFatalErrorEntry">
+      <summary>
+ Gets the default log entry for fatal errors.
  </summary>
     </member>
     <member name="M:Flame.Compiler.CodeBuilder.Static_Singleton.GetIndentationString(System.Collections.Generic.IEnumerable`1{System.String})">

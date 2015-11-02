@@ -332,6 +332,17 @@
  Gets the indexer's parameters, if any.
  </summary>
     </member>
+    <member name="T:Flame.AccessorType">
+      <summary>
+ Defines an accessor's "type".
+ Each property has zero or one accessors of any given type.
+ </summary>
+    </member>
+    <member name="P:Flame.AccessorType.Name">
+      <summary>
+ Gets this accessor type's name.
+ </summary>
+    </member>
     <member name="T:Flame.IField">
       <summary>
  Defines a common interface for fields.
@@ -696,6 +707,8 @@
  Determines whether the given methods have the same call signature or not.
  A call signature is defined as the method's signature, minus the
  return type.
+ Constructors are treated no differently from regular methods here:
+ their constructorness is not considered.
  </summary>
     </member>
     <member name="M:Flame.MethodExtensions.GetAllMethods(Flame.IType,System.String,System.Boolean,Flame.IType[])">
@@ -746,6 +759,28 @@
       <summary>
  Gets a boolean value that indicates whether the given method has a
  non-null, non-void return value.
+ </summary>
+    </member>
+    <member name="T:Flame.CompositeConverter`3">
+      <summary>
+ A converter implementation that represents the composition of two
+ converters.
+ </summary>
+    </member>
+    <member name="M:Flame.CompositeConverter`3.this(Flame.IConverter`2{T1,T2},Flame.IConverter`2{T2,T3})">
+      <summary>
+ Creates a converter that represents the composition of the given
+ converters.
+ </summary>
+    </member>
+    <member name="P:Flame.CompositeConverter`3.First">
+      <summary>
+ Gets the first converter to apply.
+ </summary>
+    </member>
+    <member name="P:Flame.CompositeConverter`3.Second">
+      <summary>
+ Gets the second converter to apply.
  </summary>
     </member>
     <member name="T:Flame.OperatorCache">
@@ -805,6 +840,21 @@
       <summary>
  Gets the generic member's generic arguments if it is a generic instance.
  Otherwise, the empty sequence is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.CloneGenericParameters(System.Collections.Generic.IEnumerable`1{Flame.IGenericParameter},Flame.IGenericMember)">
+      <summary>
+ "Clones" the given sequence of generic parameters: their names,
+ attributes and generic constraints are preserved, but they are
+ assigned to a new parent member.
+ </summary>
+    </member>
+    <member name="M:Flame.GenericExtensions.CloneGenericParameters(System.Collections.Generic.IEnumerable`1{Flame.IGenericParameter},Flame.IGenericMember,Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ "Clones" the given sequence of generic parameters: their names,
+ attributes and generic constraints are preserved, but they are
+ assigned to a new parent member. The generic parameters' constraint
+ types may also be modified.
  </summary>
     </member>
     <member name="P:Flame.GenericExtensions.IsGenericParameter">
@@ -1037,9 +1087,16 @@
  Describes common functionality for all generic constraints.
  </summary>
     </member>
+    <member name="M:Flame.IGenericConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
+ </summary>
+    </member>
     <member name="M:Flame.IGenericConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
  </summary>
     </member>
     <member name="M:Flame.GenericConstraintExtensions.ExtractBaseTypes(Flame.IGenericConstraint)">
@@ -1067,9 +1124,26 @@
  A generic constraint that specifies that a value of the type argument should be assignable to a specific type.
  </summary>
     </member>
+    <member name="M:Flame.TypeConstraint.this(Flame.IType)">
+      <summary>
+ Creates a new type constraint based on the given type.
+ </summary>
+    </member>
+    <member name="M:Flame.TypeConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
+ </summary>
+    </member>
     <member name="M:Flame.TypeConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
+ </summary>
+    </member>
+    <member name="P:Flame.TypeConstraint.Type">
+      <summary>
+ Gets the type that type arguments have to derive from.
  </summary>
     </member>
     <member name="T:Flame.AndConstraint">
@@ -1077,39 +1151,67 @@
  A generic constraint that specifies that the type argument should satisfy all given child constraints.
  </summary>
     </member>
+    <member name="M:Flame.AndConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
+ </summary>
+    </member>
     <member name="M:Flame.AndConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
  </summary>
     </member>
     <member name="T:Flame.ValueTypeConstraint">
       <summary>
- A constraint that is satisfied by value types.
+ A constraint that is satisfied by value types only.
+ </summary>
+    </member>
+    <member name="M:Flame.ValueTypeConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
  </summary>
     </member>
     <member name="M:Flame.ValueTypeConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
  </summary>
     </member>
     <member name="T:Flame.ReferenceTypeConstraint">
       <summary>
- A constraint that is satisfied by reference types.
+ A constraint that is satisfied by reference types only.
+ </summary>
+    </member>
+    <member name="M:Flame.ReferenceTypeConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
  </summary>
     </member>
     <member name="M:Flame.ReferenceTypeConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
  </summary>
     </member>
     <member name="T:Flame.EnumConstraint">
       <summary>
- A constraint that is satisfied by enum types.
+ A constraint that is satisfied by enum types only.
+ </summary>
+    </member>
+    <member name="M:Flame.EnumConstraint.Transform(Flame.IConverter`2{Flame.IType,Flame.IType})">
+      <summary>
+ Transforms the types in this generic constraint using the
+ given type converter.
  </summary>
     </member>
     <member name="M:Flame.EnumConstraint.Satisfies(Flame.IType)">
       <summary>
- Gets a boolean value that indicates whether the given type argument satisfies the generic constraint.
+ Gets a boolean value that indicates whether the given type argument
+ satisfies the generic constraint.
  </summary>
     </member>
     <member name="M:Flame.PrimitiveMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">

@@ -9,19 +9,18 @@ using System.Threading.Tasks;
 
 namespace fecs
 {
-    public class LogPass : IPass<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>
+    public class LogPass : IPass<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>
     {
-        public LogPass(ICompilerLog Log)
+        private LogPass()
         {
-            this.Log = Log;
         }
 
-        public ICompilerLog Log { get; private set; }
+        public static readonly LogPass Instance = new LogPass();
 
-        public Tuple<IStatement, IMethod> Apply(Tuple<IStatement, IMethod> Value)
+        public IStatement Apply(Tuple<IStatement, IMethod, ICompilerLog> Value)
         {
-            var logVisitor = new LoggingVisitor(Log, true, false);
-            return new Tuple<IStatement, IMethod>(logVisitor.Visit(Value.Item1), Value.Item2);
+            var logVisitor = new LoggingVisitor(Value.Item3, true, false);
+            return logVisitor.Visit(Value.Item1);
         }
     }
 }

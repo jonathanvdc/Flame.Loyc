@@ -143,7 +143,8 @@ namespace fecs
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     var arg = new ArgumentVariable(parameters[i], i);
-                    if (parameters[i].ParameterType.get_IsPointer() && parameters[i].ParameterType.AsContainerType().AsPointerType().PointerKind.Equals(PointerKind.ReferencePointer))
+                    if (parameters[i].ParameterType.get_IsPointer() && 
+                        parameters[i].ParameterType.AsContainerType().AsPointerType().PointerKind.Equals(PointerKind.ReferencePointer))
                     {
                         dict[parameters[i].Name] = new AtAddressVariable(arg.CreateGetExpression());
                     }
@@ -226,29 +227,31 @@ namespace fecs
         public PassPreferences GetPassPreferences(ICompilerLog Log)
         {
             return new PassPreferences(new string[] { },
-                new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>[] 
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>[] 
                 { 
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new LogPass(Log), "check-nodes", true),
-
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(
-                        AnalysisPasses.CreateValueTypeDelegatePass(Log),
-                        ValueTypeDelegateVisitor.ValueTypeDelegateWarningName,
-                        (optInfo, isPref) => optInfo.Log.UsePedanticWarnings(ValueTypeDelegateVisitor.ValueTypeDelegateWarningName)),
-
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new VerifyingDeadCodePass(Log, 
-                        "This method may not always return or throw. " + Warnings.Instance.GetWarningNameMessage("missing-return"), 
-                        Log.UseDefaultWarnings("missing-return"),
-                        "Unreachable code detected and removed. " + Warnings.Instance.GetWarningNameMessage("dead-code"),
-                        Log.UsePedanticWarnings("dead-code")),
-                        PassExtensions.EliminateDeadCodePassName, 
+                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                        LogPass.Instance, 
+                        "check-nodes", 
                         true),
 
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new AutoInitializationPass(Log),
+                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                        AnalysisPasses.ValueTypeDelegatePass,
+                        ValueTypeDelegateVisitor.ValueTypeDelegatePassName,
+                        (optInfo, isPref) => ValueTypeDelegateVisitor.ValueTypeDelegateWarning.UseWarning(optInfo.Log.Options)),
+
+                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                        VerifyingDeadCodePass.Instance,
+                        PassExtensions.EliminateDeadCodePassName, 
+                        (optInfo, isPref) => optInfo.OptimizeMinimal || optInfo.OptimizeDebug),
+
+                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                        AutoInitializationPass.Instance,
                         AutoInitializationPass.AutoInitializationPassName,
                         true),
 
-                    new PassInfo<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>(new InfiniteRecursionPass(Log),
-                        InfiniteRecursionPass.InfiniteRecursionWarningName,
+                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                        InfiniteRecursionPass.Instance,
+                        InfiniteRecursionPass.InfiniteRecursionPassName,
                         (optInfo, isPref) => InfiniteRecursionPass.IsUseful(Log))
                 });
         }

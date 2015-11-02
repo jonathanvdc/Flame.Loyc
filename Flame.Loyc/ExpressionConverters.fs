@@ -117,13 +117,13 @@ module ExpressionConverters =
         let convUnsafe parent node scope =
             let inner, scope = converter.Convert parent node scope
             let logWarning = match scope.Function.Function with
-                             | Some declFunc -> not(UnsafeHelpers.IsUnsafe declFunc) && scope.Global.Log.UsePedanticWarnings(UnsafeHelpers.MissingUnsafeWarningName)
+                             | Some declFunc -> not(UnsafeHelpers.IsUnsafe declFunc) && UnsafeHelpers.MissingUnsafeWarning.UseWarning scope.Global.Log.Options
                              | None          -> false
             if logWarning then
                 inner |> ExpressionBuilder.Warning (new LogEntry("Missing 'unsafe' attribute", 
-                                                                 "Unsafe code should not appear outside of an unsafe context. " +
-                                                                 "Add 'unsafe' to the enclosing member to make this warning go away. " +
-                                                                 Warnings.Instance.GetWarningNameMessage(UnsafeHelpers.MissingUnsafeWarningName))), scope
+                                                                 UnsafeHelpers.MissingUnsafeWarning.CreateMessage(
+                                                                    "Unsafe code should not appear outside of an unsafe context. " +
+                                                                    "Add 'unsafe' to the enclosing member to make this warning go away. "))), scope
             else
                 inner, scope
 

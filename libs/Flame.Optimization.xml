@@ -151,6 +151,58 @@
  Gets or sets the current flow state.
  </summary>
     </member>
+    <member name="T:Flame.Optimization.SpillableExpression">
+      <summary>
+ Defines an expression that can be "spilled", i.e. store its value in
+ a temporary local, retrieve it, and get rid of the local.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.SpillableExpression.Spill(Flame.Optimization.InsertStatement,Flame.Optimization.InsertStatement)">
+      <summary>
+ "Spills" this expression to the given initialization and finalization
+ statements.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.ImperativeCodeRewriter">
+      <summary>
+ A node visitor that rewrites nodes such that they are legal
+ for traditional imperative programming languages:
+ statements do not appear inside of expressions,
+ but expressions may appear inside of statements.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.ImperativeCodeRewriter.this">
+      <summary>
+ Creates a new imperative code rewriter.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.ImperativeCodeRewriter.Initialization">
+      <summary>
+ Gets this imperative code rewriter's initialization statement.
+ From an external perspective, this is only useful when rewriting
+ top-level expressions.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.ImperativeCodeRewriter.Finalization">
+      <summary>
+ Gets this imperative code rewriter's finalization statement.
+ From an external perspective, this is only useful when rewriting
+ top-level expressions.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.ImperativeCodePass">
+      <summary>
+ A pass that rewrites statements such that they are legal
+ for traditional imperative programming languages:
+ statements do not appear inside of expressions,
+ but expressions may appear inside of statements.
+ </summary>
+    </member>
+    <member name="F:Flame.Optimization.ImperativeCodePass.ImperativeCodePassName">
+      <summary>
+ The imperative code pass' name.
+ </summary>
+    </member>
     <member name="P:Flame.Optimization.InitialFlowState.IsInitial">
       <summary>
  Determines whether this state is "initial": it succeeds the initial
@@ -370,6 +422,93 @@
     <member name="P:Flame.Optimization.InsertStatement.Statements">
       <summary>
  Gets all inserted statements.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.TailRecursionVisitor">
+      <summary>
+ A statement visitor that rewrites tail recursion as iteration.
+ </summary>
+      <remarks>
+ Rewrites
+
+ return(invoke(get_delegate(this_method, this|null), arg0, arg1...))
+
+ as
+
+ var temp0 = arg0;
+ var temp1 = arg1;
+ ...
+ var temp(N-1) = arg(N-1);
+
+ paramN = argN;
+
+ param(N-1) = temp(N-1);
+ release temp(N-1);
+ ...
+ param1 = temp1;
+ release temp1;
+ param0 = temp0;
+ release temp0;
+ ...
+ continue OuterTag;
+ </remarks>
+    </member>
+    <member name="P:Flame.Optimization.TailRecursionVisitor.Method">
+      <summary>
+ Gets the method the tail recursion visitor is being applied
+ to.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.TailRecursionVisitor.OuterTag">
+      <summary>
+ Gets the tail recursion visitor's outer block tag.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.TailRecursionVisitor.HasReplaced">
+      <summary>
+ Gets a boolean flag that tells if this tail recursion visitor
+ has replaced one or more tail recursive calls with `continue`
+ statements.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.TailRecursionPass">
+      <summary>
+ A pass that rewrites tail recursion as iteration.
+ </summary>
+      <remarks>
+ Rewrites
+
+ return(invoke(get_delegate(this_method, this|null), arg0, arg1...))
+
+ as
+
+ var temp0 = arg0;
+ var temp1 = arg1;
+ ...
+ var temp(N-1) = arg(N-1);
+
+ paramN = argN;
+
+ param(N-1) = temp(N-1);
+ release temp(N-1);
+ ...
+ param1 = temp1;
+ release temp1;
+ param0 = temp0;
+ release temp0;
+ ...
+ continue OuterTag;
+ </remarks>
+    </member>
+    <member name="P:Flame.Optimization.TailRecursionPass.TailRecursionRemarksOption">
+      <summary>
+ The remarks option for tail recursion: applying this pass to
+ a function will emit a message if this is option set to true.
+ </summary>
+    </member>
+    <member name="F:Flame.Optimization.TailRecursionPass.TailRecursionPassName">
+      <summary>
+ The pass name string for the tail recursion pass.
  </summary>
     </member>
     <member name="T:Flame.Optimization.Variables.AccessCount">

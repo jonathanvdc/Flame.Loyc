@@ -19,16 +19,15 @@ namespace fecs
     /// <summary>
     /// A pass that inserts initialization nodes if initialization cannot be proven.
     /// </summary>
-    public class AutoInitializationPass : IPass<Tuple<IStatement, IMethod>, Tuple<IStatement, IMethod>>
+    public class AutoInitializationPass : IPass<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>
     {
-        public AutoInitializationPass(ICompilerLog Log)
-        {
-            this.Log = Log;
-        }
+        private AutoInitializationPass() { }
 
-        public ICompilerLog Log { get; private set; }
+        public static readonly AutoInitializationPass Instance = new AutoInitializationPass();
 
-        public const string StructAutoInitializationWarningName = "struct-auto-initialization";
+        public static readonly WarningDescription StructAutoInitializationWarning = 
+            new WarningDescription("struct-auto-initialization", Warnings.Instance.Pedantic);
+
         public const string AutoInitializationPassName = "auto-initialization";
 
         private static IStatement CreateAutoInitializationStatement(ICompilerLog Log, IMethod DeclaringMethod, IType DeclaringType, NodeCountVisitor Visitor)
@@ -36,14 +35,15 @@ namespace fecs
             var thisVariable = ThisReferenceVariable.Instance.Create(DeclaringType);
             if (DeclaringType.get_IsValueType())
             {
-                if (Log.UsePedanticWarnings(StructAutoInitializationWarningName) && DeclaringType.get_IsValueType())
+                if (StructAutoInitializationWarning.UseWarning(Log.Options) && DeclaringType.get_IsValueType())
                 {
-                    var entry = new LogEntry("Value type auto-initialization",
-                                             "A value type's constructed instance ('this') was auto-initialized, because the constructor did not manually initialize it" +
-                                             (Visitor.CurrentFlow.Max.Value == 0 ? ". " : " in every control flow path. ") +
-                                             "Consider rewriting the constructor to initialize the constructed instance with a 'this = default(...);' statement. " +
-                                             Warnings.Instance.GetWarningNameMessage(StructAutoInitializationWarningName),
-                                             DeclaringMethod.GetSourceLocation());
+                    var entry = new LogEntry(
+                        "Value type auto-initialization",
+                        StructAutoInitializationWarning.CreateMessage(
+                            "A value type's constructed instance ('this') was auto-initialized, because the constructor did not manually initialize it" +
+                            (Visitor.CurrentFlow.Max.Value == 0 ? ". " : " in every control flow path. ") +
+                            "Consider rewriting the constructor to initialize the constructed instance with a 'this = default(...);' statement. "),
+                        DeclaringMethod.GetSourceLocation());
                     Log.LogWarning(entry);
                 }
 
@@ -55,12 +55,13 @@ namespace fecs
                 var parameterlessCtor = baseType.GetConstructor(new IType[] { }, false);
                 if (parameterlessCtor == null)
                 {
-                    var entry = new LogEntry("Missing parameterless constructor",
-                                             (Visitor.CurrentFlow.Max == 0 ? 
-                                                "A constructor that did not manually initialize the constructed instance " : 
-                                                "A constructor that contains some constrol flow paths that may not manually initialize the constructed instance ") +
-                                             "could not auto-initialize said instance, because the base type does not have a parameterless constructor.",
-                                             DeclaringMethod.GetSourceLocation());
+                    var entry = new LogEntry(
+                        "Missing parameterless constructor",
+                        (Visitor.CurrentFlow.Max == 0 ? 
+                            "A constructor that did not manually initialize the constructed instance " : 
+                            "A constructor that contains some constrol flow paths that may not manually initialize the constructed instance ") +
+                        "could not auto-initialize said instance, because the base type does not have a parameterless constructor.",
+                        DeclaringMethod.GetSourceLocation());
                     entry = new LogEntry(entry.Name, RedefinitionHelpers.Instance.AppendDiagnosticsRemark(entry.Contents, "Base type: ", baseType.GetSourceLocation()));
                     Log.LogError(InitializationCountPass.AppendInitializationLocations(entry, Visitor));
                     return EmptyStatement.Instance;
@@ -91,13 +92,14 @@ namespace fecs
 
                 var autoInitStmt = CreateAutoInitializationStatement(Log, Target, declType, Visitor);
 
-                if (Visitor.CurrentFlow.Max > 0 && Log.UsePedanticWarnings(InitializationCountPass.MaybeMultipleInitializationWarningName))
+                if (Visitor.CurrentFlow.Max > 0 && InitializationCountPass.MaybeMultipleInitializationWarning.UseWarning(Log.Options))
                 {
-                    var msg = new LogEntry("Instance possibly initialized more than once",
-                                           "The constructed instance may be initialized more than once in some control flow paths, " +
-                                           "because an auto-initialization statement was inserted. " +
-                                           Warnings.Instance.GetWarningNameMessage(InitializationCountPass.MaybeMultipleInitializationWarningName),
-                                           Target.GetSourceLocation());
+                    var msg = new LogEntry(
+                        "Instance possibly initialized more than once",
+                        InitializationCountPass.MaybeMultipleInitializationWarning.CreateMessage(
+                            "The constructed instance may be initialized more than once in some control flow paths, " +
+                            "because an auto-initialization statement was inserted. "),
+                        Target.GetSourceLocation());
                     Log.LogWarning(InitializationCountPass.AppendInitializationLocations(msg, Visitor));
                 }
 
@@ -111,7 +113,7 @@ namespace fecs
             }
         }
 
-        public Tuple<IStatement, IMethod> Apply(Tuple<IStatement, IMethod> Value)
+        public IStatement Apply(Tuple<IStatement, IMethod, ICompilerLog> Value)
         {
             var method = Value.Item2;
             if (method.IsConstructor && !method.IsStatic && (method.DeclaringType.get_IsValueType() || method.DeclaringType.GetParent() != null))
@@ -119,15 +121,15 @@ namespace fecs
                 var visitor = InitializationCountHelpers.CreateVisitor();
                 var body = Value.Item1;
                 visitor.Visit(body);
-                if (!AutoInitialize(Log, method, visitor, ref body))
+                if (!AutoInitialize(Value.Item3, method, visitor, ref body))
                 {
-                    InitializationCountPass.LogMultipleInitialization(Log, method, visitor);
+                    InitializationCountPass.LogMultipleInitialization(Value.Item3, method, visitor);
                 }
-                return Tuple.Create(body, method);
+                return body;
             }
             else
             {
-                return Value;
+                return Value.Item1;
             }
         }
     }

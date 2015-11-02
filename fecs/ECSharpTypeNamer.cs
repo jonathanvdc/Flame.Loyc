@@ -37,7 +37,8 @@ namespace fecs
             { PrimitiveTypes.Boolean, "bool" },
             { PrimitiveTypes.Char, "char" },
             { PrimitiveTypes.String, "string" },
-            { PrimitiveTypes.Void, "void" }
+            { PrimitiveTypes.Void, "void" },
+            { PrimitiveTypes.Null, "null" }
         };
 
         protected override string ConvertPrimitiveType(IType Type)

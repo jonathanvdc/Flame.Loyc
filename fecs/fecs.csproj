@@ -32,111 +32,115 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ecs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="Ecs">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Ecs.exe</HintPath>
     </Reference>
-    <Reference Include="Flame, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Analysis">
       <HintPath>..\libs\Flame.Analysis.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Cecil, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Cecil">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.CodeDescription, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.CodeDescription">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.CodeDescription.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Compiler, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Compiler">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Compiler.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Cpp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Cpp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Cpp.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.DSProject, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.DSProject">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.DSProject.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Front, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Front">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Front.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Front.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Front.Common">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Front.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Functional, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Functional">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Functional.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Markdown, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Markdown">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Markdown.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.MIPS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.MIPS">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.MIPS.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Optimization, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Optimization">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Optimization.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Python, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Python">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Python.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Recompilation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Recompilation">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Recompilation.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.RT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.RT">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.RT.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Syntax, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Syntax">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Syntax.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.TextContract, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.TextContract">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.TextContract.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.Verification, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.Verification">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Verification.dll</HintPath>
     </Reference>
-    <Reference Include="Flame.XmlDocs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Flame.XmlDocs">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.XmlDocs.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="ICSharpCode.TextEditor, Version=4.0.2.6466, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
+    <Reference Include="ICSharpCode.TextEditor">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
-    <Reference Include="LeMP, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="LeMP">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\LeMP.exe</HintPath>
     </Reference>
-    <Reference Include="Loyc.Collections, Version=1.0.5661.21088, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="Loyc.Binary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Loyc.Binary.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Collections, Version=1.4.5731.22501, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Loyc.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Loyc.Essentials, Version=1.0.5661.21087, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="Loyc.Essentials, Version=1.4.5731.22501, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Loyc.Essentials.dll</HintPath>
     </Reference>
-    <Reference Include="Loyc.Syntax, Version=1.0.5661.21088, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="Loyc.Syntax, Version=1.4.5731.22502, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Loyc.Syntax.dll</HintPath>
     </Reference>
-    <Reference Include="Loyc.Utilities, Version=1.0.5661.21088, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+    <Reference Include="Loyc.Utilities, Version=1.4.5729.31408, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Loyc.Utilities.dll</HintPath>
     </Reference>
@@ -156,9 +160,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
-    <Reference Include="Pixie, Version=0.0.65535.65535, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Pixie">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Pixie.dll</HintPath>
+    </Reference>
+    <Reference Include="Pixie.Xml">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Pixie.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -186,7 +194,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

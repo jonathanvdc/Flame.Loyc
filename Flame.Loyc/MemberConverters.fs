@@ -264,7 +264,7 @@ module MemberConverters =
                                                      declType
                                  Global finalType
                              else 
-                                 ExpressionBuilder.This scope |> ExpressionBuilder.GetAccessedExpression
+                                 ExpressionBuilder.This (CodeSymbols.This.Name) scope |> ExpressionBuilder.GetAccessedExpression
             let valueField = thisExpr.Type.GetField(AutoPropertyFieldName declProp.Name, declProp.IsStatic)
             let fieldAcc   = ExpressionBuilder.AccessField scope valueField thisExpr
             if accType = AccessorType.GetAccessor then

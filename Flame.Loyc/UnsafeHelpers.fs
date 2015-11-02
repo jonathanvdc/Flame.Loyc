@@ -1,6 +1,7 @@
 ﻿namespace Flame.Loyc
 
 open Flame
+open Flame.Compiler
 
 module UnsafeHelpers =
     let UnsafeAttribute = new FlagAttribute("UnsafeAttribute")
@@ -12,4 +13,4 @@ module UnsafeHelpers =
         | :? IType       as ty       -> IsUnsafe ty.DeclaringNamespace
         | _                          -> false
 
-    let MissingUnsafeWarningName = "missing-unsafe"
+    let MissingUnsafeWarning = new WarningDescription("missing-unsafe", Warnings.Instance.Pedantic)
