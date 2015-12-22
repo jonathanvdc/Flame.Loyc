@@ -33,9 +33,9 @@ namespace fecs
         private static IStatement CreateAutoInitializationStatement(ICompilerLog Log, IMethod DeclaringMethod, IType DeclaringType, NodeCountVisitor Visitor)
         {
             var thisVariable = ThisReferenceVariable.Instance.Create(DeclaringType);
-            if (DeclaringType.get_IsValueType())
+            if (DeclaringType.GetIsValueType())
             {
-                if (StructAutoInitializationWarning.UseWarning(Log.Options) && DeclaringType.get_IsValueType())
+                if (StructAutoInitializationWarning.UseWarning(Log.Options) && DeclaringType.GetIsValueType())
                 {
                     var entry = new LogEntry(
                         "Value type auto-initialization",
@@ -116,7 +116,7 @@ namespace fecs
         public IStatement Apply(Tuple<IStatement, IMethod, ICompilerLog> Value)
         {
             var method = Value.Item2;
-            if (method.IsConstructor && !method.IsStatic && (method.DeclaringType.get_IsValueType() || method.DeclaringType.GetParent() != null))
+            if (method.IsConstructor && !method.IsStatic && (method.DeclaringType.GetIsValueType() || method.DeclaringType.GetParent() != null))
             {
                 var visitor = InitializationCountHelpers.CreateVisitor();
                 var body = Value.Item1;

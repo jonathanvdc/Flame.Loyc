@@ -74,7 +74,7 @@ module MemberConverters =
 
         let inferType declScope (expr : IExpression) = 
             if typeNode.Name = CodeSymbols.Missing then 
-                expr.get_TypeOrNull()
+                expr.GetTypeOrNull()
             else 
                 parent.ConvertType typeNode declScope
 
@@ -258,7 +258,7 @@ module MemberConverters =
             let scope      = new LocalScope(new FunctionScope(scope, declMethod))
             let thisExpr   = if declMethod.IsStatic then 
                                  let declType = declMethod.DeclaringType
-                                 let finalType = if declType.get_IsGeneric() && declType.get_IsGenericDeclaration() then
+                                 let finalType = if declType.GetIsGeneric() && declType.GetIsGenericDeclaration() then
                                                      declType.MakeGenericType(declType.GenericParameters |> Seq.cast)
                                                  else
                                                      declType
@@ -305,7 +305,7 @@ module MemberConverters =
 
     /// Tests if the given property node qualifies as an autoprop.
     let IsAutoProperty (parent : INodeConverter) (scope : GlobalScope) (node : LNode) (declType : IType) (isStatic : bool, attrs : IAttribute seq) =
-        IsAutoPropertyBody parent scope node.Args.[2] && not (declType.get_IsInterface()) 
+        IsAutoPropertyBody parent scope node.Args.[2] && not (declType.GetIsInterface()) 
                                                       && attrs.HasAttribute(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) 
                                                          |> not
 
@@ -374,7 +374,7 @@ module MemberConverters =
             let scope  = AliasGenericParameters declType scope
             let bTypes = node.Args.[1].Args |> Seq.map (fun x -> parent.ConvertType x (new LocalScope(scope)))
             let rootType = scope.Environment.RootType
-            if rootType = null || declType.get_IsInterface() || bTypes |> Seq.exists (fun x -> not (x.get_IsInterface())) then
+            if rootType = null || declType.GetIsInterface() || bTypes |> Seq.exists (fun x -> not (x.GetIsInterface())) then
                 bTypes
             else
                 Seq.append (Seq.singleton rootType) bTypes

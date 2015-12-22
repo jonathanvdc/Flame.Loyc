@@ -44,7 +44,7 @@
  A state for the `FinalFlowRemover` node visitor.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.SpeculativeFlowState.this(System.Collections.Generic.IEnumerable`1{Flame.Optimization.SpeculativeStatement},System.Boolean)">
+    <member name="M:Flame.Optimization.SpeculativeFlowState.#ctor(System.Collections.Generic.IEnumerable`1{Flame.Optimization.SpeculativeStatement},System.Boolean)">
       <summary>
  Creates a new speculative flow state from the given speculative final statements
  and a boolean that signals flow termination.
@@ -92,7 +92,7 @@
  Said enclosing statement is then transformed.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.FinalFlowRemover.this(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
+    <member name="M:Flame.Optimization.FinalFlowRemover.#ctor(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
       <summary>
  Creates a new final flow remover from the given enclosing flow
  and a function that matches final flow.
@@ -122,7 +122,7 @@
  flow deltas.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.FinalFlowRemover.CreateLoopFlow(Flame.Compiler.BlockTag,Flame.Optimization.SpeculativeFlowState)">
+    <member name="M:Flame.Optimization.FinalFlowRemover.CreateLoopFlow(Flame.Compiler.UniqueTag,Flame.Optimization.SpeculativeFlowState)">
       <summary>
  Creates a flow delta that will be executed zero or more
  times.
@@ -151,6 +151,46 @@
  Gets or sets the current flow state.
  </summary>
     </member>
+    <member name="T:Flame.Optimization.FlattenInitializationVisitor">
+      <summary>
+ A node visitor that attempts to flatten initialization expressions, by
+ moving them higher up the node tree.
+ </summary>
+      <remarks>
+ This can benefit node trees such as:
+
+     #invoke({ init; expr }, args...)
+
+ which will be transformed into the semantically equivalent:
+
+     { init; #invoke(expr, args) }
+
+ In many ways, this visitor is a less demanding version of
+ -fimperative-code's visitor.
+ </remarks>
+    </member>
+    <member name="M:Flame.Optimization.FlattenInitializationVisitor.SpillFinalization">
+      <summary>
+ Spills finalization statements.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.FlattenInitializationVisitor.TransformedLocations">
+      <summary>
+ Gets the source locations belonging to initialization expressions
+ that have been moved around in the expression tree.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.FlattenInitializationPass">
+      <summary>
+ A pass that attempts to flatten initialization expressions, by
+ moving them higher up the node tree.
+ </summary>
+    </member>
+    <member name="F:Flame.Optimization.FlattenInitializationPass.FlattenInitializationPassName">
+      <summary>
+ This pass' name string.
+ </summary>
+    </member>
     <member name="T:Flame.Optimization.SpillableExpression">
       <summary>
  Defines an expression that can be "spilled", i.e. store its value in
@@ -171,7 +211,7 @@
  but expressions may appear inside of statements.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.ImperativeCodeRewriter.this">
+    <member name="M:Flame.Optimization.ImperativeCodeRewriter.#ctor">
       <summary>
  Creates a new imperative code rewriter.
  </summary>
@@ -217,7 +257,7 @@
  Said enclosing statement is then transformed.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.InitialFlowRemover.this(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
+    <member name="M:Flame.Optimization.InitialFlowRemover.#ctor(Flame.Compiler.IStatement,System.Boolean(Flame.Compiler.IStatement, Flame.Compiler.IStatement))">
       <summary>
  Creates a new final flow remover from the given enclosing flow
  and a function that matches final flow.
@@ -247,7 +287,7 @@
  flow deltas.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.InitialFlowRemover.CreateLoopFlow(Flame.Compiler.BlockTag,Flame.Optimization.InitialFlowState)">
+    <member name="M:Flame.Optimization.InitialFlowRemover.CreateLoopFlow(Flame.Compiler.UniqueTag,Flame.Optimization.InitialFlowState)">
       <summary>
  Creates a flow delta that will be executed zero or more
  times.
@@ -284,6 +324,61 @@
     <member name="M:Flame.Optimization.InliningExtensions.CanInline(Flame.IMethod,Flame.Compiler.IExpression)">
       <summary>
  Finds out whether a call to the given method can be inlined.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.InsertStatement">
+      <summary>
+ Defines an insert statement: a statement that can later be populated
+ with other statements.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.InsertStatement.#ctor">
+      <summary>
+ Creates a new insert statement.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.InsertStatement.Insert(Flame.Compiler.IStatement)">
+      <summary>
+ Inserts the given statement.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.InsertStatement.Statements">
+      <summary>
+ Gets all inserted statements.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.LambdaCapturedValueVisitor">
+      <summary>
+ A node visitor that finds out which elements of the captured value
+ list are being used in a node, and which are not.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.LambdaCapturedValueVisitor.#ctor">
+      <summary>
+ Creates a new captured value visitor.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.LambdaCapturedValueVisitor.UsedCapturedValues">
+      <summary>
+ Gets the set of used captured value indices.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.LambdaCapturedValueRewriter">
+      <summary>
+ A type of node visitor that modifies the capture listindices of
+ captured value expressions.
+ </summary>
+    </member>
+    <member name="M:Flame.Optimization.LambdaCapturedValueRewriter.#ctor(System.Collections.Generic.IReadOnlyDictionary`2{System.Int32,System.Int32})">
+      <summary>
+ Creates a new captured value rewriter from the given
+ captured value index mapping.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.LambdaCapturedValueRewriter.CapturedValueMapping">
+      <summary>
+ Gets a mapping of source captured value indices to target captured
+ value indices.
  </summary>
     </member>
     <member name="T:Flame.Optimization.SimplifyFlowPass">
@@ -336,7 +431,7 @@
  Selects precisely one of two flow paths.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.SizeVisitor.CreateLoopFlow(Flame.Compiler.BlockTag,System.Int32)">
+    <member name="M:Flame.Optimization.SizeVisitor.CreateLoopFlow(Flame.Compiler.UniqueTag,System.Int32)">
       <summary>
  Creates a flow state that "loops", i.e. will be executed zero or more
  times.
@@ -352,6 +447,32 @@
  "Visits" a statement: an statement is taken as input and transformed another statement.
  </summary>
     </member>
+    <member name="T:Flame.Optimization.SlimLambdaVisitor">
+      <summary>
+ A node visitor that attempts that attempts to optimize lambda expressions
+ by removing unused expressions from their capture lists.
+ Source locations beloning to lambdas that have been optimized are remembered
+ by this visitor.
+ </summary>
+    </member>
+    <member name="P:Flame.Optimization.SlimLambdaVisitor.TransformedLocations">
+      <summary>
+ Gets the source locations belonging to lambda expressions
+ that have been optimized by this visitor, followed by their
+ old capture list size, and the new capture list size.
+ </summary>
+    </member>
+    <member name="T:Flame.Optimization.SlimLambdaPass">
+      <summary>
+ A pass that attempts that attempts to optimize lambda expressions
+ by removing unused expressions from their capture lists.
+ </summary>
+    </member>
+    <member name="F:Flame.Optimization.SlimLambdaPass.SlimLambdaPassName">
+      <summary>
+ This pass' name string.
+ </summary>
+    </member>
     <member name="T:Flame.Optimization.SpeculativeStatement">
       <summary>
  Defines a speculative statement: a statement that can first be defined
@@ -360,13 +481,13 @@
  "Alive" speculative statements are equivalent to the statement they contain.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.SpeculativeStatement.this(Flame.Compiler.IStatement)">
+    <member name="M:Flame.Optimization.SpeculativeStatement.#ctor(Flame.Compiler.IStatement)">
       <summary>
  Creates a speculative statement that corresponds to the given
  inner statement, and is marked "alive".
  </summary>
     </member>
-    <member name="M:Flame.Optimization.SpeculativeStatement.this(Flame.Compiler.IStatement,System.Boolean)">
+    <member name="M:Flame.Optimization.SpeculativeStatement.#ctor(Flame.Compiler.IStatement,System.Boolean)">
       <summary>
  Creates a speculative statement from the given inner statement and
  a boolean that determines whether it is alive or dead.
@@ -388,7 +509,7 @@
  A visitor that matches and then rewrites statements.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.StatementRewriter.this(System.Boolean(Flame.Compiler.IStatement),Flame.Compiler.IStatement(Flame.Compiler.IStatement))">
+    <member name="M:Flame.Optimization.StatementRewriter.#ctor(System.Boolean(Flame.Compiler.IStatement),Flame.Compiler.IStatement(Flame.Compiler.IStatement))">
       <summary>
  Creates a final flow visitor from the given delegates.
  </summary>
@@ -401,27 +522,6 @@
     <member name="P:Flame.Optimization.StatementRewriter.TransformStatement">
       <summary>
  Transforms a matched statement.
- </summary>
-    </member>
-    <member name="T:Flame.Optimization.InsertStatement">
-      <summary>
- Defines an insert statement: a statement that can later be populated
- with other statements.
- </summary>
-    </member>
-    <member name="M:Flame.Optimization.InsertStatement.this">
-      <summary>
- Creates a new insert statement.
- </summary>
-    </member>
-    <member name="M:Flame.Optimization.InsertStatement.Insert(Flame.Compiler.IStatement)">
-      <summary>
- Inserts the given statement.
- </summary>
-    </member>
-    <member name="P:Flame.Optimization.InsertStatement.Statements">
-      <summary>
- Gets all inserted statements.
  </summary>
     </member>
     <member name="T:Flame.Optimization.TailRecursionVisitor">
@@ -452,6 +552,12 @@
  ...
  continue OuterTag;
  </remarks>
+    </member>
+    <member name="P:Flame.Optimization.TailRecursionVisitor.MatchedLocations">
+      <summary>
+ Gets a list of all source locations containing tail-recursive calls
+ that were optimized.
+ </summary>
     </member>
     <member name="P:Flame.Optimization.TailRecursionVisitor.Method">
       <summary>
@@ -516,12 +622,12 @@
  Records how many times a variable or variable definition has been accessed.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.AccessCount.this">
+    <member name="M:Flame.Optimization.Variables.AccessCount.#ctor">
       <summary>
  Creates a new access count that represents zero variable accesses.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.AccessCount.this(System.Int32)">
+    <member name="M:Flame.Optimization.Variables.AccessCount.#ctor(System.Int32)">
       <summary>
  Creates a new access count that represents the specified number of accesses.
  </summary>
@@ -587,7 +693,7 @@
  flow deltas.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.AccessVisitor.CreateLoopFlow(Flame.Compiler.BlockTag,System.Collections.Generic.List`1{System.Func`3{Flame.Optimization.Variables.IVariableDefinition,System.Boolean,Flame.Optimization.Variables.AccessMetrics}})">
+    <member name="M:Flame.Optimization.Variables.AccessVisitor.CreateLoopFlow(Flame.Compiler.UniqueTag,System.Collections.Generic.List`1{System.Func`3{Flame.Optimization.Variables.IVariableDefinition,System.Boolean,Flame.Optimization.Variables.AccessMetrics}})">
       <summary>
  Creates a flow delta that will be executed zero or more
  times.
@@ -608,7 +714,7 @@
  A variable definition that propagates a constant expression.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.ConstantVariableDefinition.this(Flame.Compiler.IExpression)">
+    <member name="M:Flame.Optimization.Variables.ConstantVariableDefinition.#ctor(Flame.Compiler.IExpression)">
       <summary>
  Creates a new constant variable definition from the given expression.
  </summary>
@@ -640,7 +746,7 @@
  A variable definition that propagates a copy of another variable definition.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.CopyVariableDefinition.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.IExpression)">
+    <member name="M:Flame.Optimization.Variables.CopyVariableDefinition.#ctor(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.IExpression)">
       <summary>
  Creates a new copy variable definition from the given arguments.
  </summary>
@@ -684,7 +790,7 @@
  once.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.DependentVariableDefinition.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.PropagationDependencies,Flame.Compiler.IExpression,Flame.Optimization.InsertStatement)">
+    <member name="M:Flame.Optimization.Variables.DependentVariableDefinition.#ctor(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.PropagationDependencies,Flame.Compiler.IExpression,Flame.Optimization.InsertStatement)">
       <summary>
  Creates a new dependent variable definition from the given arguments.
  </summary>
@@ -748,7 +854,7 @@
  Represents unconditional variable access.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.UnconditionalAccess.this">
+    <member name="M:Flame.Optimization.Variables.UnconditionalAccess.#ctor">
       <summary>
  Creates a new unique access identifier.
  </summary>
@@ -765,7 +871,7 @@
  Represents unconditional volatile variable access.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VolatileAccess.this">
+    <member name="M:Flame.Optimization.Variables.VolatileAccess.#ctor">
       <summary>
  Creates a new unique access identifier.
  </summary>
@@ -783,7 +889,7 @@
  definition is, too.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.ReachDependentAccess.this(Flame.Optimization.Variables.VariableDefinitionReach)">
+    <member name="M:Flame.Optimization.Variables.ReachDependentAccess.#ctor(Flame.Optimization.Variables.VariableDefinitionReach)">
       <summary>
  Creates a variable access identifier based on the given reach.
  </summary>
@@ -849,7 +955,7 @@
  Defines common functionality for variable flow structures.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.IVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.IVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -861,7 +967,7 @@
  Updates the given variable reach, possibly using a pre-insert point.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.EmptyVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.EmptyVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -873,7 +979,7 @@
  Updates the given variable reach, possibly using a pre-insert point.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -885,7 +991,7 @@
  Updates the given variable reach, possibly using a pre-insert point.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableAccessFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.VariableAccessFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -897,7 +1003,7 @@
  Updates the given variable reach, possibly using a pre-insert point.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.SequenceVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.SequenceVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -914,7 +1020,7 @@
  Defines a type for local variable definitions.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.LocalVariableDefinition.this(Flame.Compiler.IUnmanagedVariable)">
+    <member name="M:Flame.Optimization.Variables.LocalVariableDefinition.#ctor(Flame.Compiler.IUnmanagedVariable)">
       <summary>
  Creates a new local variable definition from the given variable.
  </summary>
@@ -946,7 +1052,7 @@
  Defines a uniquely identified local variable.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.LocalVariableDescription.this(Flame.Compiler.IVariable)">
+    <member name="M:Flame.Optimization.Variables.LocalVariableDescription.#ctor(Flame.Compiler.IVariable)">
       <summary>
  Creates a new local variable description from the given variable and index.
  </summary>
@@ -977,7 +1083,7 @@
  Gets the unerlying local variable.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.LoopVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.LoopVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -1015,7 +1121,7 @@
  a value should be propagated or not.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.PropagationDependencies.this(Flame.Optimization.Variables.PropagationMode,System.Collections.Generic.IEnumerable`1{Flame.Optimization.Variables.LocalVariableDescription})">
+    <member name="M:Flame.Optimization.Variables.PropagationDependencies.#ctor(Flame.Optimization.Variables.PropagationMode,System.Collections.Generic.IEnumerable`1{Flame.Optimization.Variables.LocalVariableDescription})">
       <summary>
  Creates propagation dependencies from the given propagation scheme
  and a set of dependencies.
@@ -1047,7 +1153,7 @@
  Gets these propagation dependencies' propagation scheme.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.SelectVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.SelectVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -1066,7 +1172,7 @@
  extremely conservative behavior.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.TerminatedVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.TerminatedVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -1083,7 +1189,7 @@
  Defines terminated block variable flow: a "break" or "continue" statement.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.TerminatedBlockVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.BlockTag)">
+    <member name="M:Flame.Optimization.Variables.TerminatedBlockVariableFlow.GetTerminationPoints(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Compiler.UniqueTag)">
       <summary>
  Gets all termination points for the given chain and tagged block.
  This method must be called after updating the chain's reach
@@ -1102,7 +1208,7 @@
  no action is taken.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.TransferDefinitionStatement.this(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.IDefinitionAccess,Flame.Optimization.Variables.VariableDefinitionReach)">
+    <member name="M:Flame.Optimization.Variables.TransferDefinitionStatement.#ctor(Flame.Optimization.Variables.VariableDefinitionChain,Flame.Optimization.Variables.IDefinitionAccess,Flame.Optimization.Variables.VariableDefinitionReach)">
       <summary>
  Creates a new variable definition transfer statement.
  </summary>
@@ -1169,7 +1275,7 @@
  Represents the reach of a single variable definition.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionReach.this(Flame.Optimization.Variables.IVariableDefinition,Flame.Optimization.Variables.LocalVariableDescription)">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionReach.#ctor(Flame.Optimization.Variables.IVariableDefinition,Flame.Optimization.Variables.LocalVariableDescription)">
       <summary>
  Creates a new variable definition reach structure for the given definition.
  </summary>
@@ -1244,7 +1350,7 @@
  The assignment remains live as long as the definition is live.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionStatement.this(Flame.Optimization.Variables.VariableDefinitionReach,Flame.Compiler.IExpression)">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionStatement.#ctor(Flame.Optimization.Variables.VariableDefinitionReach,Flame.Compiler.IExpression)">
       <summary>
  Creates a new variable definition statement from the given parameters.
  Note that the given definition must have an underlying variable.
@@ -1268,7 +1374,7 @@
  do anything beyond that.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionMarker.this(Flame.Optimization.Variables.VariableDefinitionReach)">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionMarker.#ctor(Flame.Optimization.Variables.VariableDefinitionReach)">
       <summary>
  Creates a new variable definition marker statement.
  </summary>
@@ -1278,7 +1384,7 @@
  Gets the variable definition that is marked here.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.this">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.#ctor">
       <summary>
  Creates a new final flow remover from the given enclosing flow
  and a function that matches final flow.
@@ -1325,7 +1431,7 @@
  flow deltas.
  </summary>
     </member>
-    <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.CreateLoopFlow(Flame.Compiler.BlockTag,Flame.Optimization.Variables.VariableFlowState(Flame.Optimization.Variables.VariableFlowState))">
+    <member name="M:Flame.Optimization.Variables.VariableDefinitionVisitor.CreateLoopFlow(Flame.Compiler.UniqueTag,Flame.Optimization.Variables.VariableFlowState(Flame.Optimization.Variables.VariableFlowState))">
       <summary>
  Creates a flow delta that will be executed zero or more
  times.

@@ -5,6 +5,7 @@ using Flame.Binding;
 using Flame.Compiler;
 using Flame.Compiler.Projects;
 using Flame.Compiler.Variables;
+using Flame.Compiler.Visitors;
 using Flame.DSProject;
 using Flame.Front;
 using Flame.Front.Options;
@@ -143,7 +144,7 @@ namespace fecs
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     var arg = new ArgumentVariable(parameters[i], i);
-                    if (parameters[i].ParameterType.get_IsPointer() && 
+                    if (parameters[i].ParameterType.GetIsPointer() && 
                         parameters[i].ParameterType.AsContainerType().AsPointerType().PointerKind.Equals(PointerKind.ReferencePointer))
                     {
                         dict[parameters[i].Name] = new AtAddressVariable(arg.CreateGetExpression());
@@ -226,34 +227,39 @@ namespace fecs
 
         public PassPreferences GetPassPreferences(ICompilerLog Log)
         {
-            return new PassPreferences(new string[] { },
-                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>[] 
-                { 
-                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
-                        LogPass.Instance, 
-                        "check-nodes", 
-                        true),
+            return new PassPreferences(new PassCondition[] 
+            {
+                new PassCondition("check-nodes", _ => true),
+                new PassCondition(AutoInitializationPass.AutoInitializationPassName, _ => true),
+                new PassCondition(ValueTypeDelegateVisitor.ValueTypeDelegatePassName, 
+                    optInfo => ValueTypeDelegateVisitor.ValueTypeDelegateWarning.UseWarning(optInfo.Log.Options)),
+                new PassCondition(Flame.Front.Target.PassExtensions.EliminateDeadCodePassName,
+                    optInfo => optInfo.OptimizeMinimal || optInfo.OptimizeDebug),
+                new PassCondition(InfiniteRecursionPass.InfiniteRecursionPassName,
+                    optInfo => InfiniteRecursionPass.IsUseful(optInfo.Log)),
+            },
+            new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>[] 
+            { 
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                    LogPass.Instance, 
+                    "check-nodes"),
 
-                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
-                        AnalysisPasses.ValueTypeDelegatePass,
-                        ValueTypeDelegateVisitor.ValueTypeDelegatePassName,
-                        (optInfo, isPref) => ValueTypeDelegateVisitor.ValueTypeDelegateWarning.UseWarning(optInfo.Log.Options)),
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                    AnalysisPasses.ValueTypeDelegatePass,
+                    ValueTypeDelegateVisitor.ValueTypeDelegatePassName),
 
-                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
-                        VerifyingDeadCodePass.Instance,
-                        PassExtensions.EliminateDeadCodePassName, 
-                        (optInfo, isPref) => optInfo.OptimizeMinimal || optInfo.OptimizeDebug),
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                    VerifyingDeadCodePass.Instance,
+                    Flame.Front.Target.PassExtensions.EliminateDeadCodePassName),
 
-                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
-                        AutoInitializationPass.Instance,
-                        AutoInitializationPass.AutoInitializationPassName,
-                        true),
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                    AutoInitializationPass.Instance,
+                    AutoInitializationPass.AutoInitializationPassName),
 
-                    new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
-                        InfiniteRecursionPass.Instance,
-                        InfiniteRecursionPass.InfiniteRecursionPassName,
-                        (optInfo, isPref) => InfiniteRecursionPass.IsUseful(Log))
-                });
+                new PassInfo<Tuple<IStatement, IMethod, ICompilerLog>, IStatement>(
+                    InfiniteRecursionPass.Instance,
+                    InfiniteRecursionPass.InfiniteRecursionPassName)
+            });
         }
     }
 }

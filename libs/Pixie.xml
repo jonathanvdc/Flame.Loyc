@@ -318,12 +318,12 @@
  predefined attributes.
  </summary>
     </member>
-    <member name="M:Pixie.PredefinedAttributes.this">
+    <member name="M:Pixie.PredefinedAttributes.#ctor">
       <summary>
  Creates an empty attribute collection.
  </summary>
     </member>
-    <member name="M:Pixie.PredefinedAttributes.this(System.Collections.Generic.IReadOnlyDictionary`2{System.String,System.Object})">
+    <member name="M:Pixie.PredefinedAttributes.#ctor(System.Collections.Generic.IReadOnlyDictionary`2{System.String,System.Object})">
       <summary>
  Creates a new attribute collection based on a dictionary of
  predefined attributes.
@@ -352,7 +352,7 @@
  attributes and an attribute parser.
  </summary>
     </member>
-    <member name="M:Pixie.StringAttributes.this(System.Collections.Generic.IReadOnlyDictionary`2{System.String,System.String},Pixie.IAttributeParser)">
+    <member name="M:Pixie.StringAttributes.#ctor(System.Collections.Generic.IReadOnlyDictionary`2{System.String,System.String},Pixie.IAttributeParser)">
       <summary>
  Creates a new string attribute collection based on the given
  attribute dictionary and attribute parser.
@@ -390,23 +390,23 @@
  Describes an RGBA color.
  </summary>
     </member>
-    <member name="M:Pixie.Color.this(System.Float64,System.Float64,System.Float64,System.Float64)">
+    <member name="M:Pixie.Color.#ctor(System.Float64,System.Float64,System.Float64,System.Float64)">
       <summary>
  Creates a new color instance from the given channels.
  </summary>
     </member>
-    <member name="M:Pixie.Color.this(System.Float64,System.Float64,System.Float64)">
+    <member name="M:Pixie.Color.#ctor(System.Float64,System.Float64,System.Float64)">
       <summary>
  Creates a new color instance from the given RGB channels.
  Alpha is set to one.
  </summary>
     </member>
-    <member name="M:Pixie.Color.this(System.Float64,System.Float64)">
+    <member name="M:Pixie.Color.#ctor(System.Float64,System.Float64)">
       <summary>
  Creates a new color instance from the given grayscale and alpha values.
  </summary>
     </member>
-    <member name="M:Pixie.Color.this(System.Float64)">
+    <member name="M:Pixie.Color.#ctor(System.Float64)">
       <summary>
  Creates a new color instance from the given grayscale value.
  </summary>

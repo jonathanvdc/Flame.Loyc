@@ -9,12 +9,12 @@
  Wraps a read-write reference to a value.
  </summary>
     </member>
-    <member name="M:Flame.DSharp.Box`1.this">
+    <member name="M:Flame.DSharp.Box`1.#ctor">
       <summary>
  Creates a new box containing the default value of `T`.
  </summary>
     </member>
-    <member name="M:Flame.DSharp.Box`1.this(T)">
+    <member name="M:Flame.DSharp.Box`1.#ctor(T)">
       <summary>
  Creates a new box from the given value of `T`.
  </summary>
@@ -242,7 +242,7 @@
  Syntax: 'base(arg1, arg2, ...)'.
  </remarks>
     </member>
-    <member name="M:Flame.Syntax.DSharp.BaseConstructorCallSyntax.this(Flame.DSharp.Lexer.Token,Flame.Syntax.DSharp.DelimitedList`1{Flame.Syntax.IExpressionSyntax})">
+    <member name="M:Flame.Syntax.DSharp.BaseConstructorCallSyntax.#ctor(Flame.DSharp.Lexer.Token,Flame.Syntax.DSharp.DelimitedList`1{Flame.Syntax.IExpressionSyntax})">
       <summary>
  Creates a new base constructor call syntax node.
  </summary>

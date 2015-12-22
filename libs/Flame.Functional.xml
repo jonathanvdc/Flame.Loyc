@@ -299,7 +299,7 @@
 </member>
 <member name="P:Flame.Functional.FunctionalAccessor.LazyBaseMethods">
 <summary>
- Gets this functional-style accessor&apos;s base methods, 
+ Gets this functional-style accessor&apos;s base methods,
  with a lazy evaluation scheme.
 </summary>
 </member>
@@ -357,9 +357,6 @@
 <summary>
  Sets this functional-style accessor&apos;s base methods.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -660,7 +657,7 @@
 </member>
 <member name="P:Flame.Functional.FunctionalMethod.LazyBaseMethods">
 <summary>
- Gets this functional-style method&apos;s base methods, 
+ Gets this functional-style method&apos;s base methods,
  with a lazy evaluation scheme.
 </summary>
 </member>
@@ -732,9 +729,6 @@
 <summary>
  Sets this functional-style method&apos;s base method function.
 </summary>
-</member>
-<member name="">
-
 </member>
 <member name="">
 
@@ -1388,12 +1382,25 @@
  Creates a child scope.
 </summary>
 </member>
+<member name="P:Flame.Functional.LocalScope.AllLocals">
+<summary>
+ Gets all local variables and parameters
+ that belong to this local scope and
+ its parents.
+</summary>
+</member>
+<member name="M:Flame.Functional.LocalScope.WithVariable(Flame.Compiler.IVariable,System.String)">
+<summary>
+ Registers the given variable with this
+ local scope under the given name.
+</summary>
+</member>
 <member name="M:Flame.Functional.LocalScope.GetVariable(System.String)">
 <summary>
  Gets the variable with the given name.
 </summary>
 </member>
-<member name="M:Flame.Functional.LocalScope.FlowChildScope(Flame.Compiler.BlockTag)">
+<member name="M:Flame.Functional.LocalScope.FlowChildScope(Flame.Compiler.UniqueTag)">
 <summary>
  Creates a child scope with the given control flow tag.
 </summary>
@@ -1598,7 +1605,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.NewInstanceDelegates(Flame.Functional.LocalScope,Flame.IType)">
 <summary>
- Computes the intersection expression of the new type instance  
+ Computes the intersection expression of the new type instance
  delegates for the given type.
 </summary>
 </member>
@@ -1609,7 +1616,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AllOfType``2(System.Collections.Generic.IEnumerable{``0})">
 <summary>
- Checks if all elements of the given sequence are of a 
+ Checks if all elements of the given sequence are of a
  specific type.
 </summary>
 </member>
@@ -1620,12 +1627,12 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AccessProperty(Flame.Functional.LocalScope,Flame.IMethod,Flame.IMethod,Flame.Functional.AccessedExpression)">
 <summary>
- Accesses a property on a target expression with no index arguments, within the given local scope. 
+ Accesses a property on a target expression with no index arguments, within the given local scope.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AccessIndexedProperty(Flame.Functional.LocalScope,Flame.IMethod,Flame.IMethod,Flame.Functional.AccessedExpression,System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
- Accesses a property on a target expression with the given index arguments, within the given local scope. 
+ Accesses a property on a target expression with the given index arguments, within the given local scope.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AccessMethod(Flame.Functional.LocalScope,Flame.IMethod,Flame.Functional.AccessedExpression)">
@@ -1686,6 +1693,27 @@
 </member>
 <member name="">
 
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.RecursiveLambda(Microsoft.FSharp.Core.FSharpFunc{Flame.Functional.LocalScope,Flame.Compiler.IExpression},Flame.IMethod,System.String,Flame.Functional.LocalScope)">
+<summary>
+ Creates a capture-by-value lambda that captures all locals based on the given
+ body creation function, lambda signature, and enclosing scope.
+ A recursive delegate for this lambda function is bound to the given
+ recursion identifier.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.Lambda(Microsoft.FSharp.Core.FSharpFunc{Flame.Functional.LocalScope,Flame.Compiler.IExpression},Flame.IMethod,Flame.Functional.LocalScope)">
+<summary>
+ Creates a capture-by-value lambda that captures all locals based on the given
+ body creation function, lambda signature, and enclosing scope.
+</summary>
+</member>
+<member name="M:Flame.Functional.ExpressionBuilder.MaybeRecLambda(Microsoft.FSharp.Core.FSharpFunc{Flame.Functional.LocalScope,Flame.Compiler.IExpression},Flame.IMethod,Microsoft.FSharp.Core.FSharpOption{System.String},Flame.Functional.LocalScope)">
+<summary>
+ Creates a capture-by-value lambda that captures all locals based on the given
+ body creation function, lambda signature, and enclosing scope. If a name is provided,
+ then a recursive delegate is bound to that name.
+</summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.This(System.String,Flame.Functional.LocalScope)">
 <summary>
@@ -1753,7 +1781,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.AddressOf(Flame.Compiler.IExpression)">
 <summary>
- Gets the address of the given expression, as a reference pointer. 
+ Gets the address of the given expression, as a reference pointer.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Assign(Flame.Functional.LocalScope,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
@@ -1771,13 +1799,13 @@
 <summary>
  Gets the variable captured by the given expression.
  If this cannot be done, an expression variable
- is created that wraps the given expression. 
+ is created that wraps the given expression.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.GetVariable(Flame.Compiler.IExpression)">
 <summary>
  Tries to get the variable captured by the given expression.
- This function will reach across metadata node boundaries. 
+ This function will reach across metadata node boundaries.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.DeclareLocal(Flame.Functional.LocalScope,Flame.IType,System.String)">
@@ -1787,13 +1815,13 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Warning(Flame.Compiler.LogEntry,Flame.Compiler.IExpression)">
 <summary>
- Creates an expression thaet represents a technically correct node, 
+ Creates an expression thaet represents a technically correct node,
  that probably doesn&apos;t do what it was intended to do.
 </summary>
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.VoidError(Flame.Compiler.LogEntry)">
 <summary>
- Creates an expression that represents an erroneous node, 
+ Creates an expression that represents an erroneous node,
  and contains the given error message.
  The resulting expression&apos;s type is void.
 </summary>
@@ -1806,7 +1834,7 @@
 <member name="M:Flame.Functional.ExpressionBuilder.Intersection(System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
  Gets the intersection expression of the given sequence of expressions.
- An intersection expression may be used when resolving overloads, but 
+ An intersection expression may be used when resolving overloads, but
  code generators do not support them.
 </summary>
 </member>
@@ -1823,7 +1851,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Error(Flame.Compiler.LogEntry,Flame.Compiler.IExpression)">
 <summary>
- Creates an expression that represents an erroneous node, 
+ Creates an expression that represents an erroneous node,
  and contains the given error message.
 </summary>
 </member>
@@ -1837,7 +1865,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.Default(Flame.IType)">
 <summary>
- Creates an expression that represents the default value of the 
+ Creates an expression that represents the default value of the
  given type.
 </summary>
 </member>
@@ -1962,7 +1990,7 @@
 </member>
 <member name="M:Flame.Functional.ExpressionBuilder.ExpressionBlock(System.Collections.Generic.IEnumerable{Flame.Compiler.IExpression})">
 <summary>
- Creates a functional block expression whose result is the 
+ Creates a functional block expression whose result is the
  result of the first non-void child in the block, if any.
  Otherwise void.
 </summary>
@@ -1999,24 +2027,24 @@
  Creates a break expression.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.For(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.For(Flame.Compiler.UniqueTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a for loop expression,
  which has type void.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.Tagged(Flame.Compiler.BlockTag,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.Tagged(Flame.Compiler.UniqueTag,Flame.Compiler.IExpression)">
 <summary>
  Creates a new tagged block expression.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.DoWhile(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.DoWhile(Flame.Compiler.UniqueTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a do-while loop expression,
  which has type void.
 </summary>
 </member>
-<member name="M:Flame.Functional.ExpressionBuilder.While(Flame.Compiler.BlockTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
+<member name="M:Flame.Functional.ExpressionBuilder.While(Flame.Compiler.UniqueTag,Flame.Compiler.IExpression,Flame.Compiler.IExpression)">
 <summary>
  Creates a while loop expression,
  which has type void.

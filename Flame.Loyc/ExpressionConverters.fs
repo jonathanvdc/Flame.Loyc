@@ -181,7 +181,7 @@ module ExpressionConverters =
     let WhileConverter = 
         let convWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let cond, newScope = parent.ConvertExpression node.Args.[0] scope
-            let tag            = new BlockTag()
+            let tag            = new UniqueTag()
             let innerScope     = newScope.FlowChildScope tag
             let scopedBody     = ConvertScopedExpression parent node.Args.[1] innerScope
             ExpressionBuilder.While tag cond scopedBody, newScope
@@ -190,7 +190,7 @@ module ExpressionConverters =
     /// A converter for do-while expressions.
     let DoWhileConverter = 
         let convDoWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
-            let tag            = new BlockTag()
+            let tag            = new UniqueTag()
             let innerScope     = scope.FlowChildScope tag
             let scopedBody     = ConvertScopedExpression parent node.Args.[0] innerScope
             let cond           = ConvertScopedExpression parent node.Args.[1] innerScope
@@ -200,7 +200,7 @@ module ExpressionConverters =
     /// A converter for `for`-loop expressions.
     let ForConverter = 
         let convFor (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
-            let tag            = new BlockTag()
+            let tag            = new UniqueTag()
             let newScope       = scope.ChildScope
             let init, newScope = parent.ConvertExpression node.Args.[0] newScope
             let cond, newScope = parent.ConvertExpression node.Args.[1] newScope
@@ -306,7 +306,7 @@ module ExpressionConverters =
             let typeNode = node.Args.[0]
 
             let inferType = if typeNode.Name = CodeSymbols.Missing then 
-                                fun (arg : IExpression) -> arg.get_TypeOrNull()
+                                fun (arg : IExpression) -> arg.GetTypeOrNull()
                             else 
                                 parent.ConvertType typeNode scope |> Constant
 

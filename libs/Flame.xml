@@ -243,13 +243,6 @@
  Defines a common interface for methods.
  </summary>
     </member>
-    <member name="M:Flame.IMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
-      <summary>
- Invokes the method with the provided caller and arguments.
- </summary>
-      <param name="Arguments" />
-      <returns />
-    </member>
     <member name="P:Flame.IMethod.IsConstructor">
       <summary>
  Gets a boolean value that indicates if this method is a constructor.
@@ -268,6 +261,26 @@
     <member name="P:Flame.IMethod.BaseMethods">
       <summary>
  Gets the method's base methods.
+ </summary>
+    </member>
+    <member name="T:Flame.IInvocableMethod">
+      <summary>
+ Supplies an interface that defines invocable methods.
+ </summary>
+    </member>
+    <member name="M:Flame.IInvocableMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
+      <summary>
+ Invokes the method with the provided caller and arguments.
+ </summary>
+      <param name="Arguments" />
+      <returns>
+ A bound object if the invocation was successful.
+ Otherwise, null.
+ </returns>
+    </member>
+    <member name="T:Flame.IAccessor">
+      <summary>
+ Defines common behavior for property accessor methods.
  </summary>
     </member>
     <member name="P:Flame.IAccessor.AccessorType">
@@ -767,7 +780,7 @@
  converters.
  </summary>
     </member>
-    <member name="M:Flame.CompositeConverter`3.this(Flame.IConverter`2{T1,T2},Flame.IConverter`2{T2,T3})">
+    <member name="M:Flame.CompositeConverter`3.#ctor(Flame.IConverter`2{T1,T2},Flame.IConverter`2{T2,T3})">
       <summary>
  Creates a converter that represents the composition of the given
  converters.
@@ -892,7 +905,7 @@
  A property accessor belonging to a generic type instantiation.
  </summary>
     </member>
-    <member name="M:Flame.GenericInstanceAccessor.this(Flame.IAccessor,Flame.IGenericResolver,Flame.IProperty)">
+    <member name="M:Flame.GenericInstanceAccessor.#ctor(Flame.IAccessor,Flame.IGenericResolver,Flame.IProperty)">
       <summary>
  Creates a new generic type instance accessor from the given accessor,
  resolver and declaring property.
@@ -928,13 +941,13 @@
  Defines a method belonging to a generic type instantiation.
  </summary>
     </member>
-    <member name="M:Flame.GenericInstanceMethod.this(Flame.IMethod,Flame.IGenericResolver,Flame.IType)">
+    <member name="M:Flame.GenericInstanceMethod.#ctor(Flame.IMethod,Flame.IGenericResolver,Flame.IType)">
       <summary>
  Creates a generic type method instantiation from the given method,
  resolver and declaring type.
  </summary>
     </member>
-    <member name="M:Flame.GenericInstanceMethod.this(Flame.IMethod,Flame.IGenericResolverType)">
+    <member name="M:Flame.GenericInstanceMethod.#ctor(Flame.IMethod,Flame.IGenericResolverType)">
       <summary>
  Creates a generic type method instantiation from the given method and
  declaring type.
@@ -945,13 +958,13 @@
  Defines a type belonging to a generic type instantiation.
  </summary>
     </member>
-    <member name="M:Flame.GenericInstanceType.this(Flame.IType,Flame.IGenericResolver,Flame.IType)">
+    <member name="M:Flame.GenericInstanceType.#ctor(Flame.IType,Flame.IGenericResolver,Flame.IType)">
       <summary>
  Creates a generic type instantiation from the given type,
  resolver and declaring type.
  </summary>
     </member>
-    <member name="M:Flame.GenericInstanceType.this(Flame.IType,Flame.IGenericResolverType)">
+    <member name="M:Flame.GenericInstanceType.#ctor(Flame.IType,Flame.IGenericResolverType)">
       <summary>
  Creates a generic type instantiation from the given type and
  declaring type.
@@ -962,7 +975,7 @@
  Defines a generic method instantiation.
  </summary>
     </member>
-    <member name="M:Flame.GenericMethod.this(Flame.IMethod,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+    <member name="M:Flame.GenericMethod.#ctor(Flame.IMethod,System.Collections.Generic.IEnumerable`1{Flame.IType})">
       <summary>
  Creates a generic instantiation of the given method with the given
  type arguments.
@@ -977,13 +990,6 @@
       <summary>
  Defines a base class for generic method instances.
  </summary>
-    </member>
-    <member name="M:Flame.GenericMethodBase.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
-      <summary>
- Invokes the method with the provided caller and arguments.
- </summary>
-      <param name="Arguments" />
-      <returns />
     </member>
     <member name="P:Flame.GenericMethodBase.Resolver">
       <summary>
@@ -1010,7 +1016,7 @@
  Defines a generic type instantiation.
  </summary>
     </member>
-    <member name="M:Flame.GenericType.this(Flame.IType,System.Collections.Generic.IEnumerable`1{Flame.IType})">
+    <member name="M:Flame.GenericType.#ctor(Flame.IType,System.Collections.Generic.IEnumerable`1{Flame.IType})">
       <summary>
  Creates a generic instantiation of the given type with the given
  type arguments.
@@ -1026,7 +1032,7 @@
  A base class for generic type instances.
  </summary>
     </member>
-    <member name="M:Flame.GenericTypeBase.this(Flame.IType)">
+    <member name="M:Flame.GenericTypeBase.#ctor(Flame.IType)">
       <summary>
  Creates a new generic type base from the given type.
  </summary>
@@ -1082,6 +1088,53 @@
  Gets this namespace tree's nested namespaces.
  </summary>
     </member>
+    <member name="M:Flame.SingletonExtensions.GetSingletonMember(Flame.IType)">
+      <summary>
+ Gets the given type's singleton member, which may be either
+ a property or a field.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.GetAssociatedTypes(Flame.IType)">
+      <summary>
+ Gets the sequence of all associated types of the given
+ type.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.GetAssociatedSingletons(Flame.IType)">
+      <summary>
+ Gets all singleton types that are associated with the
+ given type.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.GetAssociatedSingleton(Flame.IType)">
+      <summary>
+ Gets the given type's single associated singleton type,
+ if any. Otherwise, null is returned.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.IsAssociatedSingletonOf(Flame.IType,Flame.IType)">
+      <summary>
+ Checks if the first type is an associated singleton
+ of the given target type.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.GetAssociatedSingletonOwner(Flame.IType)">
+      <summary>
+ Gets the "owner" of this associated singleton type.
+ Null is returned if no owner could be found.
+ </summary>
+    </member>
+    <member name="M:Flame.SingletonExtensions.IsAssociatedSingleton(Flame.IType)">
+      <summary>
+ Checks if the given type is the associated singleton of
+ some other type.
+ </summary>
+    </member>
+    <member name="P:Flame.SingletonExtensions.IsSingleton">
+      <summary>
+ Tests if the given type is a singleton.
+ </summary>
+    </member>
     <member name="T:Flame.IGenericConstraint">
       <summary>
  Describes common functionality for all generic constraints.
@@ -1124,7 +1177,7 @@
  A generic constraint that specifies that a value of the type argument should be assignable to a specific type.
  </summary>
     </member>
-    <member name="M:Flame.TypeConstraint.this(Flame.IType)">
+    <member name="M:Flame.TypeConstraint.#ctor(Flame.IType)">
       <summary>
  Creates a new type constraint based on the given type.
  </summary>
@@ -1219,7 +1272,10 @@
  Invokes the method with the provided caller and arguments.
  </summary>
       <param name="Arguments" />
-      <returns />
+      <returns>
+ A bound object if the invocation was successful.
+ Otherwise, null.
+ </returns>
     </member>
     <member name="M:Flame.PrimitiveTypes.GetPrimitiveMagnitude(Flame.IType)">
       <summary>
@@ -1238,24 +1294,24 @@
  such as this comment.
  </summary>
     </member>
-    <member name="M:Flame.DescriptionAttribute.this(Pixie.IMarkupNode)">
+    <member name="M:Flame.DescriptionAttribute.#ctor(Pixie.IMarkupNode)">
       <summary>
  Creates a new description attribute from the given markup node.
  </summary>
     </member>
-    <member name="M:Flame.DescriptionAttribute.this(System.String,Pixie.IMarkupNode)">
+    <member name="M:Flame.DescriptionAttribute.#ctor(System.String,Pixie.IMarkupNode)">
       <summary>
  Creates a new description attribute from the given tag and
  description body.
  </summary>
     </member>
-    <member name="M:Flame.DescriptionAttribute.this(System.String)">
+    <member name="M:Flame.DescriptionAttribute.#ctor(System.String)">
       <summary>
  Creates a new 'summary' description attribute from the given
  description body.
  </summary>
     </member>
-    <member name="M:Flame.DescriptionAttribute.this(System.String,System.String)">
+    <member name="M:Flame.DescriptionAttribute.#ctor(System.String,System.String)">
       <summary>
  Creates a new description attribute from the given tag and
  description body.
@@ -1337,6 +1393,11 @@
  Gets the default value for this type.
  </summary>
     </member>
+    <member name="P:Flame.MethodType.SignatureName">
+      <summary>
+ Gets a string that describes this method type's signature.
+ </summary>
+    </member>
     <member name="P:Flame.MethodType.Method">
       <summary>
  Gets the method this method type is based on.
@@ -1372,7 +1433,10 @@
  Invokes the method with the provided caller and arguments.
  </summary>
       <param name="Arguments" />
-      <returns />
+      <returns>
+ A bound object if the invocation was successful.
+ Otherwise, null.
+ </returns>
     </member>
     <member name="P:Flame.Primitives.PrimitiveParameter.FullName">
       <summary>
@@ -1410,7 +1474,10 @@
  Invokes the method with the provided caller and arguments.
  </summary>
       <param name="Arguments" />
-      <returns />
+      <returns>
+ A bound object if the invocation was successful.
+ Otherwise, null.
+ </returns>
     </member>
     <member name="M:Flame.Primitives.StringPrimitiveType.GetDefaultValue">
       <summary>
@@ -1484,7 +1551,7 @@
  Defines a base type for container types.
  </summary>
     </member>
-    <member name="M:Flame.Build.ContainerTypeBase.this(Flame.IType)">
+    <member name="M:Flame.Build.ContainerTypeBase.#ctor(Flame.IType)">
       <summary>
  Creates a container type from the given element type.
  </summary>
@@ -1553,13 +1620,6 @@
  Gets the default value for this type.
  </summary>
     </member>
-    <member name="M:Flame.Build.DescribedMethod.Invoke(Flame.IBoundObject,System.Collections.Generic.IEnumerable`1{Flame.IBoundObject})">
-      <summary>
- Invokes the method with the provided caller and arguments.
- </summary>
-      <param name="Arguments" />
-      <returns />
-    </member>
     <member name="P:Flame.Build.DescribedMethod.GenericParameters">
       <summary>
  Gets this method's generic parameters.
@@ -1571,9 +1631,82 @@
  Gets the parameter's (default) type.
  </summary>
     </member>
+    <member name="T:Flame.Build.DescribedType">
+      <summary>
+ Defines a "described type": an IType implementation that makes
+ synthesizing types easier.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddBaseType(Flame.IType)">
+      <summary>
+ Adds the given type to this described type's set of base types.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddGenericParameter(Flame.IGenericParameter)">
+      <summary>
+ Adds the given generic parameter to this described type's
+ type parameter list.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddMethod(Flame.IMethod)">
+      <summary>
+ Adds the given method to this described type's list of methods.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddProperty(Flame.IProperty)">
+      <summary>
+ Adds the given property to this described type's list of properties.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddField(Flame.IField)">
+      <summary>
+ Adds the given field to this described type's list of fields.
+ </summary>
+    </member>
+    <member name="M:Flame.Build.DescribedType.AddNestedType(Flame.IType)">
+      <summary>
+ Adds the given type to this described type's list of nested
+ types.
+ </summary>
+    </member>
     <member name="M:Flame.Build.DescribedType.GetDefaultValue">
       <summary>
  Gets the default value for this type.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.BaseTypes">
+      <summary>
+ Gets this described type's base types.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.Methods">
+      <summary>
+ Gets all methods stored in this described type.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.Properties">
+      <summary>
+ Gets all properties stored in this described type.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.Fields">
+      <summary>
+ Gets all fields stored in this described type.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.Types">
+      <summary>
+ Gets all nested types stored in this described type.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.DeclaringAssembly">
+      <summary>
+ Gets this described type's declaring assembly, if any.
+ </summary>
+    </member>
+    <member name="P:Flame.Build.DescribedType.DeclaringNamespace">
+      <summary>
+ Gets this type's declaring type.
  </summary>
     </member>
     <member name="T:Flame.Build.GenericAncestryRules">

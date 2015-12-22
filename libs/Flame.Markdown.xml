@@ -148,7 +148,7 @@
  A markdown tokenizer.
 </summary>
     </member>
-    <member name="M:Flame.Markdown.Tokenizer.this(System.String)">
+    <member name="M:Flame.Markdown.Tokenizer.#ctor(System.String)">
       <summary> #summary
  Creates a new tokenizer that tokenizes the given
  string.
