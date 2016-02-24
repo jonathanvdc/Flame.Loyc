@@ -25,8 +25,9 @@ namespace GenericsTest
     {
         public static void Main(string[] Args)
         {
-            var list = new List<string>(Args);
-            Console.WriteLine(list.Count);
+            var refObj = new Ref<List<string>>();
+            refObj.Value = new List<string>(Args);
+            Console.WriteLine(refObj.Value.Count);
         }
     }
 }

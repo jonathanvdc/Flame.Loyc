@@ -17,6 +17,6 @@ public static class Program
         if (Args.Length == 2)
             Console.WriteLine(Ackermann(int.Parse(Args[0]), int.Parse(Args[1])));
         else
-            Console.WriteLine("This program takes exactly two integer arguments.")
+            Console.WriteLine("This program takes exactly two integer arguments.");
     }
 }
