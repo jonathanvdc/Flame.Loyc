@@ -3,5 +3,6 @@ tests
 {
     Ackermann/Ackermann.test;
     Arrays/Arrays.test;
+    Generics/Generics.test;
     Product/Product.test;
 }

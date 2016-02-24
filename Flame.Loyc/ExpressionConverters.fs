@@ -337,7 +337,7 @@ module ExpressionConverters =
     /// Converts an argument expression, which may have a `#ref` attribute.
     let ConvertArgumentExpression (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression * LocalScope =
         let expr, scope = parent.ConvertExpression node scope
-        if node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Ref) then
+        if node.Attrs |> Seq.exists (fun x -> x.Name = CodeSymbols.Ref || x.Name = CodeSymbols.Out) then
             ExpressionBuilder.AddressOf expr |> ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range), scope
         else
             expr, scope

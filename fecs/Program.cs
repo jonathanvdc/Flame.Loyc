@@ -14,7 +14,7 @@ namespace fecs
         {
             ProjectHandlers.RegisterHandler(new ECSharpProjectHandler());
             var compiler = new ConsoleCompiler("fecs", "the Flame EC# compiler", "https://github.com/jonathanvdc/Flame.Loyc/releases");
-            compiler.Compile(args);
+            Environment.Exit(compiler.Compile(args));
         }
     }
 }
