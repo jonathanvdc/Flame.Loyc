@@ -18,7 +18,7 @@ module ExpressionConverters =
 
     /// Creates a predicate function that matches nodes with the given number
     /// of arguments.
-    let MatchesArgumentCount count = 
+    let MatchesArgumentCount count =
         fun (node : LNode) -> node.ArgCount = count
 
     /// Creates an n-ary node converter with the given converter.
@@ -26,19 +26,19 @@ module ExpressionConverters =
         CreateConverter (MatchesArgumentCount n)
 
     /// Defines a nullary node converter with the given converter.
-    let CreateNullaryConverter converter = 
+    let CreateNullaryConverter converter =
         CreateNAryConverter 0 converter
 
     /// Defines a unary node converter with the given converter.
-    let CreateUnaryConverter converter = 
+    let CreateUnaryConverter converter =
         CreateNAryConverter 1 converter
 
     /// Defines a binary node converter with the given converter.
-    let CreateBinaryConverter converter = 
+    let CreateBinaryConverter converter =
         CreateNAryConverter 2 converter
-            
+
     /// Defines a binary node converter with the given converter.
-    let CreateTernaryConverter converter = 
+    let CreateTernaryConverter converter =
         CreateNAryConverter 3 converter
 
     /// Defines a converter that simply returns a constant.
@@ -46,14 +46,14 @@ module ExpressionConverters =
         CreateConverter (Constant true) (value |> Constant |> Constant |> Constant)
 
     /// Defines a nullary operator with the given converter.
-    let DefineScopedNullaryOperator converter = 
+    let DefineScopedNullaryOperator converter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             converter scope, scope
 
         CreateNullaryConverter conv
 
     /// Defines a unary operator that acts on expressions.
-    let DefineScopedUnaryOperator converter = 
+    let DefineScopedUnaryOperator converter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let expr, newScope = parent.ConvertExpression node.Args.[0] scope
             converter newScope expr, newScope
@@ -61,7 +61,7 @@ module ExpressionConverters =
         CreateUnaryConverter conv
 
     /// Defines a binary operator with the given converter.
-    let DefineScopedBinaryOperator converter = 
+    let DefineScopedBinaryOperator converter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let        newScope = scope
             let expr1, newScope = parent.ConvertExpression node.Args.[0] newScope
@@ -71,7 +71,7 @@ module ExpressionConverters =
         CreateBinaryConverter conv
 
     /// Defines a binary operator with the given converter.
-    let DefineScopedTypeBinaryOperator converter = 
+    let DefineScopedTypeBinaryOperator converter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let      newScope = scope
             let lhs, newScope = parent.ConvertExpression node.Args.[0] newScope
@@ -81,7 +81,7 @@ module ExpressionConverters =
         CreateBinaryConverter conv
 
     /// Defines a ternary operator with the given converter.
-    let DefineScopedTernaryOperator converter = 
+    let DefineScopedTernaryOperator converter =
         let conv (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let        newScope = scope
             let expr1, newScope = parent.ConvertExpression node.Args.[0] newScope
@@ -120,12 +120,12 @@ module ExpressionConverters =
                              | Some declFunc -> not(UnsafeHelpers.IsUnsafe declFunc) && UnsafeHelpers.MissingUnsafeWarning.UseWarning scope.Global.Log.Options
                              | None          -> false
             if logWarning then
-                let descNode = 
+                let descNode =
                     UnsafeHelpers.MissingUnsafeWarning.CreateMessage(
                         "Unsafe code should not appear outside of an unsafe context. " +
                         "Add 'unsafe' to the enclosing member to make this warning go away. ")
 
-                let srcLoc = 
+                let srcLoc =
                     match scope.Function.Function with
                     | Some x -> x.GetSourceLocation()
                     | None   ->
@@ -133,9 +133,9 @@ module ExpressionConverters =
                         | Some x -> x.GetSourceLocation()
                         | None   -> null
 
-                let entry = 
+                let entry =
                     new LogEntry(
-                        "Unsafe code in safe context", 
+                        "Unsafe code in safe context",
                         [descNode; srcLoc.CreateRemarkDiagnosticsNode("Expected 'unsafe' here: ")])
 
                 inner |> ExpressionBuilder.Warning entry, scope
@@ -144,7 +144,7 @@ module ExpressionConverters =
 
         new SingleNodeConverter<IExpression * LocalScope>(converter.Matches, convUnsafe)
 
-    /// Converts a scoped expression. 
+    /// Converts a scoped expression.
     /// Note that an IExpression is returned, instead of an IExpression * LocalScope,
     /// as this function should not be exposed as a converter directly.
     /// Doing so anyway and registering it will most likely end up in infinite recursion.
@@ -161,7 +161,7 @@ module ExpressionConverters =
         DefineScopedBinaryOperator convAdd
 
     /// A converter for if-then expressions, which are of type void.
-    let IfConverter = 
+    let IfConverter =
         let convIf (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let cond, newScope = parent.ConvertExpression node.Args.[0] scope
             let scopedBody     = ConvertScopedExpression parent node.Args.[1] newScope
@@ -178,7 +178,7 @@ module ExpressionConverters =
         CreateTernaryConverter convIfElse
 
     /// A converter for while expressions.
-    let WhileConverter = 
+    let WhileConverter =
         let convWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let cond, newScope = parent.ConvertExpression node.Args.[0] scope
             let tag            = new UniqueTag()
@@ -188,7 +188,7 @@ module ExpressionConverters =
         CreateBinaryConverter convWhile
 
     /// A converter for do-while expressions.
-    let DoWhileConverter = 
+    let DoWhileConverter =
         let convDoWhile (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let tag            = new UniqueTag()
             let innerScope     = scope.FlowChildScope tag
@@ -198,7 +198,7 @@ module ExpressionConverters =
         CreateBinaryConverter convDoWhile
 
     /// A converter for `for`-loop expressions.
-    let ForConverter = 
+    let ForConverter =
         let convFor (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let tag            = new UniqueTag()
             let newScope       = scope.ChildScope
@@ -257,31 +257,31 @@ module ExpressionConverters =
     let ErrorConverter = CreateUnaryConverter ConvertError
     let WarningConverter = CreateUnaryConverter ConvertWarning
 
-    let private convertQuickbind (valueGetter : LNode -> LNode) (nameGetter : LNode -> LNode) (parent : INodeConverter) (node : LNode) (scope : LocalScope) = 
+    let private convertQuickbind (valueGetter : LNode -> LNode) (nameGetter : LNode -> LNode) (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
         let valueNode      = valueGetter node
         let name           = (nameGetter node).Name.Name
         let expr, newScope = parent.ConvertExpression valueNode scope
         ExpressionBuilder.Quickbind newScope expr name
 
     /// A converter for quickbind expressions.
-    let QuickbindConverter = 
+    let QuickbindConverter =
         CreateBinaryConverter (convertQuickbind (fun node -> node.Args.[0]) (fun node -> node.Args.[1]))
 
     /// A converter for quickbind-set expressions.
-    let QuickbindSetConverter = 
+    let QuickbindSetConverter =
         CreateBinaryConverter (convertQuickbind (fun node -> node.Args.[1]) (fun node -> node.Args.[0]))
 
     /// Converts a single variable definition, with the given type inference function.
-    let ConvertVariableDefinition (inferType : IExpression -> IType) (parent : INodeConverter) (node : LNode) (scope : LocalScope) = 
+    let ConvertVariableDefinition (inferType : IExpression -> IType) (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
         match NodeHelpers.GetIdNode node with
-        | None -> 
+        | None ->
             let message = new LogEntry("Invalid variable declaration",
                                        "A variable declaration must reference an identifier node, " +
                                        "which was not found in '" + node.Print() + "'.")
             ExpressionBuilder.VoidError message, scope
         | Some identifier ->
             match (inferType null, NodeHelpers.GetAssignedValueNode node) with
-            | (null, None) -> 
+            | (null, None) ->
                 let message = new LogEntry("Invalid variable declaration",
                                            "A variable declaration that infers its type must be assigned a value, " +
                                            "which was not found in '" + node.Print() + "'.")
@@ -299,15 +299,15 @@ module ExpressionConverters =
                 let local, newScope = ExpressionBuilder.DeclareLocal scope varType identifier.Name.Name
                 let expr, newScope  = parent.ConvertExpression assignedVal newScope
                 ExpressionBuilder.Assign newScope local expr, newScope
-    
+
     /// A node converter for variable declarations.
     let VariableDeclarationConverter =
         let convDeclVar (parent : INodeConverter) (node : LNode) (scope : LocalScope) =
             let typeNode = node.Args.[0]
 
-            let inferType = if typeNode.Name = CodeSymbols.Missing then 
+            let inferType = if typeNode.Name = CodeSymbols.Missing then
                                 fun (arg : IExpression) -> arg.GetTypeOrNull()
-                            else 
+                            else
                                 parent.ConvertType typeNode scope |> Constant
 
             let foldDef (init, currentScope) item =
@@ -341,7 +341,7 @@ module ExpressionConverters =
             ExpressionBuilder.AddressOf expr |> ExpressionBuilder.Source (NodeHelpers.ToSourceLocation node.Range), scope
         else
             expr, scope
-    
+
     /// Converts a sequence of argument expressions, which may have `#ref` attributes.
     let ConvertArgumentExpressions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) =
         nodes |> Seq.fold (fun (results, scope) arg -> let res, scope = ConvertArgumentExpression parent arg scope in res :: results, scope) ([], scope)
@@ -359,7 +359,7 @@ module ExpressionConverters =
         let args, scope  = ConvertArgumentExpressions parent call.Args scope
         ExpressionBuilder.Invoke scope (ExpressionBuilder.NewInstanceDelegates scope instanceType) args, scope
 
-    let private convertArrayDimensions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) : IExpression seq * LocalScope = 
+    let private convertArrayDimensions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) : IExpression seq * LocalScope =
         let dims, scope  = parent.ConvertExpressions nodes scope
         let dims         = dims |> Seq.map (ExpressionBuilder.CastImplicit scope >> (|>) PrimitiveTypes.Int32)
         dims, scope
@@ -372,22 +372,22 @@ module ExpressionConverters =
             let dims, scope  = convertArrayDimensions parent call.Args scope
             ExpressionBuilder.NewArray elemType dims, scope
 
-        let matches (node : LNode) = 
+        let matches (node : LNode) =
             // Matches anything that looks like:
             //
             // #new(#of(@`[...]`, T)(dims...))
 
-            node.ArgCount = 1 && 
-            let arrType = node.Args.[0].Target in 
-                arrType <> null && 
+            node.ArgCount = 1 &&
+            let arrType = node.Args.[0].Target in
+                arrType <> null &&
                 arrType.Target <> null &&
-                arrType.Target.Name = CodeSymbols.Of && 
+                arrType.Target.Name = CodeSymbols.Of &&
                 arrType.ArgCount = 2 &&
                 CodeSymbols.IsArrayKeyword arrType.Args.[0].Name
 
         CreateConverter matches conv
 
-    let private convertInitializedArrayItems (parent : INodeConverter) (elemType : IType) (nodes : LNode seq) (scope : LocalScope) = 
+    let private convertInitializedArrayItems (parent : INodeConverter) (elemType : IType) (nodes : LNode seq) (scope : LocalScope) =
         let args, scope  = parent.ConvertExpressions nodes scope
         let args         = args |> Seq.map (ExpressionBuilder.CastImplicit scope >> (|>) elemType)
         args, scope
@@ -399,9 +399,9 @@ module ExpressionConverters =
             let elemType     = parent.ConvertType call.Target.Args.[1] scope
             let dims, scope  = convertArrayDimensions parent call.Args scope
             let args, scope  = convertInitializedArrayItems parent elemType (node.Args.Slice(1)) scope
-            
+
             let resultExpr = ExpressionBuilder.NewInitializedArray elemType args
-            
+
             let dimsRank = Seq.length dims
             if dimsRank = 0 then
                 resultExpr, scope // Easy. Just infer the array's length.
@@ -419,16 +419,16 @@ module ExpressionConverters =
                 else
                     resultExpr, scope
 
-        let matches (node : LNode) = 
+        let matches (node : LNode) =
             // Matches anything that looks like:
             //
             // #new(#of(@`[...]`, T)(dims...), args...)
 
-            node.ArgCount > 1 && 
-            let arrType = node.Args.[0].Target in 
-                (arrType <> null && 
+            node.ArgCount > 1 &&
+            let arrType = node.Args.[0].Target in
+                (arrType <> null &&
                  arrType.Target <> null &&
-                 arrType.Target.Name = CodeSymbols.Of && 
+                 arrType.Target.Name = CodeSymbols.Of &&
                  arrType.ArgCount = 2 &&
                  CodeSymbols.IsArrayKeyword arrType.Args.[0].Name)
 
@@ -444,16 +444,16 @@ module ExpressionConverters =
                 ExpressionBuilder.NewInitializedArray (Seq.exactlyOne lowerBounds) args, scope
             else
                 let optionList = lowerBounds |> Seq.map scope.Global.TypeNamer
-                                             |> Seq.map (fun name -> new MarkupNode(NodeConstants.TextNodeType, name) :> IMarkupNode)
+                                             |> Seq.map (fun name -> new MarkupNode(NodeConstants.TextNodeType, name))
                                              |> (fun options -> ListExtensions.Instance.CreateList("Irreconcilable item types:", options))
-                let message    = new MarkupNode(NodeConstants.TextNodeType, "Could not infer the automatically typed array's element type, because the array's item types could not be reconciled.") :> IMarkupNode
+                let message    = new MarkupNode(NodeConstants.TextNodeType, "Could not infer the automatically typed array's element type, because the array's item types could not be reconciled.")
                 let contents   = new MarkupNode("entry", Seq.ofArray [| message; optionList |])
 
-                ExpressionBuilder.NewInitializedArray scope.Global.Environment.RootType args |> 
-                    ExpressionBuilder.Error (new LogEntry("Ambiguous array type", 
+                ExpressionBuilder.NewInitializedArray scope.Global.Environment.RootType args |>
+                    ExpressionBuilder.Error (new LogEntry("Ambiguous array type",
                                                           contents)), scope
-        
-        let matches (node : LNode) = 
+
+        let matches (node : LNode) =
             // Matches anything that looks like:
             //
             // #new([], args...)
@@ -471,7 +471,7 @@ module ExpressionConverters =
     let MemberAccessConverter =
         let convStaticMemberAccess (parent : INodeConverter) (left : LNode) (right : LNode) (scope : LocalScope) : IExpression * LocalScope =
             match parent.TryConvertType left scope with
-            | Some ty -> 
+            | Some ty ->
                 ExpressionBuilder.AccessNamedMembers scope right.Name.Name (Global ty), scope
             | None    ->
                 let error = ExpressionBuilder.VoidError (new LogEntry("Unresolved type", "Could not resolve type '" + left.Print() + "' on the left-hand side of a member access operation."))
@@ -487,7 +487,7 @@ module ExpressionConverters =
                     ExpressionBuilder.AccessNamedMembers scope right.Name.Name (ExpressionBuilder.GetAccessedExpression expr), newScope
             | None                 ->
                 convStaticMemberAccess parent left right scope
-                
+
         CreateBinaryConverter convMemberAccess
 
     /// Converts 'default' expressions.
@@ -499,14 +499,14 @@ module ExpressionConverters =
         CreateUnaryConverter convDefault
 
     /// Converts a `void` or `missing` identifier.
-    let ConvertVoidIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option = 
+    let ConvertVoidIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option =
         if node.Name = CodeSymbols.Void || node.Name = CodeSymbols.Missing then
             Some ExpressionBuilder.Void
         else
             None
 
     /// Converts an identifier that identifies a local variable.
-    let ConvertLocalIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option = 
+    let ConvertLocalIdentifier (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option =
         match scope.GetVariable(node.Name.Name) with
         | Some localVar -> Some (localVar.CreateGetExpression())
         | None          -> None
@@ -515,7 +515,7 @@ module ExpressionConverters =
     let ConvertMemberIdentifier (getAccessedExpr : LocalScope -> AccessedExpression option) (parent : INodeConverter) (node : LNode) (scope : LocalScope) : IExpression option =
         match getAccessedExpr scope with
         | None      -> None
-        | Some expr -> 
+        | Some expr ->
             let accExpr = ExpressionBuilder.AccessNamedMembers scope node.Name.Name expr
             if ExpressionBuilder.IsError accExpr then
                 None
@@ -524,7 +524,7 @@ module ExpressionConverters =
 
     /// Converts an identifier that identifies a type member of the current object instance.
     let ConvertInstanceIdentifier : IdentifierConverter =
-        let getAccExpr (scope : LocalScope) = 
+        let getAccExpr (scope : LocalScope) =
             match scope.GetVariable(CodeSymbols.This.Name) with
             | None         -> None
             | Some thisVar -> Some (ExpressionBuilder.GetAccessedExpression (thisVar.CreateGetExpression()))
@@ -532,7 +532,7 @@ module ExpressionConverters =
 
     /// Converts an identifier that identifies a static type member of the enclosing type.
     let ConvertStaticIdentifier : IdentifierConverter =
-        let getAccExpr (scope : LocalScope) = 
+        let getAccExpr (scope : LocalScope) =
             match scope.Function.Type with
             | None    -> None
             | Some ty -> Some (Global ty)

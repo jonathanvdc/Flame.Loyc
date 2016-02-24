@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -33,139 +33,78 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ecs">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Ecs.exe</HintPath>
     </Reference>
     <Reference Include="Flame">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Analysis">
       <HintPath>..\libs\Flame.Analysis.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Cecil">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Flame.CodeDescription">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.CodeDescription.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Compiler">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Cpp">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Cpp.dll</HintPath>
     </Reference>
     <Reference Include="Flame.DSProject">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.DSProject.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Front">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Front.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Front.Common">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Front.Common.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Functional">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Functional.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Markdown">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Markdown.dll</HintPath>
     </Reference>
     <Reference Include="Flame.MIPS">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.MIPS.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Optimization">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Optimization.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Python">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Python.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Recompilation">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Recompilation.dll</HintPath>
     </Reference>
     <Reference Include="Flame.RT">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.RT.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Syntax">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Syntax.dll</HintPath>
     </Reference>
     <Reference Include="Flame.TextContract">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.TextContract.dll</HintPath>
     </Reference>
     <Reference Include="Flame.Verification">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.Verification.dll</HintPath>
     </Reference>
     <Reference Include="Flame.XmlDocs">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Flame.XmlDocs.dll</HintPath>
     </Reference>
-    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="ICSharpCode.TextEditor">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="LeMP">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\LeMP.exe</HintPath>
     </Reference>
-    <Reference Include="Loyc.Binary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Loyc.Binary.dll</HintPath>
-    </Reference>
-    <Reference Include="Loyc.Collections, Version=1.4.5731.22501, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Loyc.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Loyc.Essentials, Version=1.4.5731.22501, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Loyc.Essentials.dll</HintPath>
-    </Reference>
-    <Reference Include="Loyc.Syntax, Version=1.4.5731.22502, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Loyc.Syntax.dll</HintPath>
-    </Reference>
-    <Reference Include="Loyc.Utilities, Version=1.4.5729.31408, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Loyc.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
     <Reference Include="Pixie">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Pixie.dll</HintPath>
     </Reference>
     <Reference Include="Pixie.Xml">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Pixie.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -174,6 +113,37 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="Loyc.Binary">
+      <HintPath>..\libs\Loyc.Binary.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Collections">
+      <HintPath>..\libs\Loyc.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Essentials">
+      <HintPath>..\libs\Loyc.Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Syntax">
+      <HintPath>..\libs\Loyc.Syntax.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Utilities">
+      <HintPath>..\libs\Loyc.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\libs\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\libs\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\libs\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\libs\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoInitializationPass.cs" />
@@ -189,7 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Flame.Loyc\Flame.Loyc.fsproj">
-      <Project>{a8ff1e7f-e3c9-4c45-b383-aea6daadc901}</Project>
+      <Project>{A8FF1E7F-E3C9-4C45-B383-AEA6DAADC901}</Project>
       <Name>Flame.Loyc</Name>
     </ProjectReference>
   </ItemGroup>
