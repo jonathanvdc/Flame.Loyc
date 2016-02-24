@@ -1,0 +1,7 @@
+
+tests
+{
+    Ackermann/Ackermann.test;
+    Arrays/Arrays.test;
+    Product/Product.test;
+}

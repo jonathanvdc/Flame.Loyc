@@ -1,0 +1,11 @@
+
+tests
+{
+    tests/all.test;
+}
+
+init
+{
+    fecs = $(net-runtime) $(working-directory)/bin/Release/fecs.exe;
+    // csc = $csc;
+}

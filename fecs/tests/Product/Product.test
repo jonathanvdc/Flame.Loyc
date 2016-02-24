@@ -1,0 +1,43 @@
+// A compare-test test description.
+// This test compares fecs to the reference implementation (csc or mcs).
+
+build
+{
+    $(compiler) $(Filename).cs $(Flags);
+}
+
+run
+{
+    return = @($(net-runtime) $(Executable) $(Args));
+}
+
+configs
+{
+    FecsOg
+    {
+        compiler = $fecs;
+        Flags = -Og -platform clr -o $(Executable);
+    }
+    FecsO3
+    {
+        compiler = $fecs;
+        Flags = -O3 -platform clr -o $(Executable);
+    }
+    ReferenceDebug
+    {
+        compiler = $csc;
+        Flags = /debug+ /out:$(Executable);
+    }
+    ReferenceRelease
+    {
+        compiler = $csc;
+        Flags = /optimize+ /out:$(Executable);
+    }
+}
+
+init
+{
+    Filename = Product;
+    Executable = bin/$(Filename).exe;
+    Args = 17 45 22 765;
+}
