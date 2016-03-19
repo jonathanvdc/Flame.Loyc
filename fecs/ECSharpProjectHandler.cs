@@ -95,14 +95,10 @@ namespace fecs
             {
                 foreach (var method in type.GetMethods())
                 {
-                    // Basically match anything that looks like `static void main(string[] Args)`
+                    // Basically match anything that looks like `static void main(...)`
                     if (method.IsStatic && method.Name.Equals("main", StringComparison.OrdinalIgnoreCase) && method.ReturnType.Equals(PrimitiveTypes.Void))
                     {
-                        var parameters = method.GetParameters();
-                        if (parameters.Length == 1 && parameters[0].ParameterType.Equals(PrimitiveTypes.String.MakeArrayType(1)))
-                        {
-                            return method;
-                        }
+                        return method;
                     }
                 }
             }
