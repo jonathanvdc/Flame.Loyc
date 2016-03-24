@@ -125,8 +125,8 @@ module MemberConverters =
         else
             ExpressionBuilder.ToStatement body
 
-    let private ConvertCommonMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
-        let isStatic, attrs = ReadAttributes parent node scope []
+    let private ConvertCommonMethodDeclaration (defaultAttrs : IAttribute seq) (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
+        let isStatic, attrs = ReadAttributes parent node scope defaultAttrs
         let name, tParams   = ReadName parent node.Args.[1] scope
         let fMethod         = new FunctionalMethod(new FunctionalMemberHeader(name, attrs, NodeHelpers.ToSourceLocation node.Args.[1].Range), declType, isStatic) 
         let fMethod         = fMethod.WithGenericParameters tParams
@@ -150,7 +150,7 @@ module MemberConverters =
 
     let ConvertMethodDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let scope   = AliasGenericParameters declType scope
-        let fMethod = ConvertCommonMethodDeclaration parent node scope declType
+        let fMethod = ConvertCommonMethodDeclaration [] parent node scope declType
         let retType declMethod = parent.ConvertType node.Args.[0] (new LocalScope(AliasGenericParameters declMethod scope))
         let fMethod = fMethod.WithReturnType retType
         let fMethod = fMethod.WithBaseMethods (InferBaseMethods (scope.GetAllMembers >> OfType))
@@ -158,8 +158,8 @@ module MemberConverters =
 
     let ConvertConstructorDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (declType : IType) =
         let scope   = AliasGenericParameters declType scope
-        let fMethod = ConvertCommonMethodDeclaration parent node scope declType
-        let fMethod = fMethod.AsConstructor 
+        let fMethod = ConvertCommonMethodDeclaration [PrimitiveAttributes.Instance.TotalInitializationAttribute] parent node scope declType
+        let fMethod = fMethod.AsConstructor
         fMethod :> IMethod
 
     /// Creates a type member converter based on the given method definition converter.
