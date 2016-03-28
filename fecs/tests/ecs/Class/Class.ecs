@@ -3,7 +3,7 @@ using LeMP;
 
 namespace Test
 {
-    public struct Vector : IVector
+    public class Vector : IVector
     {
         public this(set double X, set double Y) { }
 
@@ -23,6 +23,7 @@ namespace Test
 
     public interface IVector
     {
+        double LengthSquared { get; }
         double Length { get; }
     }
 
@@ -30,7 +31,20 @@ namespace Test
     {
         public static void Main(string[] Args)
         {
-            Console.WriteLine("Hello, world!");
+            if (Args.Length == 0)
+            {
+                Console.WriteLine("This program exactly one argument.");
+                return;
+            }
+
+            int count = int.Parse(Args[0]);
+            double result;
+            for (int i = 0; i < count; i++)
+            {
+                IVector vec = new Vector(i, 2 * i);
+                result += vec.LengthSquared;
+            }
+            Console.WriteLine(result);
         }
     }
 }

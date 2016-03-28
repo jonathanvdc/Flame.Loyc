@@ -9,26 +9,25 @@ build
 
 run
 {
-    return = @($(net-runtime) $(Executable) $(Args));
+    return = @($(net-runtime) $(Executable));
 }
 
 configs
 {
     FecsOg
     {
-        compiler = $fecs;
-        Flags = -Og -platform clr -o $(Executable);
+        Flags = -Og $(Flags);
     }
     FecsO3
     {
-        compiler = $fecs;
-        Flags = -O3 -platform clr -o $(Executable);
+        Flags = -O3 $(Flags);
     }
 }
 
 init
 {
-    Filename = Class;
+    compiler = $fecs;
+    Filename = Quickbind;
     Executable = bin/$(Filename).exe;
-    Args = 10;
+    Flags = -platform clr -o $(Executable);
 }
