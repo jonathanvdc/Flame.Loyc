@@ -2,13 +2,13 @@ using System;
 
 public static class Program
 {
-   public static void Main()
-   {
-       // Right-to-left quickbind
-       Console.WriteLine(x := 2);
-       // Left-to-right quickbind
-       Console.WriteLine(x =: y);
-       // Block expression
-       Console.WriteLine({ y++; y });
-   }
+    public static void Main()
+    {
+        // Right-to-left quickbind
+        Console.WriteLine(x := 2);
+        // Left-to-right quickbind
+        Console.WriteLine(x =: y);
+        // Block expression
+        Console.WriteLine({ y++; y });
+    }
 }
