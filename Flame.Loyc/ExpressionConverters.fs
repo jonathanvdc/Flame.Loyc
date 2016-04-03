@@ -357,7 +357,7 @@ module ExpressionConverters =
         let call         = node.Args.[0]
         let instanceType = parent.ConvertType call.Target scope
         let args, scope  = ConvertArgumentExpressions parent call.Args scope
-        ExpressionBuilder.Invoke scope (ExpressionBuilder.NewInstanceDelegates scope instanceType) args, scope
+        ExpressionBuilder.NewInstance scope instanceType args, scope
 
     let private convertArrayDimensions (parent : INodeConverter) (nodes : LNode seq) (scope : LocalScope) : IExpression seq * LocalScope =
         let dims, scope  = parent.ConvertExpressions nodes scope
