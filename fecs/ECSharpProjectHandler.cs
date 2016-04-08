@@ -1,4 +1,4 @@
-﻿using Ecs.Parser;
+﻿using Loyc.Ecs;
 using Flame;
 using Flame.Analysis;
 using Flame.Binding;
@@ -108,7 +108,7 @@ namespace fecs
         public static Task<IFunctionalNamespace[]> ParseCompilationUnitsAsync(List<IProjectSourceItem> SourceItems, CompilationParameters Parameters, IBinder Binder, IAssembly DeclaringAssembly)
         {
             var sink = new CompilerLogMessageSink(Parameters.Log);
-            var processor = new MacroProcessor(typeof(LeMP.Prelude.Macros), sink);
+            var processor = new MacroProcessor(typeof(LeMP.Prelude.BuiltinMacros), sink);
 
             processor.AddMacros(typeof(global::LeMP.StandardMacros).Assembly, false);
 
@@ -192,7 +192,7 @@ namespace fecs
                 if (Parameters.Log.Options.GetOption<bool>("E", false))
                 {
                     var outputService = GetParsingService(Parameters.Log.Options, "syntax-format", service);
-                    string newFile = outputService.PrintMultiple(nodes, Sink, indentString: new string(' ', 4));
+                    string newFile = outputService.Print(nodes, Sink, indentString: new string(' ', 4));
                     Parameters.Log.LogMessage(new LogEntry("'" + SourceItem.SourceIdentifier + "' after macro expansion", Environment.NewLine + newFile));
                 }
 
@@ -208,7 +208,7 @@ namespace fecs
 
             var nodes = Service.Parse(lexer, Sink);
 
-            return Processor.ProcessSynchronously(new RVList<LNode>(nodes));
+            return Processor.ProcessSynchronously(new VList<LNode>(nodes));
         }
 
         public static IFunctionalNamespace ParseCompilationUnit(IEnumerable<LNode> Nodes, GlobalScope Scope, IAssembly DeclaringAssembly)

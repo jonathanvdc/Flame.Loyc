@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ecs">
-      <HintPath>..\libs\Ecs.exe</HintPath>
-    </Reference>
     <Reference Include="Flame">
       <HintPath>..\libs\Flame.dll</HintPath>
     </Reference>
@@ -143,6 +140,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Loyc.Ecs">
+      <HintPath>..\libs\Loyc.Ecs.dll</HintPath>
+    </Reference>
+    <Reference Include="LeMP.StdMacros">
+      <HintPath>..\libs\LeMP.StdMacros.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -55,10 +55,10 @@ type CompilerLogMessageSink(log : ICompilerLog) =
             true
 
         member this.Write (level, context, format, args) = 
-            this.Write level context (Localize.From(format, args))
+            this.Write level context (format.Localized(args))
 
         member this.Write (level, context, format) = 
-            this.Write level context (Localize.From(format))
+            this.Write level context (format.Localized())
 
         member this.Write (level, context, format, arg0, arg1) = 
-            this.Write level context (Localize.From(format, arg0, arg1))
+            this.Write level context (format.Localized(arg0, arg1))

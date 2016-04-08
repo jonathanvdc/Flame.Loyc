@@ -305,7 +305,7 @@ module MemberConverters =
 
     /// Tests if the given property node qualifies as an autoprop.
     let IsAutoProperty (parent : INodeConverter) (scope : GlobalScope) (node : LNode) (declType : IType) (isStatic : bool, attrs : IAttribute seq) =
-        IsAutoPropertyBody parent scope node.Args.[2] && not (declType.GetIsInterface()) 
+        IsAutoPropertyBody parent scope node.Args.[3] && not (declType.GetIsInterface()) 
                                                       && attrs.HasAttribute(PrimitiveAttributes.Instance.AbstractAttribute.AttributeType) 
                                                          |> not
 
@@ -330,7 +330,8 @@ module MemberConverters =
     let ConvertPropertyDeclaration (parent : INodeConverter) (node : LNode) (scope : GlobalScope) (name : string) (isStatic : bool, attrs : IAttribute seq) (convAcc : INodeConverter -> LNode -> GlobalScope -> AccessorType -> IProperty -> IAccessor) (declType : IType) =
         let scope = AliasGenericParameters declType scope
         let prop  = ConvertPropertySignature parent node scope name (isStatic, attrs) declType
-        let prop  = ConvertPropertyMember convAcc parent scope prop node.Args.[2]
+        // TODO: handle node.Args.[2]
+        let prop  = ConvertPropertyMember convAcc parent scope prop node.Args.[3]
         prop :> IProperty
 
     /// A type member converter for property declarations.
@@ -357,7 +358,7 @@ module MemberConverters =
                                             declType, ConvertAccessorDeclaration
                 ConvertPropertyDeclaration parent node scope name attrs convAcc |> declType.WithProperty, scope
                 
-        let recognizeProperty (node : LNode) = node.ArgCount = 3
+        let recognizeProperty (node : LNode) = node.ArgCount = 4
         new TypeMemberConverter(recognizeProperty, convertProp)
 
     /// Converts a type declaration.
